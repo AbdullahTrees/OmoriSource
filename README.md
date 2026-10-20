@@ -31,6 +31,26 @@ OMORI's real install is laid out the same way: its `package.json` sits outside `
 
 ---
 
+# Building
+
+Requires Python 3 and an internet connection the first time (to download NW.js).
+
+```
+python tools/build.py                      # Windows build in build/windows/
+python tools/build.py --platform linux     # Linux x64 build in build/linux/
+python tools/build.py --sdk                # include the F12 developer console
+```
+
+Then run `build/windows/OMORI.exe` (or `build/linux/OMORI`).
+
+The script downloads NW.js 0.29.0 (32-bit on Windows, like the shipped game) and caches it in `build/.cache/`.
+It then lays the build out the way OMORI ships: the runtime, `package.json`, `launcher/` and `www/` (a copy of `project/`).
+Saves in `project/save/` are copied in, and the build fails if `www/` doesn't match the reference manifest.
+Each run deletes and rebuilds the output folder, **including its saves**, so copy any saves you want to keep out of `build/<platform>/www/save/` first.
+`build/` is ignored by git.
+
+---
+
 # Running the game
 
 The game needs **NW.js 0.29.0** (Chromium 65, Node 9.7.1), the same runtime OMORI ships with.

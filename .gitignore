@@ -1,2 +1,6 @@
 # Player data written by the game at runtime (saves, settings, title state)
 project/save/
+
+# Build output and downloaded runtimes (tools/build.py)
+build/
+__pycache__/
