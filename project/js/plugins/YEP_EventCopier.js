@@ -50,7 +50,7 @@ Yanfly.EventCopier.version = 1.01;
  * ============================================================================
  * Instructions
  * ============================================================================
- * 
+ *
  * First, set aside a dedicated map (or maps) that will be preloaded each time
  * the game starts. Each preloaded map should contain various events that you
  * wish to completely copy. These can range from templates to trigger events to
@@ -121,7 +121,7 @@ Yanfly.EventCopier.version = 1.01;
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *
  *  Variables      Description
- * 
+ *
  *      mapId      ID of the map to be loaded.
  *    eventId      ID of the event to be loaded.
  *     target      The event before it's copied over.
@@ -137,7 +137,7 @@ Yanfly.EventCopier.version = 1.01;
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *
  *  Variables      Description
- * 
+ *
  *     target      The loaded event after copied over.
  *     player      The player character.
  *
@@ -240,7 +240,7 @@ Yanfly.EventCopier.version = 1.01;
  * @desc The code used after copying over an event.
  * This is local for only this template.
  * @default "// Variables      Description\n//\n//    target      The loaded event after copied over.\n//    player      The player character."
- * 
+ *
  */
 //=============================================================================
 
@@ -291,11 +291,10 @@ Yanfly.loadMapData = function(mapId) {
   else {
 		const path = require('path');
 		const fs = require('fs');
-		var base = path.dirname(process.mainModule.filename);	
-		let filename = 'Map%1.KEL'.format(mapId.padZero(3));
-		Yanfly.PreloadedMaps[mapId] = null;	
+		var base = path.dirname(process.mainModule.filename);
+		let filename = 'Map%1.json'.format(mapId.padZero(3));
+		Yanfly.PreloadedMaps[mapId] = null;
 		fs.readFile(base + "/data/" + filename, (err, data) => {
-			data = Encryption.decrypt(data);
 			Yanfly.PreloadedMaps[mapId] = JSON.parse(data.toString());
 		})
   }

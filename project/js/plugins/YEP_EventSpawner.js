@@ -318,7 +318,7 @@ Yanfly.EventSpawn.version = 1.02;
  *
  * @param Name
  * @desc Name of the template. The template is used with
- * the script call: 
+ * the script call:
  * @default Untitled
  *
  * @param MapID
@@ -335,7 +335,7 @@ Yanfly.EventSpawn.version = 1.02;
  * @max 999
  * @desc The ID of the event to be spawned when using this template.
  * @default 1
- * 
+ *
  */
 //=============================================================================
 
@@ -375,11 +375,10 @@ Yanfly.loadMapData = function(mapId) {
   else {
 		const path = require('path');
 		const fs = require('fs');
-		var base = path.dirname(process.mainModule.filename);	
-		let filename = 'Map%1.KEL'.format(mapId.padZero(3));
-		Yanfly.PreloadedMaps[mapId] = null;	
+		var base = path.dirname(process.mainModule.filename);
+		let filename = 'Map%1.json'.format(mapId.padZero(3));
+		Yanfly.PreloadedMaps[mapId] = null;
 		fs.readFile(base + "/data/" + filename, (err, data) => {
-			data = Encryption.decrypt(data);
 			Yanfly.PreloadedMaps[mapId] = JSON.parse(data.toString());
 		})
   }
@@ -429,21 +428,21 @@ Yanfly.SpawnEventFailChecks = function(mapId, eventId, x, y) {
   }
   if ($gameMap.eventsXy(x, y).length > 0) {
     if ($gameTemp.isPlaytest()) {
-      console.log('Cannot spawn event at ' + x + ', ' + y + '.' + 
+      console.log('Cannot spawn event at ' + x + ', ' + y + '.' +
         'There is already an event there.');
     }
     return true;
   }
   if ($gameMap.boat().posNt(x, y) || $gameMap.ship().posNt(x, y)) {
     if ($gameTemp.isPlaytest()) {
-      console.log('Cannot spawn event at ' + x + ', ' + y + '.' + 
+      console.log('Cannot spawn event at ' + x + ', ' + y + '.' +
         'There is a vehicle there.');
     }
     return true;
   }
   if (x < 0 || x >= $gameMap.width() || y < 0 || y >= $gameMap.height()) {
     if ($gameTemp.isPlaytest()) {
-      console.log('Cannot spawn event at ' + x + ', ' + y + '.' + 
+      console.log('Cannot spawn event at ' + x + ', ' + y + '.' +
         "This is outside of the map's boundaries.");
     }
     return true;
@@ -604,8 +603,8 @@ Game_Map.prototype.spawnEvent = function(mapId, eventId, x, y, preserved) {
     baseMapId: this.mapId(),
     spawnId: spawnId,
     mapId: mapId,
-    eventId: eventId, 
-    x: x, 
+    eventId: eventId,
+    x: x,
     y: y,
     preserved: preserved
   };
@@ -695,7 +694,7 @@ Game_Event.prototype.initPreSpawnEventData = function() {
   this._spawnData = data;
   this._spawned = true;
   this._pageIndex = -2;
-  
+
   this._mapId = data.baseMapId;
   this._eventId = data.spawnId;
 

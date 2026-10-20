@@ -9,9 +9,6 @@ Imported.GTP_OmoriFixes = true;
 var Gamefall = Gamefall || {};
 Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 
-// For .exe
-// showDevTools()
-
 //=============================================================================
  /*:
  * @plugindesc v3.5.1 Bug Fixes and Optimization for OMORI
@@ -34,14 +31,14 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
  * VERSION 2.1.0: Children updates with a faster For/of instead of ForEach.
  * Added texture forced flush on the end of scenes.
  * VERSION 2.1.1: Solved Game Menu Freezes. They're related to the Set Wait Mode;
- * Solved bug related to renderer thay may freeze FPS; Added YSP Video Player 
+ * Solved bug related to renderer thay may freeze FPS; Added YSP Video Player
  * to wait when window unfocused; Fixed focusing on minimize; Delta time to 1.1 for stabilizing;
  * Solved FPS delay when created Event Mini Label;
  * VERSION 2.1.2: New fix for faces un-loading -> BLT to Sprite. Icon not-loading possible solution
  * added.
- * VERSION 2.2.0: Added fix to YSP Video Player for not losing texture context; Added check to 
+ * VERSION 2.2.0: Added fix to YSP Video Player for not losing texture context; Added check to
  * max video duration. Omori Final Battle Scene FIX;
- * VERSION 2.2.1: Damage Popup layer fix; 
+ * VERSION 2.2.1: Damage Popup layer fix;
  * VERSION 2.2.2: Fix for repeating skills; Fixing SOMETHING and OMORI transition battles;
  * VERSION 2.2.3: Force sprite clearing for faces;
  * VERSION 2.3.0: Removed face and icon sprite model for avoiding "Squishy Effect";
@@ -66,11 +63,11 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
  * VERSION 2.6.1: Added new GTP Skills;
  * VERSION 2.6.2: Added WriteToFile for ending title screen;
  * VERSION 2.7.0: New jitter fix test; Added wait for all SE methods;
- * VERSION 2.7.1: Added utility method; Removed some GTP Skills; Moved It had no Effect checker 
+ * VERSION 2.7.1: Added utility method; Removed some GTP Skills; Moved It had no Effect checker
  * inside finish actions methods;
  * VERSION 2.7.2: Added Steam Overlay fix;
  * VERSION 2.7.3: Added checker for Archeia_Steamworks;
- * VERSION 2.7.4: Written a specific blur method for MAC, because the ticker on MacOs stops 
+ * VERSION 2.7.4: Written a specific blur method for MAC, because the ticker on MacOs stops
  * as soon as the click out window. Added warning message when Archeia Achivements is disabled (Temporary);
  * BGM and BGS of battle faded and MAP BGM and BGS restarted after scene terminate;
  * VERSION 2.8.0: Added Achivements:
@@ -87,7 +84,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
  * VERSION 2.9.1: Added fix for tutorial troops; Force clear switch 466;
  * VERSION 2.9.2: Set start tint for Rare Bear;
  * VERSION 2.9.3: Permanent Data Manager fix and Greenworks compatiblity for MAC
- * VERSION 2.9.4: Added Second Chance message logic in code; Cleared FORCE PLOT AT ARMOR AT 
+ * VERSION 2.9.4: Added Second Chance message logic in code; Cleared FORCE PLOT AT ARMOR AT
  * THE END OF EACH BATTLE
  * VERSION 3.0.0: Super game polishing; List too long for report all bugs;
  * VERSION 3.1.1: Added checker for avoiding crash when TDS Footprits is disabled;
@@ -149,7 +146,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			}
 		}
 		this._gamepadStates[gamepad.index] = newState;
-	};	
+	};
 
 	//Input._onLostFocus = function() {}
 
@@ -235,7 +232,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			}
 			return bitmap;
 		}
-		
+
 	}*/
 
 	//###############################################################################
@@ -251,7 +248,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 		Math._lastRand = (new Date().getTime()*Math.PI) % 1;
 		return Math.floor(max * rand);
 	}
-	
+
 	//Math.randomInt = function(max) {return Math.seedRandom(max);}
 
 	//###############################################################################
@@ -264,7 +261,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 		static range(size, startAt = 0) {
 			return [...Array(size).keys()].map(i => i + startAt);
 		}
-		
+
 		static forceStatusRefresh() {
 			return SceneManager._scene._statusWindow.refresh();
 		}
@@ -370,15 +367,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 		start() {
 			super.start();
 			this.determineOS();
-			if(!!this.hasSteamwork()) {
-				this.getAchievementsData();
-			}
-			else if(!this.hasSteamwork() && !Utils.isOptionValid("test")) {
-				throw new Error("Steam has not been detected.")
-			}
-			if(!Utils.isOptionValid("test") && window.navigator.plugins.namedItem('Native Client') !== null) {
-				throw new Error("This game does not work in SDK mode.")
-			}
+			this.getAchievementsData();
 			if(Utils.isMac()) {
 				const nw = require("nw.gui");
 				const nw_window = nw.Window.get();
@@ -390,18 +379,12 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			}
 			this.initNWScreen();
 		}
-
-		hasSteamwork() {
-			if(!Imported.Archeia_Steamworks) {return false;}
-			return !!SceneManager.steamworksInitialized();
-		}
-
 		getAchievementsData() {
 			$._achievementsCount = $gameSystem.getNumberOfAchievements();
 			$._achievementsUnlocked = [];
 			let achievementNames = $gameSystem.getAchievements();
 			for(let ach of achievementNames) {
-				steamworks.getAchievement(ach, (unlocked) => {
+				$gameSystem.getAchievement(ach, (unlocked) => {
 					if(!!unlocked) {$._achievementsUnlocked.push(ach)}
 				})
 			}
@@ -411,7 +394,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			const os = require("os");
 			Utils.setMac(os.platform() === "darwin");
 		}
-		
+
 		initNWScreen() {
 			const nw = require("nw.gui");
 			nw.Screen.Init();
@@ -477,7 +460,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 		this.forceFlush();
 	}
 
-	const _old_scene_base_checkGameover = Scene_Base.prototype.checkGameover;	
+	const _old_scene_base_checkGameover = Scene_Base.prototype.checkGameover;
 	Scene_Base.prototype.checkGameover = function() {
 		let OMORI = $gameActors.actor(1);
 		let OMORI_DEAD = OMORI.isDead() || OMORI.hp <= 0
@@ -508,15 +491,15 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 
 	const _old_omo_menu_scene_menuBase_showWindows = Scene_OmoMenuBase.prototype.showWindows;
 	Scene_OmoMenuBase.prototype.showWindows = function() {
-		this.clearQueue(); 
-		this.clearWaitMode(); 
+		this.clearQueue();
+		this.clearWaitMode();
 		_old_omo_menu_scene_menuBase_showWindows.call(this);
 	}
 
 	const _old_omo_menu_scene_menuBase_hideWindows = Scene_OmoMenuBase.prototype.hideWindows;
 	Scene_OmoMenuBase.prototype.hideWindows = function() {
-		this.clearQueue(); 
-		this.clearWaitMode(); 
+		this.clearQueue();
+		this.clearWaitMode();
 		_old_omo_menu_scene_menuBase_hideWindows.call(this);
 	}
 
@@ -550,15 +533,15 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 
 	const _old_omo_menu_scene_skill_onActorSkillControlUse = Scene_OmoMenuSkill.prototype.onActorSkillControlUse;
 	Scene_OmoMenuSkill.prototype.onActorSkillControlUse = function() {
-		this.clearQueue(); 
-		this.clearWaitMode(); 
+		this.clearQueue();
+		this.clearWaitMode();
 		_old_omo_menu_scene_skill_onActorSkillControlUse.call(this);
 	}
 
 	const _old_omo_menu_scene_skill_showActorSkillEquipWindow = Scene_OmoMenuSkill.prototype.showActorSkillEquipWindow;
 	Scene_OmoMenuSkill.prototype.showActorSkillEquipWindow = function(index) {
-		this.clearQueue(); 
-		this.clearWaitMode(); 
+		this.clearQueue();
+		this.clearWaitMode();
 		_old_omo_menu_scene_skill_showActorSkillEquipWindow.call(this, index);
 	}
 
@@ -576,7 +559,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 	}
 
 	const _old_omo_menu_scene_equip_showActorEquipWindow = Scene_OmoMenuEquip.prototype.showActorEquipWindow;
-	Scene_OmoMenuEquip.prototype.showActorEquipWindow = function(index) { 
+	Scene_OmoMenuEquip.prototype.showActorEquipWindow = function(index) {
 		this.clearQueue(); // Being Sure to clear the QUEUE;
 		this.clearWaitMode();
 		_old_omo_menu_scene_equip_showActorEquipWindow.call(this, index);
@@ -598,68 +581,68 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 		}
 
 		onStatusWindowOk() {
-			this.clearQueue(); 
-			this.clearWaitMode(); 
-			return super.onStatusWindowOk();			
+			this.clearQueue();
+			this.clearWaitMode();
+			return super.onStatusWindowOk();
 		}
 
 		onItemCategoryOk() {
-			this.clearQueue(); 
-			this.clearWaitMode(); 
+			this.clearQueue();
+			this.clearWaitMode();
 			return super.onItemCategoryOk();
 		}
 
 		onItemCategoryCancel() {
-			this.clearQueue(); 
-			this.clearWaitMode(); 
+			this.clearQueue();
+			this.clearWaitMode();
 			return super.onItemCategoryCancel();
 		}
 
 		onItemListOk() {
-			this.clearQueue(); 
-			this.clearWaitMode(); 			
+			this.clearQueue();
+			this.clearWaitMode();
 			return super.onItemListOk();
 		}
 
 		onItemListCancel() {
-			this.clearQueue(); 
-			this.clearWaitMode(); 
+			this.clearQueue();
+			this.clearWaitMode();
 			return super.onItemListCancel();
 		}
 
 		onItemConfirmationUse() {
-			this.clearQueue(); 
-			this.clearWaitMode(); 
+			this.clearQueue();
+			this.clearWaitMode();
 			return super.onItemConfirmationUse();
 		}
 
 		onItemConfirmationTrash() {
-			this.clearQueue(); 
-			this.clearWaitMode(); 
+			this.clearQueue();
+			this.clearWaitMode();
 			return super.onItemConfirmationTrash();
 		}
 
 		onItemConfirmationCancel() {
-			this.clearQueue(); 
-			this.clearWaitMode(); 
+			this.clearQueue();
+			this.clearWaitMode();
 			return super.onItemConfirmationCancel();
 		}
 
 		onItemTrashPromptOk() {
-			this.clearQueue(); 
-			this.clearWaitMode(); 
+			this.clearQueue();
+			this.clearWaitMode();
 			return super.onItemTrashPromptOk();
 		}
 
 		onItemTrashPromptCancel() {
-			this.clearQueue(); 
-			this.clearWaitMode(); 
+			this.clearQueue();
+			this.clearWaitMode();
 			return super.onItemTrashPromptCancel();
 		}
 
 		onStatusWindowOk() {
-			this.clearQueue(); 
-			this.clearWaitMode(); 
+			this.clearQueue();
+			this.clearWaitMode();
 			return super.onStatusWindowOk();
 		}
 	}
@@ -745,7 +728,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 	}
 	//=======================================================================
 	// Removing Guard Skill ID
-	
+
 	//=======================================================================
 	// Just for be REALLY sure that these flags clears correctly
 
@@ -800,7 +783,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 		}
 
 		refreshTileEvents() {
-			this.tileEvents = this.events().filter(event => { 
+			this.tileEvents = this.events().filter(event => {
 				return !!event && event.isTile();
 			})
 		}
@@ -813,7 +796,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			}
 			return loc[id];
 		}
-		
+
 	}
 
 	//###############################################################################
@@ -851,7 +834,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 	// WINDOW MESSAGE FACE BOX
 	//
 	//###############################################################################
-	
+
 	//==================================================================
 	// This should fix the not loading faces issue
 
@@ -923,7 +906,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 
 		static _restoreContext() {
 			if(this._renderer.type !== PIXI.RENDERER_TYPE.WEBGL || this._rendererType === "canvas") {
-				// This condition is needed for avoiding problems 
+				// This condition is needed for avoiding problems
 				// with canvas or Unknown renderer.
 				return;
 			}
@@ -981,7 +964,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			if(os.platform() !== "darwin") {return super._isFullScreen();}
 			const nw = require("nw.gui");
 			const nw_window = nw.Window.get();
-			return !nw_window.isFullscreen;			
+			return !nw_window.isFullscreen;
 		}
 
 		static _requestFullScreen() {
@@ -989,7 +972,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			if(os.platform() !== "darwin") {return super._requestFullScreen();}
 			const nw = require("nw.gui");
 			const nw_window = nw.Window.get();
-			return nw_window.enterFullscreen();			
+			return nw_window.enterFullscreen();
 		}
 
 		static _cancelFullScreen() {
@@ -997,7 +980,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			if(os.platform() !== "darwin") {return super._cancelFullScreen();}
 			const nw = require("nw.gui");
 			const nw_window = nw.Window.get();
-			nw_window.leaveFullscreen();	
+			nw_window.leaveFullscreen();
 		}
 
 		static _paintUpperCanvas() {
@@ -1036,7 +1019,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			this._errorPrinter.style.fontSize = '28px';
 			this._errorPrinter.style.zIndex = 99;
 			this._errorPrinter.style.padding = "4px"
-			this._centerElement(this._errorPrinter);			
+			this._centerElement(this._errorPrinter);
 		}
 
 		static _applyCanvasFilter() {
@@ -1045,20 +1028,16 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 
 		static _makeErrorHtml(name, message) {
 			return ('<font color="red"><b>' + name + '</b></font><br>' +
-			'<font color="white">' + message + '</font><br>');			
+			'<font color="white">' + message + '</font><br>');
 		}
 
 		static _makeFullErrorHtml(name,message,stack) {
 			var text = '';
-			if(message === "Steam has not been detected." || message === "This game does not work in SDK mode.") {
-				name = "";
-				stack = [stack[1], ""];
-			} 
 			for (var i = 2; i < stack.length; ++i) {
 			  text += '<font color=white>' + stack[i] + '</font><br>';
 			}
 			return ('<font color="white"><b>' + stack[0] + '</b></font><br>' +
-			  '<font color="white"><b>' + stack[1] + '</b></font><br>' + text);			
+			  '<font color="white"><b>' + stack[1] + '</b></font><br>' + text);
 		}
 
 		static openSteamBugPage() {
@@ -1229,7 +1208,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 					return 1;
 				}
 				return 0;
-			}			
+			}
 		}
 
 
@@ -1237,7 +1216,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			if (!this.ticker) {
 				this.ticker = new PIXI.ticker.Ticker();
 				this.ticker.maxFPS = 60;
-				this.ticker.add(this.update, this); 
+				this.ticker.add(this.update, this);
 				this.ticker.start();
 				// Make On Minimize Event
 				const nw = require("nw.gui");
@@ -1257,7 +1236,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 							this.updateWebAudio();
 							this.updateVideos();
 						}, 25)
-					})					
+					})
 				}
 				win.on("restore", () => {this._clearMinimizeHandler()})
 				return;
@@ -1376,8 +1355,8 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			}
 			this._backgroundBitmap = this.snap();
 			if(!SceneManager.isNextScene(Scene_Menu) && forceAppear) {
-				this._backgroundBitmap.blur();	
-			}	
+				this._backgroundBitmap.blur();
+			}
 		}
 	}
 
@@ -1452,7 +1431,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 				return true;
 			} catch(e) {
 				return false;
-			}			
+			}
 		}
 
 		static _restoreGlobalInfo() {
@@ -1496,7 +1475,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			if(Utils.isOptionValid("test")) {console.error(e)}
 			else {alert("Loading Issue - " + e)};
 			return false;
-		}		
+		}
 	}
 
 	//###############################################################################
@@ -1552,18 +1531,32 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			this._playtime = 0;
 		}
 
+		getAchievements() {
+			return [];
+		}
+
+		getAchievement(_, callback) {
+			if (callback) {
+				callback(false);
+			}
+		}
+
+		getNumberOfAchievements() {
+			return 0;
+		}
+
 		clearAchievement(code, callback, err) {
-			if(!Imported.Archeia_Steamworks) {return console.warn("Archeia Achivement is disabled. If you're on MAC, the problem is related to a problem with the library that is going to be fixed. - LUCA")}
 			if(!callback) {
 				callback = () => {
-					if(!!$._achievementsUnlocked.contains(code)) {$._achievementsUnlocked.splice($._achievementsUnlocked.indexOf(code), 1)}
+					if (!err) {
+						if(!!$._achievementsUnlocked.contains(code)) {$._achievementsUnlocked.splice($._achievementsUnlocked.indexOf(code), 1)}
+					}
 				}
 			}
-			return super.clearAchievement(code, callback, err);			
+			callback();
 		}
 
 		unlockAchievement(code, callback, err) {
-			if(!Imported.Archeia_Steamworks) {return console.warn("Archeia Achivement is disabled. If you're on MAC, the problem is related to a problem with the library that is going to be fixed. - LUCA")}
 			if(!callback) {
 				callback = () => {
 					if(!err) {
@@ -1572,14 +1565,12 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 							$gameSystem.unlockAchievement("IT_IS_ALL_A_DREAM");
 						}
 					}
-					
 				}
 			}
-			return super.unlockAchievement(code, callback, err);
+			callback();
 		}
 
 		clearAllAchievements() {
-			if(!Imported.Archeia_Steamworks) {return console.warn("Archeia Achivement is disabled. If you're on MAC, the problem is related to a problem with the library that is going to be fixed. - LUCA")}
 			const achievements = this.getAchievements();
 			if(!!achievements) {
 				for(let achievement of achievements) {
@@ -1601,14 +1592,14 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 				this._playtime = Math.floor((this._framesOnSave*1000)/60);
 			}
 			Playtime_Manager.clear();
-			//=============================================	
+			//=============================================
 			// Clearing EXA Followers global variables on
 			// load.
 			EXA.FC.followerControl          = false;
 			EXA.FC.followerControlId        = -1;
 			EXA.FC.followerStop             = false;
 			EXA.FC.followerCollision        = false;
-			//=============================================	
+			//=============================================
 			$gameParty.members().forEach(member => {
 				member.setLastBattleSkill(null);
 				member.setLastCommandSymbol('');
@@ -1728,8 +1719,8 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			const troops = [445];
 			if(SceneManager.isPreviousScene(Scene_Battle) && !!troops.contains($gameTroop._troopId)) {return false;}
 			return super.needsFadeIn();
-		}	
-		
+		}
+
 		updateEncounterEffect() {
 			if (this._encounterEffectDuration > 0) {
 				this._encounterEffectDuration--;
@@ -1741,7 +1732,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 				}
 			}
 		}
-		
+
 		terminate() {
 			super.terminate();
 			// 12/16 Clearing Run Away Switch
@@ -1790,7 +1781,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 	//###############################################################################
 
 	Scene_Battle = class extends Scene_Battle {
-		
+
 		createDisplayObjects() {
 			super.createDisplayObjects();
 			this.addToneFilterCompatibility();
@@ -1818,7 +1809,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 
 		commandEscape() {
 			BattleManager.setEscapeMode(true);
-			super.commandEscape();	
+			super.commandEscape();
 		}
 
 		_defaultStart() {
@@ -1886,7 +1877,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 					this.startFadeOut(this.slowFadeSpeed(), false);
 				} else {
 					this.startFadeOut(this.fadeSpeed(), false);
-				}  				
+				}
 			}
 			this._statusWindow.close();
 			this._partyCommandWindow.close();
@@ -1914,8 +1905,8 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 		}
 
 		_needsMainToneUpdate() {
-			return (!!$gameSwitches.value(1615) || 
-					$gameTroop.isHumphreyBattle() || 
+			return (!!$gameSwitches.value(1615) ||
+					$gameTroop.isHumphreyBattle() ||
 					!!$gameTemp._toneBelowUI)
 		}
 
@@ -2021,7 +2012,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			for(let target of this._allTargets) {
 				this._logWindow.displayActionResults(this._subject, target);
 			}
-			
+
 		}
 
 		static endBattle(result) { // Being sure that Plot Armor is cleared at the end of the battle;
@@ -2047,15 +2038,15 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 					if(immortalIndex > -1) {
 						this._actionList.splice(immortalIndex, 1);
 					}
-					
+
 				}
 				if(ACS_CHECK.contains(skillId)) {
 					let immortalIndex = this._actionList.findIndex(x => x[0].contains("IMMORTAL"));
 					if(immortalIndex > -1) {
 						this._actionList.splice(immortalIndex, 1);
 					}
-					this._actionList.push(["EVAL", ["$gameTroop.members().forEach(m => m.removeImmortal())"]])	
-					this._actionList.push(['WAIT FOR EFFECT'])				
+					this._actionList.push(["EVAL", ["$gameTroop.members().forEach(m => m.removeImmortal())"]])
+					this._actionList.push(['WAIT FOR EFFECT'])
 				}
 			}
 			if(!!$gameTemp._addToFinishActions) {
@@ -2097,7 +2088,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 		static processRetry() {
 			if(!!$gameTroop.isHumphreyBattle() && !!$gameTemp._bb1Name) {
 				$gameMap.changeBattleback($gameTemp._bb1Name, $gameMap.battleback2Name());
-			}			
+			}
 			return super.processRetry();
 		}
 	}
@@ -2118,7 +2109,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 						this._logWindow.push("addText", subject.name().toUpperCase() + " does not have enough JUICE!");
 						this._logWindow.push("wait");
 					}
-				}		
+				}
 				//===================================
 			}
 			subject.removeCurrentAction();
@@ -2131,7 +2122,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			this._subject = this.getNextSubject();
 		}
 	}
-	
+
 
 	Yanfly.BEC.BattleManager_processVictory = function() {
 		$gameParty.removeBattleStates();
@@ -2153,15 +2144,15 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 		} else {
 			AudioManager.stopBgm();
 		}
-		this.endBattle(2);		
+		this.endBattle(2);
 	}
 
 	Yanfly.BEC.BattleManager_processAbort = function() {
 		$gameParty.removeBattleStates();
 		//this.replayBgmAndBgs();
-		this.endBattle(1);		
+		this.endBattle(1);
 	}
-	
+
 	//###############################################################################
 	//
 	// GAME INTERPRETER
@@ -2253,7 +2244,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 		}
 	};
 
-	const _old_sprite_battler_setBattler = Sprite_Battler.prototype.setBattler; 
+	const _old_sprite_battler_setBattler = Sprite_Battler.prototype.setBattler;
 	Sprite_Battler.prototype.setBattler = function(battler) {
 		_old_sprite_battler_setBattler.call(this, battler);
 		if(!battler) {return;}
@@ -2274,7 +2265,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 				this._damages.shift();
 			}
 		}
-	};	
+	};
 
 
 	//###############################################################################
@@ -2306,7 +2297,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 				case "bgmVolume": return 70;
 				case "bgsVolume": return 90;
 				case "seVolume": return 90;
-				case "meVolume": return 90;					
+				case "meVolume": return 90;
 			}
 		}
 
@@ -2316,7 +2307,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			return super.readVolume(config, name);
 		}
 	}
-	
+
 	Object.defineProperty(ConfigManager, 'commandRemember', {
 		get: function() {
 			return true; // Force Command Remember to TRUE
@@ -2357,7 +2348,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 			this._playedCollapseSound = true;
 		}
 	};
-	
+
 	//###############################################################################
 	//
 	// SCENE MENU
@@ -2440,11 +2431,11 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 		var base = path.dirname(process.mainModule.filename);
 		var deskDir = `${base}`;
 		fs.writeFileSync(deskDir + `___for_${$gameActors.actor(8).name()}___.txt`, `............. ...   ............................... ..... ............. ..... ..
-		...........           .    ..       .   . .. ...    .  ..     .. ...    .  ..   
-		...........   ..     .     .  .    OOZZZZZO    .    ..  ...  ...   .    ..  ... 
-		...........                .. .OZZZZZZZZZZZZZO,     .   .     ..  ..    .   .   
+		...........           .    ..       .   . .. ...    .  ..     .. ...    .  ..
+		...........   ..     .     .  .    OOZZZZZO    .    ..  ...  ...   .    ..  ...
+		...........                .. .OZZZZZZZZZZZZZO,     .   .     ..  ..    .   .
 		............. ..  . .  .    ZZZZZZZZZZZZZZZZZZZZO.... ... ... ... ... ... ... ..
-		............. ...   ... ?ZZZZZZZZZZZZZZZZZZZZZZZMMZO......  ........ .........  
+		............. ...   ... ?ZZZZZZZZZZZZZZZZZZZZZZZMMZO......  ........ .........
 		....................  MZZZZZZZZZZZZZZZZZZZZZZZZZZZMZZZ .........................
 		.....  .  .........MMMZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ........................
 		   . .    ....... OZZMMZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ$......................
@@ -2546,7 +2537,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 		........ MM .......... ......MMMMMMMMMMMMMMMMM?.. .... .............. . MM .....
 		........ 8M........... . .. .MMMMMMMMMMMMMMMMM. . .... .. ......... . ..M. .. ..
 		........ ZM... ..............MMMMMMMMMMMMMMMMM .. ................... ..M ......
-		.........Z ........... .... .NMMMMMMMMMMMMMMMM... ... ..... ..... ... ......... 
+		.........Z ........... .... .NMMMMMMMMMMMMMMMM... ... ..... ..... ... .........
 		.......... ........... ...... MMMMMMMMMMMMMMMM... ................... ..........
 		............................. MMMMMMMMMMMMMMMM... ................... ..........
 		............................. MMMMMMMMMMMMMMM+... ................... ..........
@@ -2601,7 +2592,7 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 		......... ...........  ........ .... ....  . .... .... ......... .... .... .....
 		................................................................................
 		.. .. . . ............ ........ .... ..... ...... .... .............. .... .....
-		`)	
+		`)
 	}
 
 	$.parseNoEffectEmotion = function(tname, em) {
@@ -2667,14 +2658,14 @@ Gamefall.OmoriFixes = Gamefall.OmoriFixes || {};
 				this.push('addText', target.name() + stateMsg);
 				this.push('waitForEffect');
 			}
-		}, this);		
+		}, this);
 	}
 
 	// SPEED UP ACS
 	Window_BattleLog = class extends Window_BattleLog {
 
 		updateWaitCount() {
-			let ACS_SKILLS = [46,49,52,86,89,92,126,129,132,168,171,174]; 
+			let ACS_SKILLS = [46,49,52,86,89,92,126,129,132,168,171,174];
 			let currentSkill = !!BattleManager._action && BattleManager._action._item ? BattleManager._action._item.object() : null;
 			let skillId = !!DataManager.isSkill(currentSkill) ? currentSkill.id : 0;
 			if(BattleManager._phase === "battleEnd") {return super.updateWaitCount();}
@@ -2713,7 +2704,7 @@ Gamefall.PermanentData = Gamefall.PermanentData || {};
 			if(os.platform() === "darwin") {
 				folder = "com.omocat.omori/"
 			}
-			return folder;			
+			return folder;
 		}
 
 		static load() {
@@ -2743,8 +2734,8 @@ Gamefall.PermanentData = Gamefall.PermanentData || {};
 						console.error("An error has occured during permanent data saving process!");
 						throw new Error(err);
 					}
-				})	
-			})			
+				})
+			})
 		}
 
 		static isCutsceneSkippable(key) {
@@ -2755,7 +2746,7 @@ Gamefall.PermanentData = Gamefall.PermanentData || {};
 			if(!!this._cutsceneData[key]) {return;}
 			this._cutsceneData[key] = true;
 			this.save();
-		} 
+		}
 
 		static _deletePermanentCutscenes() {
 			const pp = require("path");
@@ -2771,7 +2762,7 @@ Gamefall.PermanentData = Gamefall.PermanentData || {};
 					this._cutsceneData = {};
 					console.info("CUTSCENE.json has been correctly deleted.")
 				}
-			})			
+			})
 		}
 
 		static cutsceneData() {return this._cutsceneData}
@@ -2801,7 +2792,7 @@ Gamefall.AchivementsImplementation = Gamefall.AchivementsImplementation || {};
 	//###############################################################################
 
 	Game_Party = class extends Game_Party {
-		
+
 		gainItem(item, amount, includeEquip) {
 			super.gainItem(item, amount, includeEquip);
 			if(!!item) {
@@ -2883,14 +2874,14 @@ Gamefall.FPSMeter = Gamefall.FPSMeter || {};
 
 	Omori_FPSCounter.prototype.show = function() {
 		this._boxDiv.style.display = "block";
-		this._showFps = true;	
-		this._update();	
+		this._showFps = true;
+		this._update();
 	};
 
 	Omori_FPSCounter.prototype.hide = function() {
 		this._boxDiv.style.display = "none";
-		this._showFps = false;	
-		this._update();	
+		this._showFps = false;
+		this._update();
 	};
 
 	Omori_FPSCounter.prototype._createElements = function() {
@@ -2938,16 +2929,13 @@ Gamefall.FPSMeter = Gamefall.FPSMeter || {};
 
 })(Gamefall.FPSMeter);
 
-
-Gamefall.Encryption = Gamefall.Encryption || {};
-
-(function($) {
+(function() {
 
 	//###############################################################################
 	//
 	// DATA MANAGER
 	//
-	//###############################################################################	
+	//###############################################################################
 
 	DataManager = class extends DataManager {
 
@@ -2956,24 +2944,22 @@ Gamefall.Encryption = Gamefall.Encryption || {};
 
 			const path = require('path');
 			const fs = require('fs');
-			const yaml = require('./js/libs/js-yaml-master')  
+			const yaml = require('./js/libs/js-yaml-master')
 			var base = path.dirname(process.mainModule.filename);
 			if(window['$externalNotesData'] === undefined) {
 				let noteBuffer = fs.readFileSync(base + '/data/Notes.yaml');
-				noteBuffer = Encryption.decrypt(noteBuffer);
 				window['$externalNotesData'] = yaml.safeLoad(noteBuffer.toString());
 			}
 
 			if(window["$dataQuests"] === undefined) {
 				let questBuffer = fs.readFileSync(base + '/data/Quests.yaml');
-				questBuffer = Encryption.decrypt(questBuffer);
 				window["$dataQuests"] = yaml.safeLoad(questBuffer.toString());
 			}
 			for (var i = 0; i < this._databaseFiles.length; i++) {
 				var name = this._databaseFiles[i].name;
-				var src = this._databaseFiles[i].src.replace(".json", ".json");
+				var src = this._databaseFiles[i].src;
 				this.loadDataFile(name, src);
-			}		
+			}
 		}
 
 		static loadDataFile(name, src) {
@@ -2983,8 +2969,7 @@ Gamefall.Encryption = Gamefall.Encryption || {};
 			var base = path.dirname(process.mainModule.filename);
 			fs.readFile(base + "/data/" + src, (err, buffer) => {
 				if(err) {throw new Error(err)}
-				let decrypt = Encryption.decrypt(buffer);
-				window[name] = JSON.parse(decrypt.toString());
+				window[name] = JSON.parse(buffer.toString());
 				DataManager.onLoad(window[name]);
 			});
 
@@ -3005,8 +2990,7 @@ Gamefall.Encryption = Gamefall.Encryption || {};
 						Graphics.printLoadingError(base + "/data/" + filename);
 						SceneManager.stop();
 					}
-					let decrypt = Encryption.decrypt(buffer);
-					window["$dataMap"] = JSON.parse(decrypt.toString());
+					window["$dataMap"] = JSON.parse(buffer.toString());
 					DataManager.onLoad(window["$dataMap"])
 					Graphics.endLoading();
 					this._mapLoader = true;
@@ -3032,8 +3016,7 @@ Gamefall.Encryption = Gamefall.Encryption || {};
 					Graphics.printLoadingError(base + mapName);
 					SceneManager.stop();
 				}
-				let decrypt = Encryption.decrypt(buffer);
-				DataManager._tempTiledData = JSON.parse(decrypt.toString());
+				DataManager._tempTiledData = JSON.parse(buffer.toString());
 	            DataManager.loadTilesetData();
 	            DataManager._tiledLoaded = true;
 			})
@@ -3053,7 +3036,7 @@ Gamefall.Encryption = Gamefall.Encryption || {};
 				$callEventMap.events = [];
 				$callEventMap.width = 100;
 				$callEventMap.height = 100;
-				$callEventMap.scrollType = 3;			
+				$callEventMap.scrollType = 3;
 			}
 		}
 	}
@@ -3062,7 +3045,7 @@ Gamefall.Encryption = Gamefall.Encryption || {};
 	//
 	// LANGUAGE MANAGER
 	//
-	//###############################################################################	
+	//###############################################################################
 
 	LanguageManager = class extends LanguageManager {
 
@@ -3070,7 +3053,7 @@ Gamefall.Encryption = Gamefall.Encryption || {};
 			if(!!Utils.isOptionValid("test")) {return super.loadLanguageFiles(language);}
 			const path = require('path');
 			const fs = require('fs');
-			const yaml = require('./js/libs/js-yaml-master')  
+			const yaml = require('./js/libs/js-yaml-master')
 			var base = path.dirname(process.mainModule.filename);
 
 			let folder = "/Languages/" + language + "/";
@@ -3082,7 +3065,6 @@ Gamefall.Encryption = Gamefall.Encryption || {};
 				let filename = path.basename(directory, format);
 				if(format === ".yaml") {
 					let buff = fs.readFileSync(filePath + '/' + filename + format);
-					buff = Encryption.decrypt(buff);
 					this._data[language].text[filename] = yaml.safeLoad(buff.toString());
 				}
 			}
@@ -3096,7 +3078,7 @@ Gamefall.Encryption = Gamefall.Encryption || {};
 	//
 	// ATLAS MANAGER
 	//
-	//###############################################################################	
+	//###############################################################################
 
 	AtlasManager = class extends AtlasManager {
 
@@ -3107,11 +3089,7 @@ Gamefall.Encryption = Gamefall.Encryption || {};
 				const fs = require("fs");
 				const yaml = require('./js/libs/js-yaml-master')
 				var base = path.dirname(process.mainModule.filename);
-				let folder = '/img/atlases/';
-				var filePath = base + folder;
-				var dirList = fs.readdirSync(filePath);
 				let yy = fs.readFileSync(base + '/data/Atlas.yaml');
-				yy = Encryption.decrypt(yy);
 				var data = yaml.safeLoad(yy);
 				window['$atlasData'] = data;
 			}
@@ -3121,7 +3099,7 @@ Gamefall.Encryption = Gamefall.Encryption || {};
 	// NEED TO CLEAR ATLAS PLUGIN! DON'T FORGET!!
 	AtlasManager.initAtlasData()
 
-})(Gamefall.Encryption);
+})();
 
 
 Gamefall.FootSound = Gamefall.FootSound || {};
@@ -3243,7 +3221,7 @@ Gamefall.JPWordWrap = Gamefall.JPWordWrap || {};
 
 
 	//=====================================================================
-	// This addition is inspired from DarkPlasma Japanese Word Wrap 
+	// This addition is inspired from DarkPlasma Japanese Word Wrap
 	// approach. Header:
 
 	// DarkPlasma_WordWrapForJapanese
@@ -3270,7 +3248,7 @@ Gamefall.JPWordWrap = Gamefall.JPWordWrap || {};
 	}
 
 	Window_Base.prototype.isEasternLocale = function() {
-		return !!$._enable_2byte_linebreak 
+		return !!$._enable_2byte_linebreak
 	}
 
 	const _old_window_base_checkWordWrap = Window_Base.prototype.checkWordWrap;
@@ -3299,10 +3277,10 @@ Gamefall.JPWordWrap = Gamefall.JPWordWrap || {};
 			if (this.checkWordWrap(textState)) {
 				if(!this._letterEffectsActive) {
 					textState.index -= 1;
-				}	
+				}
 				return this.processNewLine(textState);
 			}
-			Yanfly.Message.Window_Base_processNormalCharacter.call(this, textState)		
+			Yanfly.Message.Window_Base_processNormalCharacter.call(this, textState)
 		}
 	}
 
@@ -3340,7 +3318,7 @@ Gamefall.JPWordWrap = Gamefall.JPWordWrap || {};
 		["KEL", "ケル", "켈", "凯"],
 		["HERO", "ヒロ", "히로", "英雄"]
 	];
-	
+
 	DataManager.chapterNamesPerLanguage = [
 		["???", "???", "???", "？？？"],
 		["MOVING DAY", "引越しの日", "이삿날", "搬家当天"],

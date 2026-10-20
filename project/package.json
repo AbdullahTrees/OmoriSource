@@ -9,6 +9,6 @@
         "width": 640,
         "height": 480,
         "icon": "icon/icon.png",
-        "resizable": true
+        "resizable": false
     }
 }

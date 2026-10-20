@@ -1,5 +1,5 @@
 //=============================================================================
-// Gamefall Team Plugins - Optimization for Omori taking in account 
+// Gamefall Team Plugins - Optimization for Omori taking in account
 // YEP_Core Updates;
 // GTP_CoreUpdates.js    VERSION 1.0.1
 //=============================================================================
@@ -32,7 +32,7 @@ Sprite.prototype.update = function() {
       if (child && child.update) child.update();
     };
   };
-  
+
   // Replaced ForEach
   Tilemap.prototype.update = function() {
     this.animationCount++;
@@ -48,7 +48,7 @@ Sprite.prototype.update = function() {
       if (this.bitmaps[i]) this.bitmaps[i].touch();
     }
   };
-  
+
   // Replaced ForEach
   TilingSprite.prototype.update = function() {
     var length = this.children.length;
@@ -57,7 +57,7 @@ Sprite.prototype.update = function() {
       if (child && child.update) child.update();
     }
   };
-  
+
   // Replaced ForEach
   Window.prototype.update = function() {
     if (this.active) this._animationCount++;
@@ -67,7 +67,7 @@ Sprite.prototype.update = function() {
       if (child && child.update) child.update();
     }
   };
-  
+
   // Replaced ForEach
   WindowLayer.prototype.update = function() {
     var length = this.children.length;
@@ -76,7 +76,7 @@ Sprite.prototype.update = function() {
       if (child && child.update) child.update();
     }
   };
-  
+
   // Replaced ForEach
   Weather.prototype._updateAllSprites = function() {
     var maxSprites = Math.floor(this.power * 10);
@@ -94,14 +94,14 @@ Sprite.prototype.update = function() {
       sprite.y = sprite.ay - this.origin.y;
     }
   };
-    
+
   Game_Interpreter.prototype.setup = function(list, eventId) {
     this.clear();
     this._mapId = $gameMap.mapId();
     this._eventId = eventId || 0;
     this._list = list;
   };
-  
+
   // Change Tileset Event: load instead of reserve
   Game_Interpreter.prototype.command282 = function() {
     var tileset = $dataTilesets[this._params[0]];
@@ -120,7 +120,7 @@ Sprite.prototype.update = function() {
 Sprite_Animation.prototype.isReady = function() {
     return ImageManager.isReady();
   };
-  
+
   // Replaced ForEach
   Sprite_Animation.prototype.updateFrame = function() {
     if (this._duration > 0) {
@@ -133,7 +133,7 @@ Sprite_Animation.prototype.isReady = function() {
       };
     }
   };
-  
+
   // Cleaning algorithm up
   Sprite_Animation.prototype.updateCellSprite = function(sprite, cell) {
     var pattern = cell[0];
@@ -190,34 +190,4 @@ Sprite_Animation.prototype.isReady = function() {
   Game_Map.prototype.eventsXyNt = function(x,y) {
     return this._events.filter(event => {return !!event && event.posNt(x,y)})
   }
-
-
-	Encryption = class {
-
-    static init() {
-      this._key = "hello world";
-      // this._key = String(window.nw.App.argv).replace("--", "");
-    }
-
-		static isTest() {
-			return Utils.isOptionValid("test");
-		}
-
-		static decrypt(encrypted) {
-      // Don't need to decrypt anything anymore :)
-
-			// const crypto = require("crypto")
-			// const iv = encrypted.slice(0,16);
-			// encrypted = encrypted.slice(16);
-			// const algorithm = "aes-256-ctr";
-			// const decipher = crypto.createDecipheriv(algorithm, this._key, iv);
-			// const result = Buffer.concat([decipher.update(encrypted), decipher.final()]);
-			// return result;
-
-      return encrypted;
-		}
-  }
-
-  Encryption.init();
-
 })(Gamefall.CoreUpdates);

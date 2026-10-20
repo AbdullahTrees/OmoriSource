@@ -290,7 +290,7 @@ Utils.generateRuntimeId = function(){
 Utils._supportPassiveEvent = null;
 /**
  * Test this browser support passive event feature
- * 
+ *
  * @static
  * @method isSupportPassiveEvent
  * @return {Boolean} this browser support passive event or not
@@ -735,12 +735,6 @@ Bitmap._reuseImages = [];
  *
  * requestCompleted:
  * Request completed
- *
- * decrypting:
- * requesting encrypted data from supplied URI or decrypting it.
- *
- * decryptCompleted:
- * Decrypt completed
  *
  * loaded:
  * loaded. isReady() === true, so It's usable.
@@ -1563,33 +1557,20 @@ Bitmap.prototype._onLoad = function() {
 
     this._renewCanvas();
 
-    switch(this._loadingState){
-        case 'requesting':
-            this._loadingState = 'requestCompleted';
-            if(this._decodeAfterRequest){
-                this.decode();
-            }else{
-                this._loadingState = 'purged';
-                this._clearImgInstance();
-            }
-            break;
-
-        case 'decrypting':
-            window.URL.revokeObjectURL(this._image.src);
-            this._loadingState = 'decryptCompleted';
-            if(this._decodeAfterRequest){
-                this.decode();
-            }else{
-                this._loadingState = 'purged';
-                this._clearImgInstance();
-            }
-            break;
+    if(this._loadingState === 'requesting'){
+        this._loadingState = 'requestCompleted';
+        if(this._decodeAfterRequest){
+            this.decode();
+        }else{
+            this._loadingState = 'purged';
+            this._clearImgInstance();
+        }
     }
 };
 
 Bitmap.prototype.decode = function(){
     switch(this._loadingState){
-        case 'requestCompleted': case 'decryptCompleted':
+        case 'requestCompleted':
             this._loadingState = 'loaded';
 
             if(!this.__canvas) this._createBaseTexture(this._image);
@@ -1597,7 +1578,7 @@ Bitmap.prototype.decode = function(){
             this._callLoadListeners();
             break;
 
-        case 'requesting': case 'decrypting':
+        case 'requesting':
             this._decodeAfterRequest = true;
             if (!this._loader) {
                 this._loader = ResourceHandler.createLoader(this._url, this._requestImage.bind(this, this._url), this._onError.bind(this));
@@ -1678,16 +1659,9 @@ Bitmap.prototype._requestImage = function(url){
     this._image = new Image();
     this._url = url;
     this._loadingState = 'requesting';
-
-    if(!Decrypter.checkImgIgnore(url) && Decrypter.hasEncryptedImages) {
-        this._loadingState = 'decrypting';
-        Decrypter.decryptImg(url, this);
-    } else {
-        this._image.src = url;
-
-        this._image.addEventListener('load', this._loadListener = Bitmap.prototype._onLoad.bind(this));
-        this._image.addEventListener('error', this._errorListener = this._loader || Bitmap.prototype._onError.bind(this));
-    }
+    this._image.src = url;
+    this._image.addEventListener('load', this._loadListener = Bitmap.prototype._onLoad.bind(this));
+    this._image.addEventListener('error', this._errorListener = this._loader || Bitmap.prototype._onError.bind(this));
 };
 
 Bitmap.prototype.isRequestOnly = function(){
@@ -1696,8 +1670,7 @@ Bitmap.prototype.isRequestOnly = function(){
 
 Bitmap.prototype.isRequestReady = function(){
     return this._loadingState !== 'pending' &&
-        this._loadingState !== 'requesting' &&
-        this._loadingState !== 'decrypting';
+        this._loadingState !== 'requesting';
 };
 
 Bitmap.prototype.startRequest = function(){
@@ -8163,7 +8136,6 @@ WebAudio.prototype.addStopListener = function(listner) {
 WebAudio.prototype._load = function(url) {
     if (WebAudio._context) {
         var xhr = new XMLHttpRequest();
-        if(Decrypter.hasEncryptedAudio) url = Decrypter.extToEncryptExt(url);
         xhr.open('GET', url);
         xhr.responseType = 'arraybuffer';
         xhr.onload = function() {
@@ -8183,7 +8155,6 @@ WebAudio.prototype._load = function(url) {
  */
 WebAudio.prototype._onXhrLoad = function(xhr) {
     var array = xhr.response;
-    if(Decrypter.hasEncryptedAudio) array = Decrypter.decryptArrayBuffer(array);
     this._readLoopComments(new Uint8Array(array));
     WebAudio._context.decodeAudioData(array, function(buffer) {
         this._buffer = buffer;
@@ -8490,10 +8461,6 @@ Html5Audio.setup = function (url) {
         this.initialize();
     }
     this.clear();
-
-    if(Decrypter.hasEncryptedAudio && this._audioElement.src) {
-        window.URL.revokeObjectURL(this._audioElement.src);
-    }
     this._url = url;
 };
 
@@ -9143,127 +9110,6 @@ JsonEx._resetPrototype = function(value, prototype) {
         value = newValue;
     }
     return value;
-};
-
-
-function Decrypter() {
-    throw new Error('This is a static class');
-}
-
-Decrypter.hasEncryptedImages = false;
-Decrypter.hasEncryptedAudio = false;
-Decrypter._requestImgFile = [];
-Decrypter._headerlength = 16;
-Decrypter._xhrOk = 400;
-Decrypter._encryptionKey = "";
-Decrypter._ignoreList = [
-    "img/system/Window.png"
-];
-Decrypter.SIGNATURE = "5250474d56000000";
-Decrypter.VER = "000301";
-Decrypter.REMAIN = "0000000000";
-
-Decrypter.checkImgIgnore = function(url){
-    for(var cnt = 0; cnt < this._ignoreList.length; cnt++) {
-        if(url === this._ignoreList[cnt]) return true;
-    }
-    return false;
-};
-
-Decrypter.decryptImg = function(url, bitmap) {
-    url = this.extToEncryptExt(url);
-
-    var requestFile = new XMLHttpRequest();
-    requestFile.open("GET", url);
-    requestFile.responseType = "arraybuffer";
-    requestFile.send();
-
-    requestFile.onload = function () {
-        if(this.status < Decrypter._xhrOk) {
-            var arrayBuffer = Decrypter.decryptArrayBuffer(requestFile.response);
-            bitmap._image.src = Decrypter.createBlobUrl(arrayBuffer);
-            bitmap._image.addEventListener('load', bitmap._loadListener = Bitmap.prototype._onLoad.bind(bitmap));
-            bitmap._image.addEventListener('error', bitmap._errorListener = bitmap._loader || Bitmap.prototype._onError.bind(bitmap));
-        }
-    };
-
-    requestFile.onerror = function () {
-        if (bitmap._loader) {
-            bitmap._loader();
-        } else {
-            bitmap._onError();
-        }
-    };
-};
-
-Decrypter.decryptHTML5Audio = function(url, bgm, pos) {
-    var requestFile = new XMLHttpRequest();
-    requestFile.open("GET", url);
-    requestFile.responseType = "arraybuffer";
-    requestFile.send();
-
-    requestFile.onload = function () {
-        if(this.status < Decrypter._xhrOk) {
-            var arrayBuffer = Decrypter.decryptArrayBuffer(requestFile.response);
-            var url = Decrypter.createBlobUrl(arrayBuffer);
-            AudioManager.createDecryptBuffer(url, bgm, pos);
-        }
-    };
-};
-
-Decrypter.cutArrayHeader = function(arrayBuffer, length) {
-    return arrayBuffer.slice(length);
-};
-
-Decrypter.decryptArrayBuffer = function(arrayBuffer) {
-    if (!arrayBuffer) return null;
-    var header = new Uint8Array(arrayBuffer, 0, this._headerlength);
-
-    var i;
-    var ref = this.SIGNATURE + this.VER + this.REMAIN;
-    var refBytes = new Uint8Array(16);
-    for (i = 0; i < this._headerlength; i++) {
-        refBytes[i] = parseInt("0x" + ref.substr(i * 2, 2), 16);
-    }
-    for (i = 0; i < this._headerlength; i++) {
-        if (header[i] !== refBytes[i]) {
-            throw new Error("Header is wrong");
-        }
-    }
-
-    arrayBuffer = this.cutArrayHeader(arrayBuffer, Decrypter._headerlength);
-    var view = new DataView(arrayBuffer);
-    this.readEncryptionkey();
-    if (arrayBuffer) {
-        var byteArray = new Uint8Array(arrayBuffer);
-        for (i = 0; i < this._headerlength; i++) {
-            byteArray[i] = byteArray[i] ^ parseInt(Decrypter._encryptionKey[i], 16);
-            view.setUint8(i, byteArray[i]);
-        }
-    }
-
-    return arrayBuffer;
-};
-
-Decrypter.createBlobUrl = function(arrayBuffer){
-    var blob = new Blob([arrayBuffer]);
-    return window.URL.createObjectURL(blob);
-};
-
-Decrypter.extToEncryptExt = function(url) {
-    var ext = url.split('.').pop();
-    var encryptedExt = ext;
-
-    if(ext === "ogg") encryptedExt = ".rpgmvo";
-    else if(ext === "m4a") encryptedExt = ".rpgmvm";
-    else if(ext === "png") encryptedExt = ".rpgmvp";
-    else encryptedExt = ext;
-
-    return url.slice(0, url.lastIndexOf(ext) - 1) + encryptedExt;
-};
-
-Decrypter.readEncryptionkey = function(){
-    this._encryptionKey = $dataSystem.encryptionKey.split(/(.{2})/).filter(Boolean);
 };
 
 //-----------------------------------------------------------------------------

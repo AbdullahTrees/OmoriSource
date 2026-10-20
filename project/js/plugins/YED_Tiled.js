@@ -208,7 +208,7 @@ const YED_TiledParameters = PluginManager.parameters("YED_Tiled");
 						}
 					};
 
-					xhr.send();					
+					xhr.send();
 				}
 				else {
 					DataManager._tilesetToLoad++;
@@ -216,10 +216,8 @@ const YED_TiledParameters = PluginManager.parameters("YED_Tiled");
 					const path = require('path');
 					const fs = require('fs');
 					var base = path.dirname(process.mainModule.filename);
-					filename = filename.replace(".json", ".AUBREY")
 					fs.readFile(base + "/maps/" + filename, (err, data) => {
 						if(err) {throw new Error(err)}
-						data = Encryption.decrypt(data);
 						Object.assign(tileset,JSON.parse(data.toString()))
 						DataManager._tilesetToLoad--;
 					});

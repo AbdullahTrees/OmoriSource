@@ -313,9 +313,6 @@ StreamWebAudio.prototype.clear = function() {
 
 StreamWebAudio.prototype._load = async function(url) {
     if (StreamWebAudio._context) {
-        if (Decrypter.hasEncryptedAudio) {
-            url = Decrypter.extToEncryptExt(url);
-        }
         const reader = await ResourceHandler.fetchWithRetry('stream', url);
         this._loading(reader);
     }
@@ -331,9 +328,6 @@ StreamWebAudio.prototype._loading = async function(reader) {
                 return;
             }
             let array = value;
-            if (Decrypter.hasEncryptedAudio) {
-                array = Decrypter.decryptUint8Array(array);
-            }
             this._readLoopComments(array);
             decode({ data: array, eof: false });
         }
@@ -996,7 +990,6 @@ StreamWebAudio.prototype.addStopListener = function(listner) {
  */
 StreamWebAudio.prototype._onXhrLoad = function(xhr) {
     var array = xhr.response;
-    if(Decrypter.hasEncryptedAudio) array = Decrypter.decryptArrayBuffer(array);
     this._readLoopComments(new Uint8Array(array));
     StreamWebAudio._context.decodeAudioData(array, function(buffer) {
         this._buffer = buffer;
@@ -1186,22 +1179,4 @@ StreamWebAudio.prototype._readFourCharacters = function(array, index) {
     }
     return string;
 };
-
-//
-
-Decrypter.decryptUint8Array = function(uint8Array) {
-    const ref = this.SIGNATURE + this.VER + this.REMAIN;
-    for (let i = 0; i < this._headerlength; i++) {
-        if (uint8Array[i] !== parseInt('0x' + ref.substr(i * 2, 2), 16)) {
-            return uint8Array;
-        }
-    }
-    uint8Array = new Uint8Array(uint8Array.buffer, this._headerlength);
-    this.readEncryptionkey();
-    for (var i = 0; i < this._headerlength; i++) {
-        uint8Array[i] = uint8Array[i] ^ parseInt(this._encryptionKey[i], 16);
-    }
-    return uint8Array;
-};
-
 }

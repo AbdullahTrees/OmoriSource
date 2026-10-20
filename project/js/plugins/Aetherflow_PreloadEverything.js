@@ -11,89 +11,89 @@
  * @type boolean
  * @default true
  * @desc Release non-system/global preloaded assets from memory on map change?
- * 
+ *
  * @param PreloadSystem
  * @text Preload System Resources
  * @type boolean
  * @default true
  * @desc Preload all system based assets on start?
- * 
+ *
  * @param ImageCacheSize
  * @text Image Cache Size
  * @desc Size of the image cache in bytes.
  * @type text
  * @default 10 * 1000 * 1000
- * 
+ *
  * @param AudioCacheSize
  * @text Audio Cache Size
  * @desc Size of the audio cache in bytes.
  * @type text
  * @default 20 * 1000 * 1000
- * 
+ *
  * @param PreloadGlobal
  * @text Global Assets
  * @type struct<PreloadContainer>
  * @desc Preloaded assets that are kept in memory on game start.
- * 
+ *
  * @param PreloadMaps
  * @text Map Assets
  * @desc A list of Preload Containers used for map assets.
  * @type struct<PreloadMapContainer>[]
- *  
+ *
  * @help
  * ---------------------------------------------------------------------------------
  * Introduction
  * ---------------------------------------------------------------------------------
  * This plugin is designed to allieviate your "preloading" problems. Tired of not
- * having your sound play right away when you need it? Tired of some images not 
- * appearing? Well look no further because those days are a thing of the past. Not 
- * only does this plugin preload your thingys, but it also acts as a basic caching 
+ * having your sound play right away when you need it? Tired of some images not
+ * appearing? Well look no further because those days are a thing of the past. Not
+ * only does this plugin preload your thingys, but it also acts as a basic caching
  * system to help with the problem of memory being overused (if done right). It is
  * not a perfect solution, but it should help all games.
- * 
+ *
  * NOTE: THIS PLUGIN REQUIRES RPG MAKER MV V1.6.1 IF YOU ARE NOT USING V1.6.1
  * THIS PLUGIN WILL NOT WORK AND WILL ERROR OUT. YOU HAVE BEEN WARNED.
- * 
+ *
  * ---------------------------------------------------------------------------------
  * How-to
  * ---------------------------------------------------------------------------------
  * The system is fairly straightforward, it uses "containers" to preload and store
  * resources. These containers come in two flavors:
- * 
+ *
  * GLOBAL: This is a singular container, it is used to store Global, or game wide assets
  * these assets are usually things you always want to be loaded. They are all loaded on
  * game start.
- * 
+ *
  * MAP: These containers are what you use to preload map resources. These containers
  * are loaded when the map associated with them is entered. Depending on your plugin
  * parameters they will also be released from the cache when you enter a new map.
- * 
+ *
  * In order to use the containers you simply modify and add to them via plugin parameters.
- * 
+ *
  * ---------------------------------------------------------------------------------
  * Caching & How It Works
  * ---------------------------------------------------------------------------------
- * 
+ *
  * The caching system stores assets in memory until they are no longer needed and
  * are manually purged via the available functions, or by being deleted by the system
  * itself when a new resource is loaded and the cache is full.
- * 
+ *
  * The cache size is determined by two plugin parameters:
- * 
+ *
  * Image Cache Size: The size of the image cache in bytes.
- * 
+ *
  * Audio Cache Size: The size of the audio cache in bytes.
- * 
+ *
  * These two plugin parameters are evaluated and thus you can use math to determine
  * what the size rather than having to write out a large number. (e.g: 10 * 1000 * 1000 is a 10MB cache).
- * 
+ *
  * You can use various functions in the cache classes to "Reserve" a resource. These
  * "reserved" resources will not be automatically purged, so be careful!
- * 
+ *
  * When a resource is added to the cache, the cache is sorted by the time the resources were all
  * last touched and then if a resource is not reserved it is purged and will need to be reacquired
  * again when next used.
- * 
+ *
  * ---------------------------------------------------------------------------------
  * Containers
  * ---------------------------------------------------------------------------------
@@ -102,45 +102,45 @@
  * together and then can all be purged together at the same time, for easy cleanup and
  * management. These are not the same as containers you setup in the plugin parameters.
  * These containers are only accessed and used via code.
- * 
+ *
  * Various function exists to help with the ease and usage of containers. They are
  * all well documented throughout the plugin but a brief overview of them is as follows:
- * 
+ *
  * ImageManager/AudioManager.addContainer("containerName"): Adds a container to the
  * specified resource cache for that type.
- * 
+ *
  * ImageManager/AudioManager.addContainerItem("containerName", "itemKey"): Adds an item
  * to the container. NOTE: It only adds a key to look up the item in the cache for purging,
  * it does not preload or load an item for you, you will need to do that prior to adding it
  * to a container.
- * 
+ *
  * ImageManager/AudioManager.releaseContainer("containerName"): Releases all objects
  * within the specified container from the cache.
- * 
+ *
  * ImageManager/AudioManager.releaseContainerItem("containerName", "itemKey"): Releases
  * the specified item from the specified container if it exists, freeing it from the
  * cache.
- * 
+ *
  * ---------------------------------------------------------------------------------
  * Credits
  * ---------------------------------------------------------------------------------
  * This plugin is developed and maintained by Liquidize/Kaliya.
  * Some code was ninja'ed with permission from Pivoo (http://pivoo.me)
- * 
+ *
  * ---------------------------------------------------------------------------------
  * Changelog
  * ---------------------------------------------------------------------------------
- * 
+ *
  * 1.0.2:
  * - Fixed a bug wherein due to slight changes in handling paths, Map based container for images were not being loaded.
- * 
+ *
  * 1.0.1:
  * - Fixed a bug wherein due to a slight change before release, the path for audio files
  * would be incorrect.
- * 
+ *
  * 1.0.0:
  * - Released!
- * 
+ *
  */
 /*~struct~PreloadContainer:
  @param Images
@@ -177,7 +177,7 @@
 // PluginManager
 //
 // NOTE: The parameter parsing functions were originally written by Pivoo (http://pivoo.me)
-// he has kindly given me permission to include and modify them but all credit should 
+// he has kindly given me permission to include and modify them but all credit should
 // go to him.
 //=============================================================================
 
@@ -187,7 +187,7 @@ PluginManager.parseObject = function(obj){
         var param = obj[key];
         output[key] = this.parse(param, key);
     },this);
-    return output;    
+    return output;
 };
 
 PluginManager.parseArray = function(arr, key){
@@ -580,16 +580,11 @@ AudioManager.playBgm = function(bgm, pos) {
         this.updateBgmParameters(bgm);
     } else {
         this.stopBgm();
-        if (bgm.name) { 
-            if(Decrypter.hasEncryptedAudio && this.shouldUseHtml5Audio()){
-                this.playEncryptedBgm(bgm, pos);
-            }
-            else {
-                this._bgmBuffer = this.loadBgm(bgm.name);
-                this.updateBgmParameters(bgm);
-                if (!this._meBuffer) {
-                    this._bgmBuffer.play(true, pos || 0);
-                }
+        if (bgm.name) {
+            this._bgmBuffer = this.loadBgm(bgm.name);
+            this.updateBgmParameters(bgm);
+            if (!this._meBuffer) {
+                this._bgmBuffer.play(true, pos || 0);
             }
         }
     }
@@ -672,7 +667,7 @@ Scene_Boot.loadSystemAudio = function() {
         AudioManager.reserveMe($dataSystem.gameoverMe.name, AudioManager._systemReservationId);
         AudioManager.reserveMe($dataSystem.defeatMe.name, AudioManager._systemReservationId);
         AudioManager.reserveMe($dataSystem.victoryMe.name, AudioManager._systemReservationId);
-        
+
         $dataSystem.sounds.forEach(function(sound){
             AudioManager.reserveSe(sound.name, AudioManager._systemReservationId);
         });

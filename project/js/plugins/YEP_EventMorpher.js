@@ -191,7 +191,7 @@ Yanfly.EventMorph.version = 1.00;
  * @max 999
  * @desc The ID of the event to be morphed when using this template.
  * @default 1
- * 
+ *
  */
 //=============================================================================
 
@@ -230,11 +230,10 @@ Yanfly.loadMapData = function(mapId) {
   else {
 		const path = require('path');
 		const fs = require('fs');
-		var base = path.dirname(process.mainModule.filename);	
-		let filename = 'Map%1.KEL'.format(mapId.padZero(3));
-		Yanfly.PreloadedMaps[mapId] = null;	
+		var base = path.dirname(process.mainModule.filename);
+		let filename = 'Map%1.json'.format(mapId.padZero(3));
+		Yanfly.PreloadedMaps[mapId] = null;
 		fs.readFile(base + "/data/" + filename, (err, data) => {
-			data = Encryption.decrypt(data);
 			Yanfly.PreloadedMaps[mapId] = JSON.parse(data.toString());
 		})
   }

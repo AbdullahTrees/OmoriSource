@@ -1,0 +1,16 @@
+{
+    "name": "OMORI",
+    "main": "project/index.html",
+    "inject_js_start": "launcher/compat.js",
+    "js-flags": "--expose-gc ",
+    "chromium-args": "--in-process-gpu --disable-direct-composition --enable-gpu-rasterization --enable-gpu-memory-buffer-video-frames --enable-native-gpu-memory-buffers --enable-zero-copy --enable-gpu-async-worker-context",
+    "window": {
+        "title": "OMORI",
+        "toolbar": false,
+        "width": 640,
+        "height": 480,
+        "icon": "project/icon/icon.png",
+        "resizable": false
+    }
+
+}
