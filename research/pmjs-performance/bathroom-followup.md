@@ -1,0 +1,17 @@
+# Sunny's bathroom: scene identification and longer capture
+
+The user clarified that the reported rain scene was Sunny's house bathroom. The earlier house tests were already there: their records place the player at `(45,44)` on map 78, directly below event 26 `Examine Toilet` `(45,43)`, beside event 67 `Mirror` `(48,43)` and event 32 `Bathtub` `(49,43)`. The map's `MOM'S ROOM` display label was misleading. Those records should be described as bathroom measurements, not an unidentified house location. Map 461 is a separate bathtub scene and is not the user's reported room.
+
+The previous unprofiled inherited-rain test measured 12.7/13.6 FPS in this bathroom; the separate fresh-state profile measured 13.6 FPS and 13.5 host callbacks per second with no rain. These are different runs with different instrumentation/state, so their equality is not a matched rain/no-rain result. Use `weather-ab`'s alternating phases for that comparison.
+
+The follow-up repeats the earlier sequence `87:28:27,14:45:44,111,78:45:44`, without the CPU profiler or weather ablations, and measures the bathroom for 90 seconds after settling. Its wrappers delegate all original calls and count top-level stage submissions, native-render completion callbacks immediately before swap, and changes in position/opacity of the first eight rain particles. It reports host-gap percentiles and records every gap of at least 250 ms. Counters describe simulation/submission cadence; they do not prove physical scanout or that every submitted frame contains different visible pixels.
+
+One framebuffer read was streamed directly to the host during this run. The active page was confirmed from `/sys/class/graphics/fb0/pan` (`0,480`), virtual size `640,960`, 32 bpp, stride 2560. The PNG shows Sunny beside the toilet, mirror, sink and bath, with the inherited rain overlay. That provides a visual match to the user's scene. The capture and SSH inspection add diagnostic load; an isolated stall during this run cannot automatically be attributed to the game alone.
+
+Read-only process inspection found the renderer using heap cap 480 MB and `MALLOC_ARENA_MAX=2`; `SDL_BLITTER_DISABLED`, `SDL_VIDEODRIVER` and `PMJS_SWAP_INTERVAL` were absent. CPU frequency was 1,512,000 kHz, with CPUs 0–3 online at that sample. No graphics/CPU setting was changed. The inspected PMJS presentation path calls `SDL_GL_SwapWindow` once per runner frame.
+
+Raw evidence is under `raw/session-20261021-continuation/`, including the exact injected program and framebuffer PNG. No production runtime patch or game-file edit is part of this follow-up.
+
+The completed 90,079.9 ms bathroom window reports 1,133 host callbacks and 1,134 stage submissions; host cadence, stage cadence and sampled rain-motion cadence are all 12.6/s. Host gaps are p50 77.6 ms, p95 92.0 ms, p99 105.4 ms, maximum 229.1 ms; none reaches 250 ms. An ordinary sampled diagnostic recorded 312.2 ms earlier, outside the measurement window. This confirms a roughly 13-FPS workload without reproducing sustained one-FPS play.
+
+The user then asked to forget the one-FPS report and continue other improvements. A subsequent live-lag message was checked immediately: no PMJS process remained, the log ended with normal completion at 20:54:57 Asia/Dhaka, and available RAM had recovered to 773 MB. Do not treat an image retained after exit as a new game measurement. Further work returns to character presentation and scene encoding rather than extending this symptom investigation.

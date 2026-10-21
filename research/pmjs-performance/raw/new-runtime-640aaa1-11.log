@@ -1,0 +1,64 @@
+# RG40XX-H - muOS
+```bash
+DEVICE_INFO_VERSION=0.1.15
+PM_VERSION=2026.06.23-0015
+CFW_NAME=muOS
+CFW_VERSION=2502.0_PIXIE
+CFW_GLIBC=238
+DEVICE_NAME=RG40XX-H
+DEVICE_CPU=h700
+DEVICE_ARCH=aarch64
+DEVICE_RAM=1
+DEVICE_HAS_ARMHF="Y"
+DEVICE_HAS_AARCH64="Y"
+DEVICE_HAS_X86="N"
+DEVICE_HAS_X86_64="N"
+DISPLAY_WIDTH=640
+DISPLAY_HEIGHT=480
+DISPLAY_ORIENTATION=0
+ASPECT_X=4
+ASPECT_Y=3
+ANALOG_STICKS=2
+```
+=== prep ===
+2026-10-21T00:23:13.048Z INFO [pmjs] preparation stage=images event=finish status=complete cache=warm catalog_hit=true catalog=hit duration_ms=3538.9 codec=lz4 verify_hashes=false cache_root="/mnt/mmc/ports/omori-pmjs2/.
+  2026-10-21T00:23:14.250Z INFO [pmjs] preparation stage=maps event=finish status=complete cache=warm catalog_hit=true catalog=hit duration_ms=1866.4 codec=png verify_hashes=false cache_root="/mnt/mmc/ports/omori-pmjs2/.
+2026-10-21T00:23:20.174Z INFO [pmjs] ready size=640x480 startup_ms=18755.2
+2026-10-21T00:23:27.954Z ERROR [pmjs] uncaught exception in GTP_OmoriFixes fs callback: Error: Error: ENOENT: /save/OMORI/CUTSCENE.json
+2026-10-21T00:23:27.954Z ERROR     at /mnt/mmc/ports/omori-test/www/js/plugins/GTP_OmoriFixes.js:2717:22
+2026-10-21T00:23:27.954Z ERROR     at /mnt/mmc/ports/omori-pmjs2/.cache/pmjs/ca064ebffa43d3505c55a4a8/bootstrap-bfa812bf833b4b55250aea45e920398fac2a00ab3db236ed12341684f5b12b81.js:15785:29
+2026-10-21T00:23:27.954Z ERROR     at Object.callback (/mnt/mmc/ports/omori-pmjs2/.cache/pmjs/ca064ebffa43d3505c55a4a8/bootstrap-bfa812bf833b4b55250aea45e920398fac2a00ab3db236ed12341684f5b12b81.js:1849:59)
+2026-10-21T00:23:27.954Z ERROR     at Immediate.step [as _onImmediate] (/mnt/mmc/ports/omori-pmjs2/.cache/pmjs/ca064ebffa43d3505c55a4a8/bootstrap-bfa812bf833b4b55250aea45e920398fac2a00ab3db236ed12341684f5b12b81.js:1321:1
+2026-10-21T00:23:27.954Z ERROR     at process.processImmediate (node:internal/timers:484:21)
+=== bench/prof ===
+2026-10-21T00:26:07.734Z INFO [prof] fps 11.7 frames 59 | per frame: work 81.9 (tick 36.2 = update 23.2 + sceneRender 12.0, render 0.0, native 45.5 = up 0.1+draw 43.5+mem 1.8), swap+idle 3.4 ms | rss 579.4 heap 116.1/146.2 ext 2.0 ab 0.4, images gpu 4.7/8.8 cpu 110.3 meta 4.1 warm 11.8 pinned 0.0 co
+2026-10-21T00:26:10.550Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-21T00:26:12.681Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.1 (tick 36.2 = update 23.3 + sceneRender 12.0, render 0.0, native 45.8 = up 0.1+draw 43.9+mem 1.8), swap+idle 3.2 ms | rss 579.4 heap 119.7/146.2 ext 2.0 ab 0.4, images gpu 4.7/8.8 cpu 110.3 meta 4.1 warm 11.8 pinned 0.0 co
+2026-10-21T00:26:15.498Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-21T00:26:17.716Z INFO [prof] fps 11.7 frames 59 | per frame: work 82.1 (tick 34.4 = update 22.0 + sceneRender 11.6, render 0.0, native 47.6 = up 0.1+draw 45.7+mem 1.9), swap+idle 3.2 ms | rss 579.5 heap 120.9/146.2 ext 2.0 ab 0.4, images gpu 4.7/8.8 cpu 110.3 meta 4.1 warm 11.8 pinned 0.0 co
+2026-10-21T00:26:20.530Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-21T00:26:22.662Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.1 (tick 34.4 = update 21.9 + sceneRender 11.6, render 0.0, native 47.6 = up 0.1+draw 45.6+mem 1.9), swap+idle 3.1 ms | rss 579.5 heap 121.2/146.2 ext 2.0 ab 0.4, images gpu 4.7/8.8 cpu 110.3 meta 4.1 warm 11.8 pinned 0.0 co
+2026-10-21T00:26:25.476Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-21T00:26:27.694Z INFO [prof] fps 11.7 frames 59 | per frame: work 82.1 (tick 33.9 = update 21.8 + sceneRender 11.3, render 0.0, native 48.0 = up 0.1+draw 46.1+mem 1.9), swap+idle 3.2 ms | rss 579.5 heap 124.9/146.2 ext 2.0 ab 0.4, images gpu 4.7/8.8 cpu 110.3 meta 4.1 warm 11.8 pinned 0.0 co
+2026-10-21T00:26:30.509Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-21T00:26:32.728Z INFO [prof] fps 11.7 frames 59 | per frame: work 82.1 (tick 33.5 = update 21.6 + sceneRender 11.1, render 0.0, native 48.5 = up 0.1+draw 46.4+mem 1.9), swap+idle 3.2 ms | rss 579.5 heap 125.7/146.2 ext 2.0 ab 0.4, images gpu 4.7/8.8 cpu 110.3 meta 4.1 warm 11.8 pinned 0.0 co
+2026-10-21T00:26:35.543Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-21T00:26:37.676Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.1 (tick 35.8 = update 23.2 + sceneRender 11.8, render 0.0, native 46.1 = up 0.1+draw 44.2+mem 1.8), swap+idle 3.3 ms | rss 579.5 heap 129.8/146.2 ext 2.0 ab 0.4, images gpu 4.7/8.8 cpu 110.3 meta 4.1 warm 11.8 pinned 0.0 co
+2026-10-21T00:26:40.492Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-21T00:26:42.711Z INFO [prof] fps 11.7 frames 59 | per frame: work 82.0 (tick 34.9 = update 22.5 + sceneRender 11.6, render 0.0, native 46.9 = up 0.1+draw 44.9+mem 1.9), swap+idle 3.3 ms | rss 579.5 heap 131.2/146.2 ext 2.0 ab 0.4, images gpu 4.7/8.8 cpu 110.3 meta 4.1 warm 11.8 pinned 0.0 co
+2026-10-21T00:26:45.527Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-21T00:26:47.744Z INFO [prof] fps 11.7 frames 59 | per frame: work 82.2 (tick 35.3 = update 22.6 + sceneRender 11.9, render 0.0, native 46.6 = up 0.1+draw 44.7+mem 1.8), swap+idle 3.2 ms | rss 579.6 heap 132.9/146.2 ext 2.0 ab 0.4, images gpu 4.7/8.8 cpu 110.3 meta 4.1 warm 11.8 pinned 0.0 co
+2026-10-21T00:26:50.476Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-21T00:26:52.712Z INFO [prof] fps 11.7 frames 58 | per frame: work 81.6 (tick 35.8 = update 22.8 + sceneRender 12.0, render 0.0, native 45.7 = up 0.1+draw 43.8+mem 1.8), swap+idle 4.0 ms | rss 579.6 heap 115.6/146.2 ext 2.0 ab 0.4, images gpu 4.7/8.8 cpu 110.3 meta 4.1 warm 11.8 pinned 0.0 co
+2026-10-21T00:26:55.531Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+=== mem ===
+[mem] 06:25:46 used 663 MB, available 259 MB cpu 64C
+[mem] 06:25:56 used 663 MB, available 259 MB cpu 63C
+[mem] 06:26:06 used 663 MB, available 259 MB cpu 64C
+[mem] 06:26:16 used 663 MB, available 259 MB cpu 64C
+[mem] 06:26:27 used 663 MB, available 259 MB cpu 65C
+[mem] 06:26:37 used 663 MB, available 258 MB cpu 64C
+[mem] 06:26:47 used 663 MB, available 259 MB cpu 64C
+[mem] 06:26:57 used 206 MB, available 716 MB cpu 65C
+
+[exited with code 0]

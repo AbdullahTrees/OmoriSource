@@ -1,0 +1,36 @@
+Pinned-player frame comparison (640x480 BGRA framebuffer, page 1)
+regions: changed = per-channel max diff > 2; max = largest channel diff
+
+stock within (2 s apart)
+  osd box            changed    0  >64    0  max   0
+  lightbulb cord     changed    0  >64    0  max   0
+  lightbulb          changed    0  >64    0  max   0
+  laptop             changed    0  >64    0  max   0
+  room outline left  changed    0  >64    0  max   0
+  room outline top   changed    0  >64    0  max   0
+  player             changed    0  >64    0  max   0
+  cat                changed  148  >64   79  max 254
+  white field        changed    0  >64    0  max   0
+
+fixed within (2 s apart)
+  osd box            changed    0  >64    0  max   0
+  lightbulb cord     changed    0  >64    0  max   0
+  lightbulb          changed    0  >64    0  max   0
+  laptop             changed    0  >64    0  max   0
+  room outline left  changed    0  >64    0  max   0
+  room outline top   changed    0  >64    0  max   0
+  player             changed    0  >64    0  max   0
+  cat                changed  101  >64   79  max 255
+  white field        changed    0  >64    0  max   0
+
+stock vs fixed
+  osd box            changed  545  >64  475  max 246
+  lightbulb cord     changed   71  >64   42  max 243
+  lightbulb          changed    0  >64    0  max   0
+  laptop             changed    0  >64    0  max   0
+  room outline left  changed  208  >64    0  max  23
+  room outline top   changed    0  >64    0  max   0
+  player             changed  190  >64    0  max  33
+  cat                changed  159  >64    0  max  41
+  white field        changed    0  >64    0  max   0
+

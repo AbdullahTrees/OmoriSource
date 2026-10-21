@@ -1,0 +1,22 @@
+2026-10-21T02:13:01.596Z INFO [ablate] inventory=5 ["Scene_Map/Spriteset_Map #0 BlurFilter {}","Scene_Map/Spriteset_Map #1 t {}","Scene_Map/Spriteset_Map #2 n {}","Scene_Map/Spriteset_Map/Sprite #0 ToneFilter {}","Scene_Map/WindowLayer #0 AlphaFilter {}"]
+02:13:21.414Z [plan] passes=4 resolutions=[1,1,1,1,1] frame=[-4,-4,648,488]
+02:13:21.414Z [ablate] phase 3/8: remove Scene_Map/Spriteset_Map #1 t
+02:13:23.449Z [plan] passes=11 resolutions=[1,1,1,1,1] frame=[0,0,640,480]
+02:13:25.393Z [plan] passes=11 resolutions=[1,1,1,1,1] frame=[0,0,640,480]
+02:13:27.015Z [plan] passes=11 resolutions=[1,1,1,1,1] frame=[0,0,640,480]
+02:13:29.550Z [plan] passes=11 resolutions=[1,1,1,1,1] frame=[0,0,640,480]
+02:13:31.668Z [plan] passes=11 resolutions=[1,1,1,1,1] frame=[0,0,640,480]
+02:13:31.668Z [ablate] phase 4/8: remove Scene_Map/Spriteset_Map #2 n
+02:13:33.638Z [plan] passes=9 resolutions=[1,1,1,1,1] frame=[0,0,640,480]
+02:13:35.445Z [plan] passes=9 resolutions=[1,1,1,1,1] frame=[0,0,640,480]
+02:13:37.004Z [plan] passes=9 resolutions=[1,1,1,1,1] frame=[0,0,640,480]
+02:13:39.795Z [plan] passes=9 resolutions=[1,1,1,1,1] frame=[0,0,640,480]
+02:13:41.760Z [ablate] phase 5/8: remove Scene_Map/Spriteset_Map/Sprite #0 ToneFilter
+02:13:41.761Z [plan] passes=12 resolutions=[1,1,1,1,1] frame=[0,0,640,480]
+02:13:43.891Z [plan] passes=12 resolutions=[1,1,1,1,1] frame=[0,0,640,480]
+02:13:45.447Z [plan] passes=12 resolutions=[1,1,1,1,1] frame=[0,0,640,480]
+02:13:47.008Z [plan] passes=12 resolutions=[1,1,1,1,1] frame=[0,0,640,480]
+02:13:50.042Z [plan] passes=12 resolutions=[1,1,1,1,1] frame=[0,0,640,480]
+02:13:51.798Z [ablate] phase 6/8: remove Scene_Map/WindowLayer #0 AlphaFilter
+
+[exited with code 0]

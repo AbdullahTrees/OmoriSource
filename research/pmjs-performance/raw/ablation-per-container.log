@@ -1,0 +1,58 @@
+session cleared, available=730MB Wed Oct 21 06:30:57 +06 2026
+# RG40XX-H - muOS
+```bash
+DEVICE_INFO_VERSION=0.1.15
+PM_VERSION=2026.06.23-0015
+CFW_NAME=muOS
+CFW_VERSION=2502.0_PIXIE
+CFW_GLIBC=238
+DEVICE_NAME=RG40XX-H
+DEVICE_CPU=h700
+DEVICE_ARCH=aarch64
+DEVICE_RAM=1
+DEVICE_HAS_ARMHF="Y"
+DEVICE_HAS_AARCH64="Y"
+DEVICE_HAS_X86="N"
+DEVICE_HAS_X86_64="N"
+DISPLAY_WIDTH=640
+DISPLAY_HEIGHT=480
+DISPLAY_ORIENTATION=0
+ASPECT_X=4
+ASPECT_Y=3
+ANALOG_STICKS=2
+```
+=== ablate ===
+2026-10-21T00:32:30.648Z INFO [ablate] inventory=5 ["Scene_Map/Spriteset_Map #0 BlurFilter {}","Scene_Map/Spriteset_Map #1 t {}","Scene_Map/Spriteset_Map #2 n {}","Scene_Map/Spriteset_Map/Sprite #0 ToneFilter {}","Scene_Map/WindowLayer #0 AlphaFilter {}"]
+2026-10-21T00:32:30.648Z INFO [ablate] phase 1/5: baseline
+2026-10-21T00:32:40.593Z INFO [ablate] phase 2/5: remove all Spriteset_Map filters
+2026-10-21T00:32:50.571Z INFO [ablate] phase 3/5: remove Tone+Alpha only
+2026-10-21T00:33:00.607Z INFO [ablate] phase 4/5: all filters off
+2026-10-21T00:33:10.582Z INFO [ablate] phase 5/5: restored
+=== prof ===
+2026-10-21T00:32:15.626Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.9 (tick 35.8 = update 23.0 + sceneRender 11.6, render 0.0, native 46.9 = up 0.2+draw 44.3+mem 2.5), swa
+2026-10-21T00:32:19.920Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.7 (tick 36.5 = update 23.6 + sceneRender 11.6, render 0.0, native 46.0 = up 0.2+draw 43.4+mem 2.4), swa
+2026-10-21T00:32:25.583Z INFO [prof] fps 11.7 frames 58 | per frame: work 83.0 (tick 34.1 = update 21.6 + sceneRender 11.3, render 0.0, native 48.7 = up 0.2+draw 46.1+mem 2.5), swa
+2026-10-21T00:32:30.647Z INFO [prof] fps 11.7 frames 59 | per frame: work 82.9 (tick 39.1 = update 25.9 + sceneRender 12.0, render 0.0, native 43.6 = up 0.2+draw 41.0+mem 2.3), swa
+2026-10-21T00:32:35.625Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.6 (tick 38.9 = update 25.4 + sceneRender 12.3, render 0.0, native 43.5 = up 0.2+draw 40.9+mem 2.4), swa
+2026-10-21T00:32:40.592Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.8 (tick 38.2 = update 24.6 + sceneRender 12.4, render 0.0, native 44.4 = up 0.2+draw 41.9+mem 2.4), swa
+2026-10-21T00:32:45.608Z INFO [prof] fps 24.7 frames 123 | per frame: work 38.0 (tick 32.9 = update 21.9 + sceneRender 10.0, render 0.0, native 5.0 = up 0.2+draw 3.5+mem 1.3), swap
+2026-10-21T00:32:50.570Z INFO [prof] fps 28.3 frames 141 | per frame: work 33.0 (tick 30.8 = update 21.1 + sceneRender 8.7, render 0.0, native 2.0 = up 0.1+draw 1.1+mem 0.8), swap+
+2026-10-21T00:32:55.632Z INFO [prof] fps 14.0 frames 71 | per frame: work 68.5 (tick 35.1 = update 22.6 + sceneRender 11.4, render 0.0, native 33.3 = up 0.1+draw 31.7+mem 1.4), swa
+2026-10-21T00:33:00.607Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.7 (tick 36.0 = update 23.2 + sceneRender 11.8, render 0.0, native 46.5 = up 0.1+draw 44.7+mem 1.7), swa
+2026-10-21T00:33:05.575Z INFO [prof] fps 26.7 frames 133 | per frame: work 35.3 (tick 30.9 = update 21.1 + sceneRender 9.0, render 0.0, native 4.3 = up 0.1+draw 3.4+mem 0.8), swap+
+2026-10-21T00:33:10.582Z INFO [prof] fps 29.4 frames 147 | per frame: work 32.1 (tick 30.0 = update 20.5 + sceneRender 8.6, render 0.0, native 2.0 = up 0.1+draw 1.1+mem 0.8), swap+
+2026-10-21T00:33:15.643Z INFO [prof] fps 14.0 frames 71 | per frame: work 68.4 (tick 35.0 = update 22.7 + sceneRender 11.4, render 0.0, native 33.2 = up 0.1+draw 31.8+mem 1.3), swa
+2026-10-21T00:33:20.620Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.7 (tick 34.8 = update 22.1 + sceneRender 11.8, render 0.0, native 47.8 = up 0.1+draw 45.9+mem 1.8), swa
+2026-10-21T00:33:25.597Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.6 (tick 35.6 = update 22.8 + sceneRender 11.9, render 0.0, native 46.9 = up 0.1+draw 45.1+mem 1.7), swa
+2026-10-21T00:33:30.571Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.6 (tick 34.9 = update 22.4 + sceneRender 11.6, render 0.0, native 47.6 = up 0.1+draw 45.7+mem 1.7), swa
+2026-10-21T00:33:35.636Z INFO [prof] fps 11.7 frames 59 | per frame: work 82.5 (tick 37.8 = update 24.3 + sceneRender 12.6, render 0.0, native 44.5 = up 0.1+draw 42.7+mem 1.6), swa
+2026-10-21T00:33:40.613Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.5 (tick 36.8 = update 23.5 + sceneRender 12.4, render 0.0, native 45.6 = up 0.1+draw 43.8+mem 1.7), swa
+2026-10-21T00:33:45.590Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.7 (tick 34.1 = update 21.7 + sceneRender 11.5, render 0.0, native 48.5 = up 0.1+draw 46.6+mem 1.8), swa
+2026-10-21T00:33:50.571Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.6 (tick 36.4 = update 23.2 + sceneRender 12.3, render 0.0, native 46.1 = up 0.1+draw 44.3+mem 1.7), swa
+2026-10-21T00:33:55.633Z INFO [prof] fps 11.7 frames 59 | per frame: work 82.6 (tick 35.9 = update 22.8 + sceneRender 12.2, render 0.0, native 46.7 = up 0.1+draw 44.8+mem 1.7), swa
+2026-10-21T00:34:00.609Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.7 (tick 34.4 = update 22.0 + sceneRender 11.5, render 0.0, native 48.2 = up 0.1+draw 46.3+mem 1.8), swa
+2026-10-21T00:34:05.592Z INFO [prof] fps 11.4 frames 57 | per frame: work 82.4 (tick 36.2 = update 22.8 + sceneRender 12.5, render 0.0, native 46.0 = up 0.1+draw 44.2+mem 1.8), swa
+2026-10-21T00:34:10.571Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.6 (tick 34.7 = update 22.1 + sceneRender 11.8, render 0.0, native 47.7 = up 0.1+draw 45.9+mem 1.7), swa
+2026-10-21T00:34:15.633Z INFO [prof] fps 11.7 frames 59 | per frame: work 82.6 (tick 35.3 = update 22.5 + sceneRender 11.9, render 0.0, native 47.1 = up 0.1+draw 45.3+mem 1.6), swa
+
+[exited with code 0]

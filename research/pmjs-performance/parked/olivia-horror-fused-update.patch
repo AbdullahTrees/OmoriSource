@@ -1,0 +1,156 @@
+diff --git a/js/pmjs-plugins/olivia/horror-effects.js b/js/pmjs-plugins/olivia/horror-effects.js
+index 56b6082..5503155 100644
+--- a/js/pmjs-plugins/olivia/horror-effects.js
++++ b/js/pmjs-plugins/olivia/horror-effects.js
+@@ -48,6 +48,18 @@
+       '995aed7c210f48e6e16c01934644f6ba6bf5bcffe81ee1a1bb8b848fcd7a8164']);
+   }
+ 
++  function isKnownOliviaSpriteUpdate(fn) {
++    return matchesReviewedFunction(fn, [
++      'afc0c175fbd5adfb4ffc57345ca0aea27ec1338fe74789c2c3599dca1c001594',
++      'fa940368a25319d5d1805dbb531da17c7f5787bc10cacd392ff953ad05f6cabb']);
++  }
++
++  function isKnownOliviaSynchronization(fn) {
++    return matchesReviewedFunction(fn, [
++      'e97a11a96fdaba2f99bfc3e769ab7dd15f7d9c152062c59a2654576da596b7ea',
++      '736bf802a6bb2183c89972fd445ee9217896fe9caee76809cc2d65f1c63f4c43']);
++  }
++
+   function hasActiveHorrorFilter(sprite) {
+     var filters = sprite._horrorFilters;
+     return !!(filters && (filters.noiseFilter || filters.glitchFilter ||
+@@ -104,6 +116,30 @@
+         guarded._pmjsOliviaGuard = true;
+         return guarded;
+       })(updateEffects);
++      var guardedEffects = proto.updateHorrorEffects;
++      var spriteUpdate = proto.update;
++      var synchronize = proto.synchronizeHorrorFiltersWithSource;
++      if (isKnownOliviaSpriteUpdate(spriteUpdate) &&
++          isKnownOliviaSynchronization(synchronize)) {
++        // Fuse the reviewed outer update with its dispatcher. Keep child traversal
++        // and all active effects in their original order; only remove no-op calls.
++        var fusedUpdate = function() {
++          var currentSync = this.synchronizeHorrorFiltersWithSource;
++          if (currentSync !== synchronize || this._horrorFiltersSource)
++            currentSync.call(this);
++          Olivia.HorrorEffects.___Sprite_update___.call(this);
++          var currentEffects = this.updateHorrorEffects;
++          if (currentEffects !== guardedEffects) { currentEffects.call(this); return; }
++          var delegatesUnchanged = this.updateHorrorNoise === knownNoise &&
++            this.updateHorrorGlitch === knownGlitch && this.updateHorrorTV === knownTV;
++          if (delegatesUnchanged && !hasActiveHorrorFilter(this)) return;
++          if (!delegatesUnchanged) PMJS.optimizations.reportFallback('plugins.olivia.horror-effects',
++            'sprite HorrorEffects methods changed after installation');
++          updateEffects.call(this);
++        };
++        fusedUpdate._pmjsOliviaPredecessor = spriteUpdate;
++        proto.update = fusedUpdate;
++      }
+       integrated = true;
+ 
+     } else if (!knownDispatcher && !updateEffects._pmjsOliviaGuard) {
+diff --git a/test/olivia-horror-effects.test.cjs b/test/olivia-horror-effects.test.cjs
+index 15d3043..da3ee36 100644
+--- a/test/olivia-horror-effects.test.cjs
++++ b/test/olivia-horror-effects.test.cjs
+@@ -25,6 +25,11 @@ function createKnownOliviaSprite() {
+   Sprite.prototype.synchronizeHorrorFiltersWithSource = function() {
+     Object.assign(this.filters, this._horrorFiltersSource?._horrorFilters);
+   };
++  Sprite.prototype.update = function() {
++    this.synchronizeHorrorFiltersWithSource();
++    this.runChildren();
++    this.updateHorrorEffects();
++  };
+   Sprite.prototype.updateHorrorEffects = function() {
+     for (const name of ['Noise', 'Glitch', 'TV']) this['updateHorror' + name]();
+   };
+@@ -48,7 +53,9 @@ const fixtureSource = reviewedFunctionFixture(source, {
+   isKnownOliviaUpdateHorrorEffects: fixturePrototype.updateHorrorEffects,
+   isKnownOliviaNoise: fixturePrototype.updateHorrorNoise,
+   isKnownOliviaGlitch: fixturePrototype.updateHorrorGlitch,
+-  isKnownOliviaTV: fixturePrototype.updateHorrorTV
++  isKnownOliviaTV: fixturePrototype.updateHorrorTV,
++  isKnownOliviaSpriteUpdate: fixturePrototype.update,
++  isKnownOliviaSynchronization: fixturePrototype.synchronizeHorrorFiltersWithSource
+ });
+ 
+ const registrySources = {
+@@ -81,6 +88,74 @@ test('registers plugins.olivia.horror-effects optimization', () => {
+   assert.ok(sandbox.PMJS.optimizations.ids().includes('plugins.olivia.horror-effects'));
+ });
+ 
++test('fused update preserves child traversal, source synchronization and active effects', () => {
++  const Sprite = createKnownOliviaSprite();
++  const original = Sprite.prototype.update;
++  const { sandbox } = loadAdapter({ Sprite, Olivia: { HorrorEffects: {
++    ___Sprite_update___() { this.runChildren(); }
++  } } });
++  sandbox.PMJS.plugins.execute('Olivia_HorrorEffects', function() {});
++  sandbox.PMJS.phases.emit('afterGuestPlugins');
++  assert.equal(Sprite.prototype.update._pmjsOliviaPredecessor, original);
++  const sprite = new Sprite();
++  let children = 0;
++  sprite.runChildren = function() { children++; };
++  assert.equal(sprite.update(), undefined);
++  assert.equal(children, 1);
++  assert.equal(sprite.filterReads, 1);
++  sprite._horrorFiltersSource = { _horrorFilters: { tvFilter: { animated: true, time: 2, aniSpeed: 3 } } };
++  sprite.update();
++  assert.equal(sprite.filters.tvFilter.time, 5);
++  assert.equal(children, 2);
++});
++
++test('fused update observes child changes and late synchronization, dispatcher and leaf hooks', () => {
++  const Sprite = createKnownOliviaSprite();
++  const { sandbox } = loadAdapter({ Sprite, Olivia: { HorrorEffects: {
++    ___Sprite_update___() { this.runChildren(); }
++  } } });
++  sandbox.PMJS.plugins.execute('Olivia_HorrorEffects', function() {});
++  sandbox.PMJS.phases.emit('afterGuestPlugins');
++  const sprite = new Sprite();
++  const actions = [];
++  sprite.synchronizeHorrorFiltersWithSource = function() { actions.push('sync'); };
++  sprite.runChildren = function() {
++    actions.push('children');
++    this._horrorFilters.tvFilter = { animated: true, time: 0, aniSpeed: 2 };
++  };
++  sprite.update();
++  assert.deepEqual(actions, ['sync', 'children']);
++  assert.equal(sprite.filters.tvFilter.time, 2);
++  actions.length = 0;
++  sprite.updateHorrorEffects = function() { actions.push('effects'); return 42; };
++  assert.equal(sprite.update(), undefined);
++  assert.deepEqual(actions, ['sync', 'children', 'effects']);
++  delete sprite.updateHorrorEffects;
++  sprite.runChildren = function() {
++    this.updateHorrorNoise = function() { actions.push('noise'); };
++    this.updateHorrorGlitch = function() { actions.push('glitch'); };
++    this.updateHorrorTV = function() { actions.push('tv'); };
++  };
++  actions.length = 0;
++  sprite.update();
++  assert.deepEqual(actions, ['sync', 'noise', 'glitch', 'tv']);
++  sandbox.Olivia.HorrorEffects.___Sprite_update___ = function() { actions.push('alias'); };
++  actions.length = 0;
++  sprite.update();
++  assert.deepEqual(actions, ['sync', 'alias', 'noise', 'glitch', 'tv']);
++});
++
++test('unreviewed outer update remains intact while the dispatcher guard still installs', () => {
++  const Sprite = createKnownOliviaSprite();
++  Sprite.prototype.update = function() { this.customCalls = (this.customCalls || 0)+1; };
++  const original = Sprite.prototype.update;
++  const { sandbox } = loadAdapter({ Sprite, Olivia: { HorrorEffects: {} } });
++  sandbox.PMJS.plugins.execute('Olivia_HorrorEffects', function() {});
++  sandbox.PMJS.phases.emit('afterGuestPlugins');
++  assert.equal(Sprite.prototype.update, original);
++  assert.ok(Sprite.prototype.updateHorrorEffects._pmjsOliviaGuard);
++});
++
+ test('Olivia fast path skips inactive work and preserves active plugin updates for known Olivia implementation', () => {
+   const Sprite = createKnownOliviaSprite();
+   const { sandbox } = loadAdapter({

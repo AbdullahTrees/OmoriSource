@@ -79,7 +79,7 @@
       return;
     }
     var enabled = false, hits = 0, fallbacks = 0;
-    proto.updateCharacterFrame = function() {
+    var fastUpdate = function() {
       var character = this._character, bitmap = this.bitmap;
       if (enabled && character && bitmap && bitmap.width > 0 && bitmap.height > 0 && this._tileId === 0 &&
           character.isSingleFrame === checks.isSingleFrame && !character._singleFrame &&
@@ -90,8 +90,14 @@
           this.characterPatternX === methods.characterPatternX && this.characterPatternY === methods.characterPatternY &&
           this.patternWidth === methods.patternWidth && this.patternHeight === methods.patternHeight &&
           _TDS_.OmoriBASE.Sprite_Character_updateCharacterFrame === checks.inner &&
+          _TDS_.CustomCharacterRectangles === custom && ModernAlgebra.EMF === emf &&
           emf.SpriteCharacter_patternWidth === checks.emfWidth &&
-          names.every(function(name) { return custom['Sprite_Character_'+name] === aliases[name]; })) {
+          custom.Sprite_Character_characterBlockX === aliases.characterBlockX &&
+          custom.Sprite_Character_characterBlockY === aliases.characterBlockY &&
+          custom.Sprite_Character_characterPatternX === aliases.characterPatternX &&
+          custom.Sprite_Character_characterPatternY === aliases.characterPatternY &&
+          custom.Sprite_Character_patternWidth === aliases.patternWidth &&
+          custom.Sprite_Character_patternHeight === aliases.patternHeight) {
         hits++;
         var width = bitmap.width / (this._isBigCharacter ? 3 : 12);
         var height = bitmap.height / (this._isBigCharacter ? 4 : 8);
@@ -116,7 +122,13 @@
       return frame.apply(this, arguments);
     };
     root.__omoriFrameExperiment = {
-      setEnabled: function(value) { enabled = !!value; },
+      setEnabled: function(value) {
+        if (proto.updateCharacterFrame !== frame && proto.updateCharacterFrame !== fastUpdate)
+          throw new Error('frame method changed during experiment');
+        enabled = !!value;
+        // The disabled phase is the actual original method, without an extra wrapper.
+        proto.updateCharacterFrame = enabled ? fastUpdate : frame;
+      },
       snapshot: function() { return { enabled: enabled, hits: hits, fallbacks: fallbacks }; }
     };
     console.log('[frame-experiment] installed');

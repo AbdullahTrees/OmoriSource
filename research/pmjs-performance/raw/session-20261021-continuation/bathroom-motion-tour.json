@@ -1,0 +1,366 @@
+[
+  {
+    "n": 1,
+    "id": 87,
+    "region": "",
+    "name": "",
+    "effects": "",
+    "arrived": true,
+    "at": [
+      28,
+      27
+    ],
+    "tickMs": 31.97,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 687,
+    "fps": 27.2,
+    "ft": [
+      35.7,
+      49.2,
+      57.6
+    ],
+    "drawMs": 1.87,
+    "uploadMs": 0.17,
+    "draws": 0,
+    "messageShare": 0,
+    "motion": {
+      "durationMs": 5043.6,
+      "presents": 135,
+      "submissions": 136,
+      "hostHz": 26.8,
+      "submissionHz": 27,
+      "rainChangedHz": 0,
+      "gapP50Ms": 35.6,
+      "gapP95Ms": 48.8,
+      "gapP99Ms": 55,
+      "gapMaxMs": 56.9,
+      "slow": [],
+      "weather": {
+        "type": "none",
+        "power": 0,
+        "sprites": 0
+      },
+      "location": {
+        "map": 87,
+        "x": 28,
+        "y": 27
+      }
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "text": null,
+    "autopilot": {
+      "presses": 0,
+      "battles": 0,
+      "gameOvers": 0
+    },
+    "mem": {
+      "rss": 623.7,
+      "heap": 124.9,
+      "imgGpu": 8.8,
+      "imgCpu": 110.3
+    },
+    "prep": {
+      "selected": 0,
+      "refused": 0,
+      "unscoped": 0,
+      "reasons": {},
+      "catalog": true
+    },
+    "state": {
+      "scene": "Scene_Map",
+      "map": 87,
+      "message": false,
+      "event": false,
+      "pictures": 0
+    },
+    "errors": [],
+    "errorCount": 0
+  },
+  {
+    "n": 2,
+    "id": 14,
+    "region": "",
+    "name": "",
+    "effects": "",
+    "arrived": true,
+    "at": [
+      45,
+      44
+    ],
+    "tickMs": 70.83,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 977,
+    "fps": 13,
+    "ft": [
+      77.7,
+      93.6,
+      107.5
+    ],
+    "drawMs": 2.01,
+    "uploadMs": 0.36,
+    "draws": 0,
+    "messageShare": 0,
+    "motion": {
+      "durationMs": 5123.5,
+      "presents": 65,
+      "submissions": 66,
+      "hostHz": 12.7,
+      "submissionHz": 12.9,
+      "rainChangedHz": 0,
+      "gapP50Ms": 77.3,
+      "gapP95Ms": 93.9,
+      "gapP99Ms": 108.2,
+      "gapMaxMs": 108.2,
+      "slow": [],
+      "weather": {
+        "type": "none",
+        "power": 0,
+        "sprites": 0
+      },
+      "location": {
+        "map": 14,
+        "x": 45,
+        "y": 44
+      }
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "text": null,
+    "autopilot": {
+      "presses": 0,
+      "battles": 0,
+      "gameOvers": 0
+    },
+    "mem": {
+      "rss": 643.3,
+      "heap": 130.6,
+      "imgGpu": 17.8,
+      "imgCpu": 105.9
+    },
+    "prep": {
+      "selected": 5,
+      "refused": 0,
+      "unscoped": 3,
+      "reasons": {},
+      "catalog": false
+    },
+    "state": {
+      "scene": "Scene_Map",
+      "map": 14,
+      "message": false,
+      "event": false,
+      "pictures": 0
+    },
+    "errors": [],
+    "errorCount": 0
+  },
+  {
+    "n": 3,
+    "id": 111,
+    "region": "",
+    "name": "",
+    "effects": "",
+    "arrived": true,
+    "at": [
+      15,
+      25
+    ],
+    "tickMs": 53.46,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 965,
+    "fps": 16.9,
+    "ft": [
+      58.3,
+      73.8,
+      82.8
+    ],
+    "drawMs": 2.55,
+    "uploadMs": 0.25,
+    "draws": 0,
+    "messageShare": 0,
+    "motion": {
+      "durationMs": 5080.6,
+      "presents": 84,
+      "submissions": 85,
+      "hostHz": 16.5,
+      "submissionHz": 16.7,
+      "rainChangedHz": 16.3,
+      "gapP50Ms": 58.4,
+      "gapP95Ms": 73.7,
+      "gapP99Ms": 82.9,
+      "gapMaxMs": 82.9,
+      "slow": [],
+      "weather": {
+        "type": "rain",
+        "power": 6,
+        "sprites": 192
+      },
+      "location": {
+        "map": 111,
+        "x": 15,
+        "y": 25
+      }
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "text": null,
+    "autopilot": {
+      "presses": 0,
+      "battles": 0,
+      "gameOvers": 0
+    },
+    "mem": {
+      "rss": 661,
+      "heap": 136.9,
+      "imgGpu": 36.1,
+      "imgCpu": 95.5
+    },
+    "prep": {
+      "selected": 9,
+      "refused": 0,
+      "unscoped": 4,
+      "reasons": {},
+      "catalog": false
+    },
+    "state": {
+      "scene": "Scene_Map",
+      "map": 111,
+      "message": false,
+      "event": true,
+      "pictures": 1
+    },
+    "errors": [],
+    "errorCount": 0
+  },
+  {
+    "n": 4,
+    "id": 78,
+    "region": "",
+    "name": "",
+    "effects": "",
+    "arrived": true,
+    "at": [
+      45,
+      44
+    ],
+    "tickMs": 71.28,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 1163,
+    "fps": 12.6,
+    "ft": [
+      77.5,
+      92.3,
+      228.5
+    ],
+    "drawMs": 2.73,
+    "uploadMs": 0.45,
+    "draws": 0,
+    "messageShare": 0,
+    "motion": {
+      "durationMs": 90079.9,
+      "presents": 1133,
+      "submissions": 1134,
+      "hostHz": 12.6,
+      "submissionHz": 12.6,
+      "rainChangedHz": 12.6,
+      "gapP50Ms": 77.6,
+      "gapP95Ms": 92,
+      "gapP99Ms": 105.4,
+      "gapMaxMs": 229.1,
+      "slow": [],
+      "weather": {
+        "type": "rain",
+        "power": 6,
+        "sprites": 192
+      },
+      "location": {
+        "map": 78,
+        "x": 45,
+        "y": 44
+      }
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "text": null,
+    "autopilot": {
+      "presses": 0,
+      "battles": 0,
+      "gameOvers": 0
+    },
+    "mem": {
+      "rss": 674.6,
+      "heap": 130.6,
+      "imgGpu": 48.4,
+      "imgCpu": 111.7
+    },
+    "prep": {
+      "selected": 14,
+      "refused": 0,
+      "unscoped": 5,
+      "reasons": {},
+      "catalog": false
+    },
+    "state": {
+      "scene": "Scene_Map",
+      "map": 78,
+      "message": false,
+      "event": false,
+      "pictures": 2
+    },
+    "errors": [],
+    "errorCount": 0
+  }
+]

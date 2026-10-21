@@ -1,0 +1,229 @@
+=== samples ===
+pid=20076 /root/pmjs-test/pmjs-linux-arm64/bin/node /root/pmjs-test/pmjs-linux-arm64/share/pmjs/runner/session.cjs 
+muxlaunch=4374
+threads:
+  20076 node
+  20077 DelayedTaskSche
+  20078 node
+  20079 node
+  20080 node
+  20081 node
+  20082 node
+  20089 MALI_BlitterThr
+  20090 SDLHotplugALSA
+  20094 mali-mem-purge
+  20095 mali-utility-wo
+  20096 mali-utility-wo
+  20097 mali-utility-wo
+  20098 mali-utility-wo
+  20099 mali-cmar-backe
+  20146 pw-data-loop
+  20147 alsa-pipewire
+  20148 SDLAudioP2
+  20149 node
+  20150 libuv-worker
+  20151 libuv-worker
+  20152 libuv-worker
+  20153 libuv-worker
+--- interval 1 (10 s), ticks of 10 ms ---
+  tid=20076 cpu_ticks=7549 (+5580 ms)
+  tid=20077 cpu_ticks=0 (+0 ms)
+  tid=20078 cpu_ticks=600 (+50 ms)
+  tid=20079 cpu_ticks=521 (+70 ms)
+  tid=20080 cpu_ticks=606 (+50 ms)
+  tid=20081 cpu_ticks=617 (+30 ms)
+  tid=20082 cpu_ticks=0 (+0 ms)
+  tid=20089 cpu_ticks=99 (+60 ms)
+  tid=20090 cpu_ticks=83 (+90 ms)
+  tid=20094 cpu_ticks=3 (+0 ms)
+  tid=20095 cpu_ticks=0 (+0 ms)
+  tid=20096 cpu_ticks=0 (+0 ms)
+  tid=20097 cpu_ticks=0 (+0 ms)
+  tid=20098 cpu_ticks=0 (+0 ms)
+  tid=20099 cpu_ticks=624 (+640 ms)
+  tid=20146 cpu_ticks=82 (+70 ms)
+  tid=20147 cpu_ticks=0 (+0 ms)
+  tid=20148 cpu_ticks=131 (+150 ms)
+  tid=20149 cpu_ticks=316 (+340 ms)
+  tid=20150 cpu_ticks=54 (+0 ms)
+  tid=20151 cpu_ticks=51 (+0 ms)
+  tid=20152 cpu_ticks=52 (+0 ms)
+  tid=20153 cpu_ticks=67 (+0 ms)
+--- interval 2 (10 s), ticks of 10 ms ---
+  tid=20076 cpu_ticks=8104 (+5550 ms)
+  tid=20077 cpu_ticks=0 (+0 ms)
+  tid=20078 cpu_ticks=610 (+100 ms)
+  tid=20079 cpu_ticks=536 (+150 ms)
+  tid=20080 cpu_ticks=616 (+100 ms)
+  tid=20081 cpu_ticks=626 (+90 ms)
+  tid=20082 cpu_ticks=0 (+0 ms)
+  tid=20089 cpu_ticks=104 (+50 ms)
+  tid=20090 cpu_ticks=90 (+70 ms)
+  tid=20094 cpu_ticks=4 (+10 ms)
+  tid=20095 cpu_ticks=0 (+0 ms)
+  tid=20096 cpu_ticks=0 (+0 ms)
+  tid=20097 cpu_ticks=0 (+0 ms)
+  tid=20098 cpu_ticks=0 (+0 ms)
+  tid=20099 cpu_ticks=687 (+630 ms)
+  tid=20146 cpu_ticks=88 (+60 ms)
+  tid=20147 cpu_ticks=0 (+0 ms)
+  tid=20148 cpu_ticks=146 (+150 ms)
+  tid=20149 cpu_ticks=351 (+350 ms)
+  tid=20150 cpu_ticks=54 (+0 ms)
+  tid=20151 cpu_ticks=51 (+0 ms)
+  tid=20152 cpu_ticks=52 (+0 ms)
+  tid=20153 cpu_ticks=67 (+0 ms)
+captured fb-menu.raw and fb-game.raw (muxlaunch was stopped for ~2 s)
+--- interval 3 (10 s), ticks of 10 ms ---
+  tid=20076 cpu_ticks=8756 (+6520 ms)
+  tid=20077 cpu_ticks=0 (+0 ms)
+  tid=20078 cpu_ticks=642 (+320 ms)
+  tid=20079 cpu_ticks=544 (+80 ms)
+  tid=20080 cpu_ticks=625 (+90 ms)
+  tid=20081 cpu_ticks=642 (+160 ms)
+  tid=20082 cpu_ticks=0 (+0 ms)
+  tid=20089 cpu_ticks=111 (+70 ms)
+  tid=20090 cpu_ticks=102 (+120 ms)
+  tid=20094 cpu_ticks=4 (+0 ms)
+  tid=20095 cpu_ticks=0 (+0 ms)
+  tid=20096 cpu_ticks=0 (+0 ms)
+  tid=20097 cpu_ticks=0 (+0 ms)
+  tid=20098 cpu_ticks=0 (+0 ms)
+  tid=20099 cpu_ticks=763 (+760 ms)
+  tid=20146 cpu_ticks=96 (+80 ms)
+  tid=20147 cpu_ticks=0 (+0 ms)
+  tid=20148 cpu_ticks=162 (+160 ms)
+  tid=20149 cpu_ticks=389 (+380 ms)
+  tid=20150 cpu_ticks=54 (+0 ms)
+  tid=20151 cpu_ticks=51 (+0 ms)
+  tid=20152 cpu_ticks=52 (+0 ms)
+  tid=20153 cpu_ticks=67 (+0 ms)
+--- interval 4 (10 s), ticks of 10 ms ---
+  tid=20076 cpu_ticks=9307 (+5510 ms)
+  tid=20077 cpu_ticks=0 (+0 ms)
+  tid=20078 cpu_ticks=666 (+240 ms)
+  tid=20079 cpu_ticks=564 (+200 ms)
+  tid=20080 cpu_ticks=641 (+160 ms)
+  tid=20081 cpu_ticks=669 (+270 ms)
+  tid=20082 cpu_ticks=0 (+0 ms)
+  tid=20089 cpu_ticks=117 (+60 ms)
+  tid=20090 cpu_ticks=109 (+70 ms)
+  tid=20094 cpu_ticks=4 (+0 ms)
+  tid=20095 cpu_ticks=0 (+0 ms)
+  tid=20096 cpu_ticks=0 (+0 ms)
+  tid=20097 cpu_ticks=0 (+0 ms)
+  tid=20098 cpu_ticks=0 (+0 ms)
+  tid=20099 cpu_ticks=827 (+640 ms)
+  tid=20146 cpu_ticks=102 (+60 ms)
+  tid=20147 cpu_ticks=0 (+0 ms)
+  tid=20148 cpu_ticks=177 (+150 ms)
+  tid=20149 cpu_ticks=424 (+350 ms)
+  tid=20150 cpu_ticks=54 (+0 ms)
+  tid=20151 cpu_ticks=51 (+0 ms)
+  tid=20152 cpu_ticks=52 (+0 ms)
+  tid=20153 cpu_ticks=67 (+0 ms)
+--- interval 5 (10 s), ticks of 10 ms ---
+  tid=20076 cpu_ticks=9842 (+5350 ms)
+  tid=20077 cpu_ticks=0 (+0 ms)
+  tid=20078 cpu_ticks=667 (+10 ms)
+  tid=20079 cpu_ticks=566 (+20 ms)
+  tid=20080 cpu_ticks=643 (+20 ms)
+  tid=20081 cpu_ticks=691 (+220 ms)
+  tid=20082 cpu_ticks=0 (+0 ms)
+  tid=20089 cpu_ticks=123 (+60 ms)
+  tid=20090 cpu_ticks=117 (+80 ms)
+  tid=20094 cpu_ticks=5 (+10 ms)
+  tid=20095 cpu_ticks=0 (+0 ms)
+  tid=20096 cpu_ticks=0 (+0 ms)
+  tid=20097 cpu_ticks=0 (+0 ms)
+  tid=20098 cpu_ticks=0 (+0 ms)
+  tid=20099 cpu_ticks=890 (+630 ms)
+  tid=20146 cpu_ticks=109 (+70 ms)
+  tid=20147 cpu_ticks=0 (+0 ms)
+  tid=20148 cpu_ticks=191 (+140 ms)
+  tid=20149 cpu_ticks=457 (+330 ms)
+  tid=20150 cpu_ticks=54 (+0 ms)
+  tid=20151 cpu_ticks=51 (+0 ms)
+  tid=20152 cpu_ticks=52 (+0 ms)
+  tid=20153 cpu_ticks=67 (+0 ms)
+--- interval 6 (10 s), ticks of 10 ms ---
+  tid=20076 cpu_ticks=10377 (+5350 ms)
+  tid=20077 cpu_ticks=0 (+0 ms)
+  tid=20078 cpu_ticks=669 (+20 ms)
+  tid=20079 cpu_ticks=567 (+10 ms)
+  tid=20080 cpu_ticks=643 (+0 ms)
+  tid=20081 cpu_ticks=692 (+10 ms)
+  tid=20082 cpu_ticks=0 (+0 ms)
+  tid=20089 cpu_ticks=128 (+50 ms)
+  tid=20090 cpu_ticks=124 (+70 ms)
+  tid=20094 cpu_ticks=5 (+0 ms)
+  tid=20095 cpu_ticks=0 (+0 ms)
+  tid=20096 cpu_ticks=0 (+0 ms)
+  tid=20097 cpu_ticks=0 (+0 ms)
+  tid=20098 cpu_ticks=0 (+0 ms)
+  tid=20099 cpu_ticks=952 (+620 ms)
+  tid=20146 cpu_ticks=115 (+60 ms)
+  tid=20147 cpu_ticks=0 (+0 ms)
+  tid=20148 cpu_ticks=205 (+140 ms)
+  tid=20149 cpu_ticks=489 (+320 ms)
+  tid=20150 cpu_ticks=54 (+0 ms)
+  tid=20151 cpu_ticks=51 (+0 ms)
+  tid=20152 cpu_ticks=52 (+0 ms)
+  tid=20153 cpu_ticks=67 (+0 ms)
+done
+=== prof ===
+2026-10-20T23:00:24.044Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.6 (tick 35.4, render 0.0, native 47.1 = up 0.1+draw 45.3+mem 1.7), swap+idle 3.3 ms | rss 677.1 heap 116.9/133.9 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1624 commands +1450 spriteDrawCalls +580 tileDrawCalls +116 filterDrawCalls +754 identityFilterShaderDrawCalls +58 filterTargetAcquires +116 filterTargetReuses +116 bufferUploads +78 screenFillDrawCalls +116 tilingSpriteDrawCalls +58 filter[31] +116
+2026-10-20T23:00:29.020Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.6 (tick 36.6, render 0.0, native 45.8 = up 0.1+draw 44.1+mem 1.6), swap+idle 3.3 ms | rss 677.1 heap 117.9/133.9 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1624 commands +1450 spriteDrawCalls +580 tileDrawCalls +116 filterDrawCalls +754 identityFilterShaderDrawCalls +58 filterTargetAcquires +116 filterTargetReuses +116 bufferUploads +78 screenFillDrawCalls +116 tilingSpriteDrawCalls +58 filter[31] +116
+2026-10-20T23:00:34.014Z INFO [prof] fps 11.5 frames 57 | per frame: work 83.4 (tick 36.8, render 0.0, native 46.4 = up 0.1+draw 44.6+mem 1.7), swap+idle 4.0 ms | rss 676.3 heap 110.7/134.4 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1596 commands +1425 spriteDrawCalls +570 tileDrawCalls +114 filterDrawCalls +741 identityFilterShaderDrawCalls +57 filterTargetAcquires +114 filterTargetReuses +114 bufferUploads +79 screenFillDrawCalls +114 tilingSpriteDrawCalls +57 filter[31] +114
+2026-10-20T23:00:38.993Z INFO [prof] fps 11.6 frames 58 | per frame: work 83.0 (tick 34.2, render 0.0, native 48.7 = up 0.1+draw 46.8+mem 1.8), swap+idle 3.1 ms | rss 676.3 heap 111.6/134.4 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1624 commands +1450 spriteDrawCalls +580 tileDrawCalls +116 filterDrawCalls +754 identityFilterShaderDrawCalls +58 filterTargetAcquires +116 filterTargetReuses +116 bufferUploads +78 screenFillDrawCalls +116 tilingSpriteDrawCalls +58 filter[31] +116
+2026-10-20T23:00:44.054Z INFO [prof] fps 11.7 frames 59 | per frame: work 82.6 (tick 33.7, render 0.0, native 48.7 = up 0.1+draw 46.8+mem 1.8), swap+idle 3.2 ms | rss 677.0 heap 112.3/134.4 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1652 commands +1475 spriteDrawCalls +590 tileDrawCalls +118 filterDrawCalls +767 identityFilterShaderDrawCalls +59 filterTargetAcquires +118 filterTargetReuses +118 bufferUploads +81 screenFillDrawCalls +118 tilingSpriteDrawCalls +59 filter[31] +118
+2026-10-20T23:00:49.033Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.6 (tick 34.8, render 0.0, native 47.6 = up 0.1+draw 45.8+mem 1.7), swap+idle 3.2 ms | rss 677.3 heap 113.1/134.4 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1624 commands +1450 spriteDrawCalls +580 tileDrawCalls +116 filterDrawCalls +754 identityFilterShaderDrawCalls +58 filterTargetAcquires +116 filterTargetReuses +116 bufferUploads +80 screenFillDrawCalls +116 tilingSpriteDrawCalls +58 filter[31] +116
+2026-10-20T23:00:54.012Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.6 (tick 34.8, render 0.0, native 47.7 = up 0.1+draw 45.9+mem 1.6), swap+idle 3.2 ms | rss 677.3 heap 116.7/134.4 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1624 commands +1450 spriteDrawCalls +580 tileDrawCalls +116 filterDrawCalls +754 identityFilterShaderDrawCalls +58 filterTargetAcquires +116 filterTargetReuses +116 bufferUploads +78 screenFillDrawCalls +116 tilingSpriteDrawCalls +58 filter[31] +116
+2026-10-20T23:00:58.989Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.6 (tick 33.8, render 0.0, native 48.5 = up 0.1+draw 46.7+mem 1.7), swap+idle 3.2 ms | rss 677.3 heap 117.5/134.4 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1624 commands +1450 spriteDrawCalls +580 tileDrawCalls +116 filterDrawCalls +754 identityFilterShaderDrawCalls +58 filterTargetAcquires +116 filterTargetReuses +116 bufferUploads +80 screenFillDrawCalls +116 tilingSpriteDrawCalls +58 filter[31] +116
+2026-10-20T23:01:04.054Z INFO [prof] fps 11.7 frames 59 | per frame: work 82.7 (tick 35.6, render 0.0, native 47.0 = up 0.1+draw 45.2+mem 1.7), swap+idle 3.1 ms | rss 677.3 heap 118.1/134.4 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1652 commands +1475 spriteDrawCalls +590 tileDrawCalls +118 filterDrawCalls +767 identityFilterShaderDrawCalls +59 filterTargetAcquires +118 filterTargetReuses +118 bufferUploads +81 screenFillDrawCalls +118 tilingSpriteDrawCalls +59 filter[31] +118
+2026-10-20T23:01:09.030Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.8 (tick 33.9, render 0.0, native 48.7 = up 0.1+draw 46.9+mem 1.8), swap+idle 3.1 ms | rss 677.4 heap 119.1/134.7 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1624 commands +1450 spriteDrawCalls +580 tileDrawCalls +116 filterDrawCalls +754 identityFilterShaderDrawCalls +58 filterTargetAcquires +116 filterTargetReuses +116 bufferUploads +78 screenFillDrawCalls +116 tilingSpriteDrawCalls +58 filter[31] +116
+2026-10-20T23:01:14.013Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.7 (tick 34.3, render 0.0, native 48.3 = up 0.1+draw 46.5+mem 1.7), swap+idle 3.1 ms | rss 677.4 heap 119.8/134.7 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1624 commands +1450 spriteDrawCalls +580 tileDrawCalls +116 filterDrawCalls +754 identityFilterShaderDrawCalls +58 filterTargetAcquires +116 filterTargetReuses +116 bufferUploads +78 screenFillDrawCalls +116 tilingSpriteDrawCalls +58 filter[31] +116
+2026-10-20T23:01:19.045Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.7 (tick 34.4, render 0.0, native 48.2 = up 0.1+draw 46.4+mem 1.7), swap+idle 3.2 ms | rss 677.4 heap 120.2/134.7 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1624 commands +1450 spriteDrawCalls +580 tileDrawCalls +116 filterDrawCalls +754 identityFilterShaderDrawCalls +58 filterTargetAcquires +116 filterTargetReuses +116 bufferUploads +82 screenFillDrawCalls +116 tilingSpriteDrawCalls +58 filter[31] +116
+2026-10-20T23:01:24.026Z INFO [prof] fps 11.6 frames 58 | per frame: work 82.8 (tick 35.0, render 0.0, native 47.6 = up 0.1+draw 45.8+mem 1.7), swap+idle 4.0 ms | rss 677.4 heap 111.4/134.2 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1624 commands +1450 spriteDrawCalls +580 tileDrawCalls +116 filterDrawCalls +754 identityFilterShaderDrawCalls +58 filterTargetAcquires +116 filterTargetReuses +116 bufferUploads +78 screenFillDrawCalls +116 tilingSpriteDrawCalls +58 filter[31] +116
+2026-10-20T23:01:29.000Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.9 (tick 34.3, render 0.0, native 48.5 = up 0.1+draw 46.7+mem 1.7), swap+idle 2.9 ms | rss 677.4 heap 111.6/134.2 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1624 commands +1450 spriteDrawCalls +580 tileDrawCalls +116 filterDrawCalls +754 identityFilterShaderDrawCalls +58 filterTargetAcquires +116 filterTargetReuses +116 bufferUploads +78 screenFillDrawCalls +116 tilingSpriteDrawCalls +58 filter[31] +116
+2026-10-20T23:01:34.062Z INFO [prof] fps 11.7 frames 59 | per frame: work 82.7 (tick 35.2, render 0.0, native 47.4 = up 0.1+draw 45.6+mem 1.7), swap+idle 3.1 ms | rss 677.4 heap 113.4/134.2 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1652 commands +1475 spriteDrawCalls +590 tileDrawCalls +118 filterDrawCalls +767 identityFilterShaderDrawCalls +59 filterTargetAcquires +118 filterTargetReuses +118 bufferUploads +83 screenFillDrawCalls +118 tilingSpriteDrawCalls +59 filter[31] +118
+2026-10-20T23:01:39.036Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.9 (tick 33.8, render 0.0, native 49.1 = up 0.1+draw 47.2+mem 1.7), swap+idle 2.9 ms | rss 677.4 heap 116.2/134.2 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1624 commands +1450 spriteDrawCalls +580 tileDrawCalls +116 filterDrawCalls +754 identityFilterShaderDrawCalls +58 filterTargetAcquires +116 filterTargetReuses +116 bufferUploads +76 screenFillDrawCalls +116 tilingSpriteDrawCalls +58 filter[31] +116
+2026-10-20T23:01:44.016Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.7 (tick 35.2, render 0.0, native 47.5 = up 0.1+draw 45.7+mem 1.7), swap+idle 3.1 ms | rss 677.4 heap 116.9/134.2 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1624 commands +1450 spriteDrawCalls +580 tileDrawCalls +116 filterDrawCalls +754 identityFilterShaderDrawCalls +58 filterTargetAcquires +116 filterTargetReuses +116 bufferUploads +80 screenFillDrawCalls +116 tilingSpriteDrawCalls +58 filter[31] +116
+2026-10-20T23:01:48.994Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.7 (tick 35.0, render 0.0, native 47.6 = up 0.1+draw 45.8+mem 1.7), swap+idle 3.1 ms | rss 677.4 heap 117.3/134.2 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1624 commands +1450 spriteDrawCalls +580 tileDrawCalls +116 filterDrawCalls +754 identityFilterShaderDrawCalls +58 filterTargetAcquires +116 filterTargetReuses +116 bufferUploads +80 screenFillDrawCalls +116 tilingSpriteDrawCalls +58 filter[31] +116
+2026-10-20T23:01:54.058Z INFO [prof] fps 11.7 frames 59 | per frame: work 82.7 (tick 33.4, render 0.0, native 49.2 = up 0.1+draw 47.4+mem 1.7), swap+idle 3.1 ms | rss 677.4 heap 118.0/134.2 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1652 commands +1475 spriteDrawCalls +590 tileDrawCalls +118 filterDrawCalls +767 identityFilterShaderDrawCalls +59 filterTargetAcquires +118 filterTargetReuses +118 bufferUploads +79 screenFillDrawCalls +118 tilingSpriteDrawCalls +59 filter[31] +118
+2026-10-20T23:01:59.032Z INFO [prof] fps 11.7 frames 58 | per frame: work 82.9 (tick 33.8, render 0.0, native 49.0 = up 0.1+draw 47.2+mem 1.7), swap+idle 3.0 ms | rss 677.4 heap 118.4/134.2 ext 2.0 ab 0.4, images gpu 64.4/74.3 cpu 92.0 meta 4.0 warm 0.0 pinned 0.0 count 163, targets 14.3 targetCache 0.0, canvas 0.0, audio pcm 0.3 cache 0.3 | drawCalls +1624 commands +1450 spriteDrawCalls +580 tileDrawCalls +116 filterDrawCalls +754 identityFilterShaderDrawCalls +58 filterTargetAcquires +116 filterTargetReuses +116 bufferUploads +80 screenFillDrawCalls +116 tilingSpriteDrawCalls +58 filter[31] +116
+=== bench ===
+2026-10-20T22:59:36.423Z INFO [bench] fps 11.6 (webgl, Scene_Map map 87)
+2026-10-20T22:59:41.400Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-20T22:59:46.376Z INFO [bench] fps 11.6 (webgl, Scene_Map map 87)
+2026-10-20T22:59:51.376Z INFO [bench] fps 11.6 (webgl, Scene_Map map 87)
+2026-10-20T22:59:56.357Z INFO [bench] fps 11.6 (webgl, Scene_Map map 87)
+2026-10-20T23:00:01.418Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-20T23:00:06.395Z INFO [bench] fps 11.6 (webgl, Scene_Map map 87)
+2026-10-20T23:00:11.374Z INFO [bench] fps 11.6 (webgl, Scene_Map map 87)
+2026-10-20T23:00:16.402Z INFO [bench] fps 11.5 (webgl, Scene_Map map 87)
+2026-10-20T23:00:21.380Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-20T23:00:26.360Z INFO [bench] fps 11.6 (webgl, Scene_Map map 87)
+2026-10-20T23:00:31.421Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-20T23:00:36.422Z INFO [bench] fps 11.4 (webgl, Scene_Map map 87)
+2026-10-20T23:00:41.395Z INFO [bench] fps 11.6 (webgl, Scene_Map map 87)
+2026-10-20T23:00:46.370Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-20T23:00:51.435Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-20T23:00:56.414Z INFO [bench] fps 11.6 (webgl, Scene_Map map 87)
+2026-10-20T23:01:01.396Z INFO [bench] fps 11.6 (webgl, Scene_Map map 87)
+2026-10-20T23:01:06.369Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-20T23:01:11.436Z INFO [bench] fps 11.6 (webgl, Scene_Map map 87)
+2026-10-20T23:01:16.409Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-20T23:01:21.363Z INFO [bench] fps 11.5 (webgl, Scene_Map map 87)
+2026-10-20T23:01:26.426Z INFO [bench] fps 11.6 (webgl, Scene_Map map 87)
+2026-10-20T23:01:31.400Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-20T23:01:36.377Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-20T23:01:41.355Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-20T23:01:46.418Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-20T23:01:51.393Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-20T23:01:56.370Z INFO [bench] fps 11.7 (webgl, Scene_Map map 87)
+2026-10-20T23:02:01.348Z INFO [bench] fps 11.6 (webgl, Scene_Map map 87)
+-rw-r--r--    1 root     root       7372800 Oct 21 04:59 /tmp/fb-game.raw
+-rw-r--r--    1 root     root       7372800 Oct 21 04:59 /tmp/fb-menu.raw
+
+[exited with code 0]

@@ -1,0 +1,106 @@
+[
+  {
+    "id": 87,
+    "motion": {
+      "durationMs": 5043.6,
+      "presents": 135,
+      "submissions": 136,
+      "hostHz": 26.8,
+      "submissionHz": 27,
+      "rainChangedHz": 0,
+      "gapP50Ms": 35.6,
+      "gapP95Ms": 48.8,
+      "gapP99Ms": 55,
+      "gapMaxMs": 56.9,
+      "slow": [],
+      "weather": {
+        "type": "none",
+        "power": 0,
+        "sprites": 0
+      },
+      "location": {
+        "map": 87,
+        "x": 28,
+        "y": 27
+      }
+    }
+  },
+  {
+    "id": 14,
+    "motion": {
+      "durationMs": 5123.5,
+      "presents": 65,
+      "submissions": 66,
+      "hostHz": 12.7,
+      "submissionHz": 12.9,
+      "rainChangedHz": 0,
+      "gapP50Ms": 77.3,
+      "gapP95Ms": 93.9,
+      "gapP99Ms": 108.2,
+      "gapMaxMs": 108.2,
+      "slow": [],
+      "weather": {
+        "type": "none",
+        "power": 0,
+        "sprites": 0
+      },
+      "location": {
+        "map": 14,
+        "x": 45,
+        "y": 44
+      }
+    }
+  },
+  {
+    "id": 111,
+    "motion": {
+      "durationMs": 5080.6,
+      "presents": 84,
+      "submissions": 85,
+      "hostHz": 16.5,
+      "submissionHz": 16.7,
+      "rainChangedHz": 16.3,
+      "gapP50Ms": 58.4,
+      "gapP95Ms": 73.7,
+      "gapP99Ms": 82.9,
+      "gapMaxMs": 82.9,
+      "slow": [],
+      "weather": {
+        "type": "rain",
+        "power": 6,
+        "sprites": 192
+      },
+      "location": {
+        "map": 111,
+        "x": 15,
+        "y": 25
+      }
+    }
+  },
+  {
+    "id": 78,
+    "motion": {
+      "durationMs": 90079.9,
+      "presents": 1133,
+      "submissions": 1134,
+      "hostHz": 12.6,
+      "submissionHz": 12.6,
+      "rainChangedHz": 12.6,
+      "gapP50Ms": 77.6,
+      "gapP95Ms": 92,
+      "gapP99Ms": 105.4,
+      "gapMaxMs": 229.1,
+      "slow": [],
+      "weather": {
+        "type": "rain",
+        "power": 6,
+        "sprites": 192
+      },
+      "location": {
+        "map": 78,
+        "x": 45,
+        "y": 44
+      }
+    }
+  }
+]

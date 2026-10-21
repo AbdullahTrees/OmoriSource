@@ -4,6 +4,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '../..');
+const production = process.argv.includes('--production');
 function extract(file, marker, end = '\n};') {
   const source = fs.readFileSync(path.join(root,file),'utf8').replace(/\r\n/g,'\n');
   const position = source.indexOf(marker), start = source.indexOf('function',position);
@@ -21,7 +22,10 @@ methods.inner = extract('pmjs/js/pmjs-mv/character-presentation.js','Sprite_Char
 methods.stockFrame = extract('project/js/rpg_sprites.js','Sprite_Character.prototype.updateCharacterFrame =');
 methods.emf = extract('project/js/plugins/ExtraMovementFrames.js','Sprite_Character.prototype.patternWidth =','\n\t};');
 methods.isEmf = extract('project/js/plugins/ExtraMovementFrames.js','Game_CharacterBase.prototype.isEmfCharacter =','\n\t};');
-const source = fs.readFileSync(path.join(__dirname,'character-frame-experiment.js'),'utf8');
+let source = fs.readFileSync(production ? path.join(root,'launcher/pmjs/character-frames.js')
+  : path.join(__dirname,'character-frame-experiment.js'),'utf8');
+if (production) source = source.replace('        var width = bitmap.width /',
+  '        globalThis.__frameHits = (globalThis.__frameHits || 0)+1; var width = bitmap.width /');
 function fixture(enabled) {
   const c = vm.createContext({__pmjsBuiltinRequire:require,console:{log(){}}});
   vm.runInContext(`
@@ -49,9 +53,17 @@ function fixture(enabled) {
     Sprite_Character.prototype.updateCharacterFrame=(${methods.frame});
     var SceneManager={_scene:{constructor:{name:'Scene_OmoriTitleScreen'}}};
     function setInterval(fn){callback=fn;return 1;}function clearInterval(){}`,c);
-  vm.runInContext(source,c);vm.runInContext('callback();',c);
-  assert.ok(c.__omoriFrameExperiment,'reviewed sources must activate');
-  c.__omoriFrameExperiment.setEnabled(enabled);
+  if (production) {
+    vm.runInContext(`var PMJS={plugins:{registerOptimization:function(){},onLoaded:function(name,owner,fn){fn();}},
+      phases:{on:function(phase,owner,fn){fn();}},optimizations:{isEnabled:function(){return true;},refuse:function(id,why){throw new Error(why);}}};`,c);
+    vm.runInContext(source,c);
+    assert.ok(c.Sprite_Character.prototype.updateCharacterFrame._pmjsCharacterFramePredecessor,'production fingerprints must activate');
+    if (!enabled) vm.runInContext('Sprite_Character.prototype.updateCharacterFrame=Sprite_Character.prototype.updateCharacterFrame._pmjsCharacterFramePredecessor;',c);
+  } else {
+    vm.runInContext(source,c);vm.runInContext('callback();',c);
+    assert.ok(c.__omoriFrameExperiment,'reviewed sources must activate');
+    c.__omoriFrameExperiment.setEnabled(enabled);
+  }
   return c;
 }
 const cases = [];
@@ -66,6 +78,9 @@ cases.push('sprite._character._customFrameX=2;','sprite._character._customFrameY
   'sprite._character.isSingleFrame=function(){actions.push("single-hook");return false;};',
   'sprite._character.pattern=function(){this._customFrameY=3;return 2;};',
   'sprite._character.characterIndex=function(){this._customFrameX=2;return 3;};');
+for (const name of names) cases.push('_TDS_.CustomCharacterRectangles.Sprite_Character_'+name+'=function(){return 3;};');
+cases.push('_TDS_.CustomCharacterRectangles=Object.assign({},_TDS_.CustomCharacterRectangles,{Sprite_Character_patternWidth:function(){return 19;}});',
+  'ModernAlgebra.EMF=Object.assign({},ModernAlgebra.EMF,{SpriteCharacter_patternWidth:function(){return 19;}});');
 let fast = 0;
 for (const setup of cases) {
   let reference;
@@ -73,7 +88,7 @@ for (const setup of cases) {
     const c = fixture(enabled);
     vm.runInContext('var sprite=new Sprite_Character();'+setup+'sprite.updateCharacterFrame();var observed=JSON.stringify({actions:actions,frame:sprite._frame});',c);
     if (!enabled) reference = c.observed;
-    else { assert.equal(c.observed,reference,setup); fast += c.__omoriFrameExperiment.snapshot().hits; }
+    else { assert.equal(c.observed,reference,setup); fast += production ? c.__frameHits || 0 : c.__omoriFrameExperiment.snapshot().hits; }
   }
 }
-console.log(JSON.stringify({scenarios:cases.length,fastPathCases:fast,status:'passed'}));
+console.log(JSON.stringify({production:production,scenarios:cases.length,fastPathCases:fast,status:'passed'}));

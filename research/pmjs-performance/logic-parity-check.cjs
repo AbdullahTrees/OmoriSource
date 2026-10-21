@@ -5,6 +5,8 @@ const path = require('node:path');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '../..');
+const production = process.argv.includes('--production');
+const productionSource = fs.readFileSync(path.join(root, 'pmjs/js/pmjs-plugins/olivia/horror-effects.js'), 'utf8');
 function extract(file, marker, end = '\n};') {
   const source = fs.readFileSync(path.join(root, file), 'utf8').replace(/\r\n/g, '\n');
   const position = source.indexOf(marker), start = source.indexOf('function', position);
@@ -53,10 +55,23 @@ function fixture(mode) {
     var NativeHost={runtime:{env:function(){return 'baseline';}}};
     function setInterval(fn){callback=fn;return 1;} function clearInterval(){}
   `, context);
-  vm.runInContext(experiment, context);
-  vm.runInContext('callback();', context);
-  assert.ok(context.__omoriLogicExperiments, 'reviewed sources must activate');
-  context.__omoriLogicExperiments.setMode(mode);
+  if (production) {
+    vm.runInContext(`
+      Sprite.prototype.updateHorrorEffects=(${methods.dispatcher});
+      PMJS.optimizations.isEnabled=function(){return true;};
+      PMJS.optimizations.refuse=function(id,message){throw new Error(id+': '+message);};
+      PMJS.plugins={registerOptimization:function(){},onLoaded:function(name,owner,callback){callback();}};
+      PMJS.phases={on:function(phase,owner,callback){callback();}};
+    `,context);
+    vm.runInContext(productionSource, context);
+    assert.ok(context.Sprite.prototype.update._pmjsOliviaPredecessor, 'real production fingerprints must activate');
+    if (mode === 'baseline') vm.runInContext('Sprite.prototype.update=Sprite.prototype.update._pmjsOliviaPredecessor;',context);
+  } else {
+    vm.runInContext(experiment, context);
+    vm.runInContext('callback();', context);
+    assert.ok(context.__omoriLogicExperiments, 'reviewed sources must activate');
+    context.__omoriLogicExperiments.setMode(mode);
+  }
   return context;
 }
 const scenarios = {
@@ -65,6 +80,8 @@ const scenarios = {
   appendedChild: `var sprite=new Sprite_Base(); sprite.children.push({update:function(){actions.push('first');sprite.children.push({update:function(){actions.push('appended');}});}});`,
   childEnablesNoise: `var sprite=new Sprite_Base(); sprite.children.push({update:function(){sprite._horrorFilters.noiseFilter={animated:true};}});`,
   childChangesDelegate: `var sprite=new Sprite_Base(); sprite.children.push({update:function(){sprite.updateHorrorNoise=function(){actions.push('custom-noise');};}});`,
+  childChangesSynchronization: `var sprite=new Sprite_Base(); sprite.children.push({update:function(){sprite.synchronizeHorrorFiltersWithSource=function(){actions.push('late-child-sync');};}});`,
+  lateDispatcher: `var sprite=new Sprite_Base(); sprite.updateHorrorEffects=function(){actions.push('custom-effects');return 42;};`,
   active: `var sprite=new Sprite_Base(); sprite._horrorFilters={noiseFilter:{animated:true},tvFilter:{animated:true,time:3,aniSpeed:2},glitchFilter:{}};`,
   source: `var sprite=new Sprite_Base(); sprite._horrorFilters.tvFilter={animated:true,time:3,aniSpeed:2}; sprite._horrorFiltersSource={_horrorFilters:{tvFilter:{needUpdate:false}}};`,
   lateSynchronization: `var sprite=new Sprite_Base(); sprite.synchronizeHorrorFiltersWithSource=function(){actions.push('custom-sync');};`,
@@ -75,7 +92,7 @@ const scenarios = {
 let checks = 0;
 for (const [name, setup] of Object.entries(scenarios)) {
   let reference;
-  for (const mode of ['baseline','horror','base','both']) {
+  for (const mode of production ? ['baseline','fused'] : ['baseline','horror','base','both']) {
     const context = fixture(mode);
     vm.runInContext(setup+`; sprite.update(); var observed=JSON.stringify({actions:actions,filters:sprite._horrorFilters,
       visible:sprite.visible,randomCalls:randomCalls,animations:sprite._animationSprites.length,children:sprite.children.length});`, context);
@@ -83,4 +100,4 @@ for (const [name, setup] of Object.entries(scenarios)) {
     else { assert.equal(context.observed, reference, name+' / '+mode); checks++; }
   }
 }
-console.log(JSON.stringify({ scenarios: Object.keys(scenarios).length, differentialChecks: checks, status: 'passed' }));
+console.log(JSON.stringify({ production: production, scenarios: Object.keys(scenarios).length, differentialChecks: checks, status: 'passed' }));
