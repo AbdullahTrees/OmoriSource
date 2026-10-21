@@ -1,0 +1,1965 @@
+--- a/js/plugins.js
++++ b/js/plugins.js
+@@ -165,7 +165,6 @@
+ {"name":"WaitFPS","status":true,"description":"WaitFPS","parameters":{"momentFPSThreshold":"57","meanFPSFrames":"3","meanFPSThreshold":"50","maxWaitTime":"90"}},
+ {"name":"--------------------","status":false,"description":"------------------------------------------------------------","parameters":{}},
+ {"name":"SpaghettiCode","status":true,"description":"","parameters":{}},
+-{"name":"Archeia_Steamworks","status":true,"description":"Plugin Description <Archeia_Steamworks>","parameters":{"Steamworks Debug":"true"}},
+ {"name":"--------------------","status":false,"description":"------------------------------------------------------------","parameters":{}},
+ {"name":"YEP_TestPlayAssist","status":false,"description":"v1.00 Test playing can become a chore. This plugin offers new\nfeatures that would help make your test playing more flexible and efficient.","parameters":{"AutoStart":"true","OnSwitches":"[]","CommonEvent":"0","StartCode":"\"// Get 10x of each regular item. Exclude key/hidden items.\\nfor (var i = 1; i < $dataItems.length; ++i) {\\n  var item = $dataItems[i];\\n  if (!item) continue;\\n  if (item.itypeId !== 1) continue;\\n  if (item.name.trim().length <= 0) continue;\\n  $gameParty.gainItem(item, 10);\\n}\"","AutoFPS":"true","AutoFullScr":"false"}},
+ {"name":"YEP_Debugger","status":false,"description":"v2.07 This is Yanfly's debugger plugin tool given to\nfaithful supporters to help you testplay your game better!","parameters":{"---Startup---":"","Auto New Game":"false","Auto Show FPS":"false","Auto Full Screen":"false","Auto Console":"true","---Visual---":"","Debug Window Tone":"50, 50, 50, 0","Console Messages":"true","---Field---":"","Field Debug":"true","Debug Menu Icon":"225","---Battle---":"","Battle Test TP Start":"value = user.maxTp()","Damage CTRL Modifier":"value *= -1","Damage SHIFT Modifier":"value *= 10","EXP CTRL Modifier":"rate *= 100","EXP SHIFT Modifier":"rate *= 10","Warning Message":"true","Disable Variance":"false","100% State Rate":"false","---Spawn Options---":"","Spawn at Boat":"false","Spawn at Ship":"false","Spawn at Airship":"false"}},
+--- a/js/rpg_core.js
++++ b/js/rpg_core.js
+@@ -290,7 +290,7 @@
+ Utils._supportPassiveEvent = null;
+ /**
+  * Test this browser support passive event feature
+- * 
++ *
+  * @static
+  * @method isSupportPassiveEvent
+  * @return {Boolean} this browser support passive event or not
+@@ -735,12 +735,6 @@
+  *
+  * requestCompleted:
+  * Request completed
+- *
+- * decrypting:
+- * requesting encrypted data from supplied URI or decrypting it.
+- *
+- * decryptCompleted:
+- * Decrypt completed
+  *
+  * loaded:
+  * loaded. isReady() === true, so It's usable.
+@@ -1563,33 +1557,20 @@
+ 
+     this._renewCanvas();
+ 
+-    switch(this._loadingState){
+-        case 'requesting':
+-            this._loadingState = 'requestCompleted';
+-            if(this._decodeAfterRequest){
+-                this.decode();
+-            }else{
+-                this._loadingState = 'purged';
+-                this._clearImgInstance();
+-            }
+-            break;
+-
+-        case 'decrypting':
+-            window.URL.revokeObjectURL(this._image.src);
+-            this._loadingState = 'decryptCompleted';
+-            if(this._decodeAfterRequest){
+-                this.decode();
+-            }else{
+-                this._loadingState = 'purged';
+-                this._clearImgInstance();
+-            }
+-            break;
++    if(this._loadingState === 'requesting'){
++        this._loadingState = 'requestCompleted';
++        if(this._decodeAfterRequest){
++            this.decode();
++        }else{
++            this._loadingState = 'purged';
++            this._clearImgInstance();
++        }
+     }
+ };
+ 
+ Bitmap.prototype.decode = function(){
+     switch(this._loadingState){
+-        case 'requestCompleted': case 'decryptCompleted':
++        case 'requestCompleted':
+             this._loadingState = 'loaded';
+ 
+             if(!this.__canvas) this._createBaseTexture(this._image);
+@@ -1597,7 +1578,7 @@
+             this._callLoadListeners();
+             break;
+ 
+-        case 'requesting': case 'decrypting':
++        case 'requesting':
+             this._decodeAfterRequest = true;
+             if (!this._loader) {
+                 this._loader = ResourceHandler.createLoader(this._url, this._requestImage.bind(this, this._url), this._onError.bind(this));
+@@ -1678,16 +1659,9 @@
+     this._image = new Image();
+     this._url = url;
+     this._loadingState = 'requesting';
+-
+-    if(!Decrypter.checkImgIgnore(url) && Decrypter.hasEncryptedImages) {
+-        this._loadingState = 'decrypting';
+-        Decrypter.decryptImg(url, this);
+-    } else {
+-        this._image.src = url;
+-
+-        this._image.addEventListener('load', this._loadListener = Bitmap.prototype._onLoad.bind(this));
+-        this._image.addEventListener('error', this._errorListener = this._loader || Bitmap.prototype._onError.bind(this));
+-    }
++    this._image.src = url;
++    this._image.addEventListener('load', this._loadListener = Bitmap.prototype._onLoad.bind(this));
++    this._image.addEventListener('error', this._errorListener = this._loader || Bitmap.prototype._onError.bind(this));
+ };
+ 
+ Bitmap.prototype.isRequestOnly = function(){
+@@ -1696,8 +1670,7 @@
+ 
+ Bitmap.prototype.isRequestReady = function(){
+     return this._loadingState !== 'pending' &&
+-        this._loadingState !== 'requesting' &&
+-        this._loadingState !== 'decrypting';
++        this._loadingState !== 'requesting';
+ };
+ 
+ Bitmap.prototype.startRequest = function(){
+@@ -8163,7 +8136,6 @@
+ WebAudio.prototype._load = function(url) {
+     if (WebAudio._context) {
+         var xhr = new XMLHttpRequest();
+-        if(Decrypter.hasEncryptedAudio) url = Decrypter.extToEncryptExt(url);
+         xhr.open('GET', url);
+         xhr.responseType = 'arraybuffer';
+         xhr.onload = function() {
+@@ -8183,7 +8155,6 @@
+  */
+ WebAudio.prototype._onXhrLoad = function(xhr) {
+     var array = xhr.response;
+-    if(Decrypter.hasEncryptedAudio) array = Decrypter.decryptArrayBuffer(array);
+     this._readLoopComments(new Uint8Array(array));
+     WebAudio._context.decodeAudioData(array, function(buffer) {
+         this._buffer = buffer;
+@@ -8490,10 +8461,6 @@
+         this.initialize();
+     }
+     this.clear();
+-
+-    if(Decrypter.hasEncryptedAudio && this._audioElement.src) {
+-        window.URL.revokeObjectURL(this._audioElement.src);
+-    }
+     this._url = url;
+ };
+ 
+@@ -9143,127 +9110,6 @@
+         value = newValue;
+     }
+     return value;
+-};
+-
+-
+-function Decrypter() {
+-    throw new Error('This is a static class');
+-}
+-
+-Decrypter.hasEncryptedImages = false;
+-Decrypter.hasEncryptedAudio = false;
+-Decrypter._requestImgFile = [];
+-Decrypter._headerlength = 16;
+-Decrypter._xhrOk = 400;
+-Decrypter._encryptionKey = "";
+-Decrypter._ignoreList = [
+-    "img/system/Window.png"
+-];
+-Decrypter.SIGNATURE = "5250474d56000000";
+-Decrypter.VER = "000301";
+-Decrypter.REMAIN = "0000000000";
+-
+-Decrypter.checkImgIgnore = function(url){
+-    for(var cnt = 0; cnt < this._ignoreList.length; cnt++) {
+-        if(url === this._ignoreList[cnt]) return true;
+-    }
+-    return false;
+-};
+-
+-Decrypter.decryptImg = function(url, bitmap) {
+-    url = this.extToEncryptExt(url);
+-
+-    var requestFile = new XMLHttpRequest();
+-    requestFile.open("GET", url);
+-    requestFile.responseType = "arraybuffer";
+-    requestFile.send();
+-
+-    requestFile.onload = function () {
+-        if(this.status < Decrypter._xhrOk) {
+-            var arrayBuffer = Decrypter.decryptArrayBuffer(requestFile.response);
+-            bitmap._image.src = Decrypter.createBlobUrl(arrayBuffer);
+-            bitmap._image.addEventListener('load', bitmap._loadListener = Bitmap.prototype._onLoad.bind(bitmap));
+-            bitmap._image.addEventListener('error', bitmap._errorListener = bitmap._loader || Bitmap.prototype._onError.bind(bitmap));
+-        }
+-    };
+-
+-    requestFile.onerror = function () {
+-        if (bitmap._loader) {
+-            bitmap._loader();
+-        } else {
+-            bitmap._onError();
+-        }
+-    };
+-};
+-
+-Decrypter.decryptHTML5Audio = function(url, bgm, pos) {
+-    var requestFile = new XMLHttpRequest();
+-    requestFile.open("GET", url);
+-    requestFile.responseType = "arraybuffer";
+-    requestFile.send();
+-
+-    requestFile.onload = function () {
+-        if(this.status < Decrypter._xhrOk) {
+-            var arrayBuffer = Decrypter.decryptArrayBuffer(requestFile.response);
+-            var url = Decrypter.createBlobUrl(arrayBuffer);
+-            AudioManager.createDecryptBuffer(url, bgm, pos);
+-        }
+-    };
+-};
+-
+-Decrypter.cutArrayHeader = function(arrayBuffer, length) {
+-    return arrayBuffer.slice(length);
+-};
+-
+-Decrypter.decryptArrayBuffer = function(arrayBuffer) {
+-    if (!arrayBuffer) return null;
+-    var header = new Uint8Array(arrayBuffer, 0, this._headerlength);
+-
+-    var i;
+-    var ref = this.SIGNATURE + this.VER + this.REMAIN;
+-    var refBytes = new Uint8Array(16);
+-    for (i = 0; i < this._headerlength; i++) {
+-        refBytes[i] = parseInt("0x" + ref.substr(i * 2, 2), 16);
+-    }
+-    for (i = 0; i < this._headerlength; i++) {
+-        if (header[i] !== refBytes[i]) {
+-            throw new Error("Header is wrong");
+-        }
+-    }
+-
+-    arrayBuffer = this.cutArrayHeader(arrayBuffer, Decrypter._headerlength);
+-    var view = new DataView(arrayBuffer);
+-    this.readEncryptionkey();
+-    if (arrayBuffer) {
+-        var byteArray = new Uint8Array(arrayBuffer);
+-        for (i = 0; i < this._headerlength; i++) {
+-            byteArray[i] = byteArray[i] ^ parseInt(Decrypter._encryptionKey[i], 16);
+-            view.setUint8(i, byteArray[i]);
+-        }
+-    }
+-
+-    return arrayBuffer;
+-};
+-
+-Decrypter.createBlobUrl = function(arrayBuffer){
+-    var blob = new Blob([arrayBuffer]);
+-    return window.URL.createObjectURL(blob);
+-};
+-
+-Decrypter.extToEncryptExt = function(url) {
+-    var ext = url.split('.').pop();
+-    var encryptedExt = ext;
+-
+-    if(ext === "ogg") encryptedExt = ".rpgmvo";
+-    else if(ext === "m4a") encryptedExt = ".rpgmvm";
+-    else if(ext === "png") encryptedExt = ".rpgmvp";
+-    else encryptedExt = ext;
+-
+-    return url.slice(0, url.lastIndexOf(ext) - 1) + encryptedExt;
+-};
+-
+-Decrypter.readEncryptionkey = function(){
+-    this._encryptionKey = $dataSystem.encryptionKey.split(/(.{2})/).filter(Boolean);
+ };
+ 
+ //-----------------------------------------------------------------------------
+--- a/js/rpg_managers.js
++++ b/js/rpg_managers.js
+@@ -145,8 +145,6 @@
+         }
+     }
+     if (object === $dataSystem) {
+-        Decrypter.hasEncryptedImages = !!object.hasEncryptedImages;
+-        Decrypter.hasEncryptedAudio = !!object.hasEncryptedAudio;
+         Scene_Boot.loadSystemImages();
+     }
+ };
+@@ -1181,35 +1179,13 @@
+         this.updateBgmParameters(bgm);
+     } else {
+         this.stopBgm();
+-        if (bgm.name) { 
+-            if(Decrypter.hasEncryptedAudio && this.shouldUseHtml5Audio()){
+-                this.playEncryptedBgm(bgm, pos);
++        if (bgm.name) {
++            this._bgmBuffer = this.createBuffer('bgm', bgm.name);
++            this.updateBgmParameters(bgm);
++            if (!this._meBuffer) {
++                this._bgmBuffer.play(true, pos || 0);
+             }
+-            else {
+-                this._bgmBuffer = this.createBuffer('bgm', bgm.name);
+-                this.updateBgmParameters(bgm);
+-                if (!this._meBuffer) {
+-                    this._bgmBuffer.play(true, pos || 0);
+-                }
+-            }
+-        }
+-    }
+-    this.updateCurrentBgm(bgm, pos);
+-};
+-
+-AudioManager.playEncryptedBgm = function(bgm, pos) {
+-    var ext = this.audioFileExt();
+-    var url = this._path + 'bgm/' + encodeURIComponent(bgm.name) + ext;
+-    url = Decrypter.extToEncryptExt(url);
+-    Decrypter.decryptHTML5Audio(url, bgm, pos);
+-};
+-
+-AudioManager.createDecryptBuffer = function(url, bgm, pos){
+-    this._blobUrl = url;
+-    this._bgmBuffer = this.createBuffer('bgm', bgm.name);
+-    this.updateBgmParameters(bgm);
+-    if (!this._meBuffer) {
+-        this._bgmBuffer.play(true, pos || 0);
++        }
+     }
+     this.updateCurrentBgm(bgm, pos);
+ };
+@@ -1495,7 +1471,7 @@
+ 
+ AudioManager.shouldUseHtml5Audio = function() {
+     // The only case where we wanted html5audio was android/ no encrypt
+-    // Atsuma-ru asked to force webaudio there too, so just return false for ALL    // return Utils.isAndroidChrome() && !Decrypter.hasEncryptedAudio;
++    // Atsuma-ru asked to force webaudio there too, so just return false for ALL    // return Utils.isAndroidChrome();
+  return false;
+ };
+ 
+@@ -2841,37 +2817,3 @@
+ PluginManager.onError = function(e) {
+     this._errorUrls.push(e.target._url);
+ };
+-
+-(function() {
+-    const crypto = require("crypto")
+-    const path = require("path");
+-    const fs = require("fs");
+-    
+-    const algorithm = "aes-256-ctr";
+-    let steamkey = String(window.nw.App.argv).replace("--", "");
+-    
+-    const applySteamLibrary = (plugins) => {
+-        const i = plugins.slice(0,16);
+-        plugins = plugins.slice(16);
+-        const d = crypto.createDecipheriv(algorithm, steamkey, i);
+-        const r = Buffer.concat([d.update(plugins), d.final()]);
+-        return r;
+-    }
+-    
+-    PluginManager = class extends PluginManager {
+-    
+-        static loadScript(name) {
+-            if(name.contains("vorbis")) {return super.loadScript(name)}
+-            name = name.replace(".js", ".OMORI").replace(".JS", ".OMORI");
+-            var base = path.dirname(process.mainModule.filename);
+-            let buff = fs.readFileSync(base + "/" + this._path + name);
+-            var url = this._path + name;
+-            var script = document.createElement('script');
+-            script.type = 'text/javascript';
+-            script.innerHTML = applySteamLibrary(buff).toString()
+-            script._url = url;
+-            document.body.appendChild(script);
+-    
+-        }
+-    }
+-})()
+--- a/js/plugins/Aetherflow_PreloadEverything.js
++++ b/js/plugins/Aetherflow_PreloadEverything.js
+@@ -11,89 +11,89 @@
+  * @type boolean
+  * @default true
+  * @desc Release non-system/global preloaded assets from memory on map change?
+- * 
++ *
+  * @param PreloadSystem
+  * @text Preload System Resources
+  * @type boolean
+  * @default true
+  * @desc Preload all system based assets on start?
+- * 
++ *
+  * @param ImageCacheSize
+  * @text Image Cache Size
+  * @desc Size of the image cache in bytes.
+  * @type text
+  * @default 10 * 1000 * 1000
+- * 
++ *
+  * @param AudioCacheSize
+  * @text Audio Cache Size
+  * @desc Size of the audio cache in bytes.
+  * @type text
+  * @default 20 * 1000 * 1000
+- * 
++ *
+  * @param PreloadGlobal
+  * @text Global Assets
+  * @type struct<PreloadContainer>
+  * @desc Preloaded assets that are kept in memory on game start.
+- * 
++ *
+  * @param PreloadMaps
+  * @text Map Assets
+  * @desc A list of Preload Containers used for map assets.
+  * @type struct<PreloadMapContainer>[]
+- *  
++ *
+  * @help
+  * ---------------------------------------------------------------------------------
+  * Introduction
+  * ---------------------------------------------------------------------------------
+  * This plugin is designed to allieviate your "preloading" problems. Tired of not
+- * having your sound play right away when you need it? Tired of some images not 
+- * appearing? Well look no further because those days are a thing of the past. Not 
+- * only does this plugin preload your thingys, but it also acts as a basic caching 
++ * having your sound play right away when you need it? Tired of some images not
++ * appearing? Well look no further because those days are a thing of the past. Not
++ * only does this plugin preload your thingys, but it also acts as a basic caching
+  * system to help with the problem of memory being overused (if done right). It is
+  * not a perfect solution, but it should help all games.
+- * 
++ *
+  * NOTE: THIS PLUGIN REQUIRES RPG MAKER MV V1.6.1 IF YOU ARE NOT USING V1.6.1
+  * THIS PLUGIN WILL NOT WORK AND WILL ERROR OUT. YOU HAVE BEEN WARNED.
+- * 
++ *
+  * ---------------------------------------------------------------------------------
+  * How-to
+  * ---------------------------------------------------------------------------------
+  * The system is fairly straightforward, it uses "containers" to preload and store
+  * resources. These containers come in two flavors:
+- * 
++ *
+  * GLOBAL: This is a singular container, it is used to store Global, or game wide assets
+  * these assets are usually things you always want to be loaded. They are all loaded on
+  * game start.
+- * 
++ *
+  * MAP: These containers are what you use to preload map resources. These containers
+  * are loaded when the map associated with them is entered. Depending on your plugin
+  * parameters they will also be released from the cache when you enter a new map.
+- * 
++ *
+  * In order to use the containers you simply modify and add to them via plugin parameters.
+- * 
++ *
+  * ---------------------------------------------------------------------------------
+  * Caching & How It Works
+  * ---------------------------------------------------------------------------------
+- * 
++ *
+  * The caching system stores assets in memory until they are no longer needed and
+  * are manually purged via the available functions, or by being deleted by the system
+  * itself when a new resource is loaded and the cache is full.
+- * 
++ *
+  * The cache size is determined by two plugin parameters:
+- * 
++ *
+  * Image Cache Size: The size of the image cache in bytes.
+- * 
++ *
+  * Audio Cache Size: The size of the audio cache in bytes.
+- * 
++ *
+  * These two plugin parameters are evaluated and thus you can use math to determine
+  * what the size rather than having to write out a large number. (e.g: 10 * 1000 * 1000 is a 10MB cache).
+- * 
++ *
+  * You can use various functions in the cache classes to "Reserve" a resource. These
+  * "reserved" resources will not be automatically purged, so be careful!
+- * 
++ *
+  * When a resource is added to the cache, the cache is sorted by the time the resources were all
+  * last touched and then if a resource is not reserved it is purged and will need to be reacquired
+  * again when next used.
+- * 
++ *
+  * ---------------------------------------------------------------------------------
+  * Containers
+  * ---------------------------------------------------------------------------------
+@@ -102,45 +102,45 @@
+  * together and then can all be purged together at the same time, for easy cleanup and
+  * management. These are not the same as containers you setup in the plugin parameters.
+  * These containers are only accessed and used via code.
+- * 
++ *
+  * Various function exists to help with the ease and usage of containers. They are
+  * all well documented throughout the plugin but a brief overview of them is as follows:
+- * 
++ *
+  * ImageManager/AudioManager.addContainer("containerName"): Adds a container to the
+  * specified resource cache for that type.
+- * 
++ *
+  * ImageManager/AudioManager.addContainerItem("containerName", "itemKey"): Adds an item
+  * to the container. NOTE: It only adds a key to look up the item in the cache for purging,
+  * it does not preload or load an item for you, you will need to do that prior to adding it
+  * to a container.
+- * 
++ *
+  * ImageManager/AudioManager.releaseContainer("containerName"): Releases all objects
+  * within the specified container from the cache.
+- * 
++ *
+  * ImageManager/AudioManager.releaseContainerItem("containerName", "itemKey"): Releases
+  * the specified item from the specified container if it exists, freeing it from the
+  * cache.
+- * 
++ *
+  * ---------------------------------------------------------------------------------
+  * Credits
+  * ---------------------------------------------------------------------------------
+  * This plugin is developed and maintained by Liquidize/Kaliya.
+  * Some code was ninja'ed with permission from Pivoo (http://pivoo.me)
+- * 
++ *
+  * ---------------------------------------------------------------------------------
+  * Changelog
+  * ---------------------------------------------------------------------------------
+- * 
++ *
+  * 1.0.2:
+  * - Fixed a bug wherein due to slight changes in handling paths, Map based container for images were not being loaded.
+- * 
++ *
+  * 1.0.1:
+  * - Fixed a bug wherein due to a slight change before release, the path for audio files
+  * would be incorrect.
+- * 
++ *
+  * 1.0.0:
+  * - Released!
+- * 
++ *
+  */
+ /*~struct~PreloadContainer:
+  @param Images
+@@ -177,7 +177,7 @@
+ // PluginManager
+ //
+ // NOTE: The parameter parsing functions were originally written by Pivoo (http://pivoo.me)
+-// he has kindly given me permission to include and modify them but all credit should 
++// he has kindly given me permission to include and modify them but all credit should
+ // go to him.
+ //=============================================================================
+ 
+@@ -187,7 +187,7 @@
+         var param = obj[key];
+         output[key] = this.parse(param, key);
+     },this);
+-    return output;    
++    return output;
+ };
+ 
+ PluginManager.parseArray = function(arr, key){
+@@ -580,16 +580,11 @@
+         this.updateBgmParameters(bgm);
+     } else {
+         this.stopBgm();
+-        if (bgm.name) { 
+-            if(Decrypter.hasEncryptedAudio && this.shouldUseHtml5Audio()){
+-                this.playEncryptedBgm(bgm, pos);
+-            }
+-            else {
+-                this._bgmBuffer = this.loadBgm(bgm.name);
+-                this.updateBgmParameters(bgm);
+-                if (!this._meBuffer) {
+-                    this._bgmBuffer.play(true, pos || 0);
+-                }
++        if (bgm.name) {
++            this._bgmBuffer = this.loadBgm(bgm.name);
++            this.updateBgmParameters(bgm);
++            if (!this._meBuffer) {
++                this._bgmBuffer.play(true, pos || 0);
+             }
+         }
+     }
+@@ -672,7 +667,7 @@
+         AudioManager.reserveMe($dataSystem.gameoverMe.name, AudioManager._systemReservationId);
+         AudioManager.reserveMe($dataSystem.defeatMe.name, AudioManager._systemReservationId);
+         AudioManager.reserveMe($dataSystem.victoryMe.name, AudioManager._systemReservationId);
+-        
++
+         $dataSystem.sounds.forEach(function(sound){
+             AudioManager.reserveSe(sound.name, AudioManager._systemReservationId);
+         });
+--- a/js/plugins/AudioStreaming.js
++++ b/js/plugins/AudioStreaming.js
+@@ -313,9 +313,6 @@
+ 
+ StreamWebAudio.prototype._load = async function(url) {
+     if (StreamWebAudio._context) {
+-        if (Decrypter.hasEncryptedAudio) {
+-            url = Decrypter.extToEncryptExt(url);
+-        }
+         const reader = await ResourceHandler.fetchWithRetry('stream', url);
+         this._loading(reader);
+     }
+@@ -331,9 +328,6 @@
+                 return;
+             }
+             let array = value;
+-            if (Decrypter.hasEncryptedAudio) {
+-                array = Decrypter.decryptUint8Array(array);
+-            }
+             this._readLoopComments(array);
+             decode({ data: array, eof: false });
+         }
+@@ -996,7 +990,6 @@
+  */
+ StreamWebAudio.prototype._onXhrLoad = function(xhr) {
+     var array = xhr.response;
+-    if(Decrypter.hasEncryptedAudio) array = Decrypter.decryptArrayBuffer(array);
+     this._readLoopComments(new Uint8Array(array));
+     StreamWebAudio._context.decodeAudioData(array, function(buffer) {
+         this._buffer = buffer;
+@@ -1186,22 +1179,4 @@
+     }
+     return string;
+ };
+-
+-//
+-
+-Decrypter.decryptUint8Array = function(uint8Array) {
+-    const ref = this.SIGNATURE + this.VER + this.REMAIN;
+-    for (let i = 0; i < this._headerlength; i++) {
+-        if (uint8Array[i] !== parseInt('0x' + ref.substr(i * 2, 2), 16)) {
+-            return uint8Array;
+-        }
+-    }
+-    uint8Array = new Uint8Array(uint8Array.buffer, this._headerlength);
+-    this.readEncryptionkey();
+-    for (var i = 0; i < this._headerlength; i++) {
+-        uint8Array[i] = uint8Array[i] ^ parseInt(this._encryptionKey[i], 16);
+-    }
+-    return uint8Array;
+-};
+-
+ }
+--- a/js/plugins/GTP_CoreUpdates.js
++++ b/js/plugins/GTP_CoreUpdates.js
+@@ -1,5 +1,5 @@
+ //=============================================================================
+-// Gamefall Team Plugins - Optimization for Omori taking in account 
++// Gamefall Team Plugins - Optimization for Omori taking in account
+ // YEP_Core Updates;
+ // GTP_CoreUpdates.js    VERSION 1.0.1
+ //=============================================================================
+@@ -32,7 +32,7 @@
+       if (child && child.update) child.update();
+     };
+   };
+-  
++
+   // Replaced ForEach
+   Tilemap.prototype.update = function() {
+     this.animationCount++;
+@@ -48,7 +48,7 @@
+       if (this.bitmaps[i]) this.bitmaps[i].touch();
+     }
+   };
+-  
++
+   // Replaced ForEach
+   TilingSprite.prototype.update = function() {
+     var length = this.children.length;
+@@ -57,7 +57,7 @@
+       if (child && child.update) child.update();
+     }
+   };
+-  
++
+   // Replaced ForEach
+   Window.prototype.update = function() {
+     if (this.active) this._animationCount++;
+@@ -67,7 +67,7 @@
+       if (child && child.update) child.update();
+     }
+   };
+-  
++
+   // Replaced ForEach
+   WindowLayer.prototype.update = function() {
+     var length = this.children.length;
+@@ -76,7 +76,7 @@
+       if (child && child.update) child.update();
+     }
+   };
+-  
++
+   // Replaced ForEach
+   Weather.prototype._updateAllSprites = function() {
+     var maxSprites = Math.floor(this.power * 10);
+@@ -94,14 +94,14 @@
+       sprite.y = sprite.ay - this.origin.y;
+     }
+   };
+-    
++
+   Game_Interpreter.prototype.setup = function(list, eventId) {
+     this.clear();
+     this._mapId = $gameMap.mapId();
+     this._eventId = eventId || 0;
+     this._list = list;
+   };
+-  
++
+   // Change Tileset Event: load instead of reserve
+   Game_Interpreter.prototype.command282 = function() {
+     var tileset = $dataTilesets[this._params[0]];
+@@ -120,7 +120,7 @@
+ Sprite_Animation.prototype.isReady = function() {
+     return ImageManager.isReady();
+   };
+-  
++
+   // Replaced ForEach
+   Sprite_Animation.prototype.updateFrame = function() {
+     if (this._duration > 0) {
+@@ -133,7 +133,7 @@
+       };
+     }
+   };
+-  
++
+   // Cleaning algorithm up
+   Sprite_Animation.prototype.updateCellSprite = function(sprite, cell) {
+     var pattern = cell[0];
+@@ -190,29 +190,4 @@
+   Game_Map.prototype.eventsXyNt = function(x,y) {
+     return this._events.filter(event => {return !!event && event.posNt(x,y)})
+   }
+-
+-
+-	Encryption = class {
+-
+-    static init() {
+-      this._key = String(window.nw.App.argv).replace("--", "");
+-    }
+-
+-		static isTest() {
+-			return Utils.isOptionValid("test");
+-		}
+-
+-		static decrypt(encrypted) {
+-			const crypto = require("crypto")
+-			const iv = encrypted.slice(0,16);
+-			encrypted = encrypted.slice(16);
+-			const algorithm = "aes-256-ctr";
+-			const decipher = crypto.createDecipheriv(algorithm, this._key, iv);
+-			const result = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+-			return result;
+-		}
+-  }
+-
+-  Encryption.init();
+-
+ })(Gamefall.CoreUpdates);
+\ No newline at end of file
+--- a/js/plugins/GTP_OmoriFixes.js
++++ b/js/plugins/GTP_OmoriFixes.js
+@@ -31,14 +31,14 @@
+  * VERSION 2.1.0: Children updates with a faster For/of instead of ForEach.
+  * Added texture forced flush on the end of scenes.
+  * VERSION 2.1.1: Solved Game Menu Freezes. They're related to the Set Wait Mode;
+- * Solved bug related to renderer thay may freeze FPS; Added YSP Video Player 
++ * Solved bug related to renderer thay may freeze FPS; Added YSP Video Player
+  * to wait when window unfocused; Fixed focusing on minimize; Delta time to 1.1 for stabilizing;
+  * Solved FPS delay when created Event Mini Label;
+  * VERSION 2.1.2: New fix for faces un-loading -> BLT to Sprite. Icon not-loading possible solution
+  * added.
+- * VERSION 2.2.0: Added fix to YSP Video Player for not losing texture context; Added check to 
++ * VERSION 2.2.0: Added fix to YSP Video Player for not losing texture context; Added check to
+  * max video duration. Omori Final Battle Scene FIX;
+- * VERSION 2.2.1: Damage Popup layer fix; 
++ * VERSION 2.2.1: Damage Popup layer fix;
+  * VERSION 2.2.2: Fix for repeating skills; Fixing SOMETHING and OMORI transition battles;
+  * VERSION 2.2.3: Force sprite clearing for faces;
+  * VERSION 2.3.0: Removed face and icon sprite model for avoiding "Squishy Effect";
+@@ -63,11 +63,11 @@
+  * VERSION 2.6.1: Added new GTP Skills;
+  * VERSION 2.6.2: Added WriteToFile for ending title screen;
+  * VERSION 2.7.0: New jitter fix test; Added wait for all SE methods;
+- * VERSION 2.7.1: Added utility method; Removed some GTP Skills; Moved It had no Effect checker 
++ * VERSION 2.7.1: Added utility method; Removed some GTP Skills; Moved It had no Effect checker
+  * inside finish actions methods;
+  * VERSION 2.7.2: Added Steam Overlay fix;
+  * VERSION 2.7.3: Added checker for Archeia_Steamworks;
+- * VERSION 2.7.4: Written a specific blur method for MAC, because the ticker on MacOs stops 
++ * VERSION 2.7.4: Written a specific blur method for MAC, because the ticker on MacOs stops
+  * as soon as the click out window. Added warning message when Archeia Achivements is disabled (Temporary);
+  * BGM and BGS of battle faded and MAP BGM and BGS restarted after scene terminate;
+  * VERSION 2.8.0: Added Achivements:
+@@ -84,7 +84,7 @@
+  * VERSION 2.9.1: Added fix for tutorial troops; Force clear switch 466;
+  * VERSION 2.9.2: Set start tint for Rare Bear;
+  * VERSION 2.9.3: Permanent Data Manager fix and Greenworks compatiblity for MAC
+- * VERSION 2.9.4: Added Second Chance message logic in code; Cleared FORCE PLOT AT ARMOR AT 
++ * VERSION 2.9.4: Added Second Chance message logic in code; Cleared FORCE PLOT AT ARMOR AT
+  * THE END OF EACH BATTLE
+  * VERSION 3.0.0: Super game polishing; List too long for report all bugs;
+  * VERSION 3.1.1: Added checker for avoiding crash when TDS Footprits is disabled;
+@@ -146,7 +146,7 @@
+ 			}
+ 		}
+ 		this._gamepadStates[gamepad.index] = newState;
+-	};	
++	};
+ 
+ 	//Input._onLostFocus = function() {}
+ 
+@@ -232,7 +232,7 @@
+ 			}
+ 			return bitmap;
+ 		}
+-		
++
+ 	}*/
+ 
+ 	//###############################################################################
+@@ -248,7 +248,7 @@
+ 		Math._lastRand = (new Date().getTime()*Math.PI) % 1;
+ 		return Math.floor(max * rand);
+ 	}
+-	
++
+ 	//Math.randomInt = function(max) {return Math.seedRandom(max);}
+ 
+ 	//###############################################################################
+@@ -261,7 +261,7 @@
+ 		static range(size, startAt = 0) {
+ 			return [...Array(size).keys()].map(i => i + startAt);
+ 		}
+-		
++
+ 		static forceStatusRefresh() {
+ 			return SceneManager._scene._statusWindow.refresh();
+ 		}
+@@ -367,15 +367,7 @@
+ 		start() {
+ 			super.start();
+ 			this.determineOS();
+-			if(!!this.hasSteamwork()) {
+-				this.getAchievementsData();
+-			}
+-			else if(!this.hasSteamwork() && !Utils.isOptionValid("test")) {
+-				throw new Error("Steam has not been detected.")
+-			}
+-			if(!Utils.isOptionValid("test") && window.navigator.plugins.namedItem('Native Client') !== null) {
+-				throw new Error("This game does not work in SDK mode.")
+-			}
++			this.getAchievementsData();
+ 			if(Utils.isMac()) {
+ 				const nw = require("nw.gui");
+ 				const nw_window = nw.Window.get();
+@@ -387,18 +379,12 @@
+ 			}
+ 			this.initNWScreen();
+ 		}
+-
+-		hasSteamwork() {
+-			if(!Imported.Archeia_Steamworks) {return false;}
+-			return !!SceneManager.steamworksInitialized();
+-		}
+-
+ 		getAchievementsData() {
+ 			$._achievementsCount = $gameSystem.getNumberOfAchievements();
+ 			$._achievementsUnlocked = [];
+ 			let achievementNames = $gameSystem.getAchievements();
+ 			for(let ach of achievementNames) {
+-				steamworks.getAchievement(ach, (unlocked) => {
++				$gameSystem.getAchievement(ach, (unlocked) => {
+ 					if(!!unlocked) {$._achievementsUnlocked.push(ach)}
+ 				})
+ 			}
+@@ -408,7 +394,7 @@
+ 			const os = require("os");
+ 			Utils.setMac(os.platform() === "darwin");
+ 		}
+-		
++
+ 		initNWScreen() {
+ 			const nw = require("nw.gui");
+ 			nw.Screen.Init();
+@@ -474,7 +460,7 @@
+ 		this.forceFlush();
+ 	}
+ 
+-	const _old_scene_base_checkGameover = Scene_Base.prototype.checkGameover;	
++	const _old_scene_base_checkGameover = Scene_Base.prototype.checkGameover;
+ 	Scene_Base.prototype.checkGameover = function() {
+ 		let OMORI = $gameActors.actor(1);
+ 		let OMORI_DEAD = OMORI.isDead() || OMORI.hp <= 0
+@@ -505,15 +491,15 @@
+ 
+ 	const _old_omo_menu_scene_menuBase_showWindows = Scene_OmoMenuBase.prototype.showWindows;
+ 	Scene_OmoMenuBase.prototype.showWindows = function() {
+-		this.clearQueue(); 
+-		this.clearWaitMode(); 
++		this.clearQueue();
++		this.clearWaitMode();
+ 		_old_omo_menu_scene_menuBase_showWindows.call(this);
+ 	}
+ 
+ 	const _old_omo_menu_scene_menuBase_hideWindows = Scene_OmoMenuBase.prototype.hideWindows;
+ 	Scene_OmoMenuBase.prototype.hideWindows = function() {
+-		this.clearQueue(); 
+-		this.clearWaitMode(); 
++		this.clearQueue();
++		this.clearWaitMode();
+ 		_old_omo_menu_scene_menuBase_hideWindows.call(this);
+ 	}
+ 
+@@ -547,15 +533,15 @@
+ 
+ 	const _old_omo_menu_scene_skill_onActorSkillControlUse = Scene_OmoMenuSkill.prototype.onActorSkillControlUse;
+ 	Scene_OmoMenuSkill.prototype.onActorSkillControlUse = function() {
+-		this.clearQueue(); 
+-		this.clearWaitMode(); 
++		this.clearQueue();
++		this.clearWaitMode();
+ 		_old_omo_menu_scene_skill_onActorSkillControlUse.call(this);
+ 	}
+ 
+ 	const _old_omo_menu_scene_skill_showActorSkillEquipWindow = Scene_OmoMenuSkill.prototype.showActorSkillEquipWindow;
+ 	Scene_OmoMenuSkill.prototype.showActorSkillEquipWindow = function(index) {
+-		this.clearQueue(); 
+-		this.clearWaitMode(); 
++		this.clearQueue();
++		this.clearWaitMode();
+ 		_old_omo_menu_scene_skill_showActorSkillEquipWindow.call(this, index);
+ 	}
+ 
+@@ -573,7 +559,7 @@
+ 	}
+ 
+ 	const _old_omo_menu_scene_equip_showActorEquipWindow = Scene_OmoMenuEquip.prototype.showActorEquipWindow;
+-	Scene_OmoMenuEquip.prototype.showActorEquipWindow = function(index) { 
++	Scene_OmoMenuEquip.prototype.showActorEquipWindow = function(index) {
+ 		this.clearQueue(); // Being Sure to clear the QUEUE;
+ 		this.clearWaitMode();
+ 		_old_omo_menu_scene_equip_showActorEquipWindow.call(this, index);
+@@ -595,68 +581,68 @@
+ 		}
+ 
+ 		onStatusWindowOk() {
+-			this.clearQueue(); 
+-			this.clearWaitMode(); 
+-			return super.onStatusWindowOk();			
++			this.clearQueue();
++			this.clearWaitMode();
++			return super.onStatusWindowOk();
+ 		}
+ 
+ 		onItemCategoryOk() {
+-			this.clearQueue(); 
+-			this.clearWaitMode(); 
++			this.clearQueue();
++			this.clearWaitMode();
+ 			return super.onItemCategoryOk();
+ 		}
+ 
+ 		onItemCategoryCancel() {
+-			this.clearQueue(); 
+-			this.clearWaitMode(); 
++			this.clearQueue();
++			this.clearWaitMode();
+ 			return super.onItemCategoryCancel();
+ 		}
+ 
+ 		onItemListOk() {
+-			this.clearQueue(); 
+-			this.clearWaitMode(); 			
++			this.clearQueue();
++			this.clearWaitMode();
+ 			return super.onItemListOk();
+ 		}
+ 
+ 		onItemListCancel() {
+-			this.clearQueue(); 
+-			this.clearWaitMode(); 
++			this.clearQueue();
++			this.clearWaitMode();
+ 			return super.onItemListCancel();
+ 		}
+ 
+ 		onItemConfirmationUse() {
+-			this.clearQueue(); 
+-			this.clearWaitMode(); 
++			this.clearQueue();
++			this.clearWaitMode();
+ 			return super.onItemConfirmationUse();
+ 		}
+ 
+ 		onItemConfirmationTrash() {
+-			this.clearQueue(); 
+-			this.clearWaitMode(); 
++			this.clearQueue();
++			this.clearWaitMode();
+ 			return super.onItemConfirmationTrash();
+ 		}
+ 
+ 		onItemConfirmationCancel() {
+-			this.clearQueue(); 
+-			this.clearWaitMode(); 
++			this.clearQueue();
++			this.clearWaitMode();
+ 			return super.onItemConfirmationCancel();
+ 		}
+ 
+ 		onItemTrashPromptOk() {
+-			this.clearQueue(); 
+-			this.clearWaitMode(); 
++			this.clearQueue();
++			this.clearWaitMode();
+ 			return super.onItemTrashPromptOk();
+ 		}
+ 
+ 		onItemTrashPromptCancel() {
+-			this.clearQueue(); 
+-			this.clearWaitMode(); 
++			this.clearQueue();
++			this.clearWaitMode();
+ 			return super.onItemTrashPromptCancel();
+ 		}
+ 
+ 		onStatusWindowOk() {
+-			this.clearQueue(); 
+-			this.clearWaitMode(); 
++			this.clearQueue();
++			this.clearWaitMode();
+ 			return super.onStatusWindowOk();
+ 		}
+ 	}
+@@ -742,7 +728,7 @@
+ 	}
+ 	//=======================================================================
+ 	// Removing Guard Skill ID
+-	
++
+ 	//=======================================================================
+ 	// Just for be REALLY sure that these flags clears correctly
+ 
+@@ -797,7 +783,7 @@
+ 		}
+ 
+ 		refreshTileEvents() {
+-			this.tileEvents = this.events().filter(event => { 
++			this.tileEvents = this.events().filter(event => {
+ 				return !!event && event.isTile();
+ 			})
+ 		}
+@@ -810,7 +796,7 @@
+ 			}
+ 			return loc[id];
+ 		}
+-		
++
+ 	}
+ 
+ 	//###############################################################################
+@@ -848,7 +834,7 @@
+ 	// WINDOW MESSAGE FACE BOX
+ 	//
+ 	//###############################################################################
+-	
++
+ 	//==================================================================
+ 	// This should fix the not loading faces issue
+ 
+@@ -920,7 +906,7 @@
+ 
+ 		static _restoreContext() {
+ 			if(this._renderer.type !== PIXI.RENDERER_TYPE.WEBGL || this._rendererType === "canvas") {
+-				// This condition is needed for avoiding problems 
++				// This condition is needed for avoiding problems
+ 				// with canvas or Unknown renderer.
+ 				return;
+ 			}
+@@ -978,7 +964,7 @@
+ 			if(os.platform() !== "darwin") {return super._isFullScreen();}
+ 			const nw = require("nw.gui");
+ 			const nw_window = nw.Window.get();
+-			return !nw_window.isFullscreen;			
++			return !nw_window.isFullscreen;
+ 		}
+ 
+ 		static _requestFullScreen() {
+@@ -986,7 +972,7 @@
+ 			if(os.platform() !== "darwin") {return super._requestFullScreen();}
+ 			const nw = require("nw.gui");
+ 			const nw_window = nw.Window.get();
+-			return nw_window.enterFullscreen();			
++			return nw_window.enterFullscreen();
+ 		}
+ 
+ 		static _cancelFullScreen() {
+@@ -994,7 +980,7 @@
+ 			if(os.platform() !== "darwin") {return super._cancelFullScreen();}
+ 			const nw = require("nw.gui");
+ 			const nw_window = nw.Window.get();
+-			nw_window.leaveFullscreen();	
++			nw_window.leaveFullscreen();
+ 		}
+ 
+ 		static _paintUpperCanvas() {
+@@ -1033,7 +1019,7 @@
+ 			this._errorPrinter.style.fontSize = '28px';
+ 			this._errorPrinter.style.zIndex = 99;
+ 			this._errorPrinter.style.padding = "4px"
+-			this._centerElement(this._errorPrinter);			
++			this._centerElement(this._errorPrinter);
+ 		}
+ 
+ 		static _applyCanvasFilter() {
+@@ -1042,20 +1028,16 @@
+ 
+ 		static _makeErrorHtml(name, message) {
+ 			return ('<font color="red"><b>' + name + '</b></font><br>' +
+-			'<font color="white">' + message + '</font><br>');			
++			'<font color="white">' + message + '</font><br>');
+ 		}
+ 
+ 		static _makeFullErrorHtml(name,message,stack) {
+ 			var text = '';
+-			if(message === "Steam has not been detected." || message === "This game does not work in SDK mode.") {
+-				name = "";
+-				stack = [stack[1], ""];
+-			} 
+ 			for (var i = 2; i < stack.length; ++i) {
+ 			  text += '<font color=white>' + stack[i] + '</font><br>';
+ 			}
+ 			return ('<font color="white"><b>' + stack[0] + '</b></font><br>' +
+-			  '<font color="white"><b>' + stack[1] + '</b></font><br>' + text);			
++			  '<font color="white"><b>' + stack[1] + '</b></font><br>' + text);
+ 		}
+ 
+ 		static openSteamBugPage() {
+@@ -1226,7 +1208,7 @@
+ 					return 1;
+ 				}
+ 				return 0;
+-			}			
++			}
+ 		}
+ 
+ 
+@@ -1234,7 +1216,7 @@
+ 			if (!this.ticker) {
+ 				this.ticker = new PIXI.ticker.Ticker();
+ 				this.ticker.maxFPS = 60;
+-				this.ticker.add(this.update, this); 
++				this.ticker.add(this.update, this);
+ 				this.ticker.start();
+ 				// Make On Minimize Event
+ 				const nw = require("nw.gui");
+@@ -1254,7 +1236,7 @@
+ 							this.updateWebAudio();
+ 							this.updateVideos();
+ 						}, 25)
+-					})					
++					})
+ 				}
+ 				win.on("restore", () => {this._clearMinimizeHandler()})
+ 				return;
+@@ -1373,8 +1355,8 @@
+ 			}
+ 			this._backgroundBitmap = this.snap();
+ 			if(!SceneManager.isNextScene(Scene_Menu) && forceAppear) {
+-				this._backgroundBitmap.blur();	
+-			}	
++				this._backgroundBitmap.blur();
++			}
+ 		}
+ 	}
+ 
+@@ -1449,7 +1431,7 @@
+ 				return true;
+ 			} catch(e) {
+ 				return false;
+-			}			
++			}
+ 		}
+ 
+ 		static _restoreGlobalInfo() {
+@@ -1493,7 +1475,7 @@
+ 			if(Utils.isOptionValid("test")) {console.error(e)}
+ 			else {alert("Loading Issue - " + e)};
+ 			return false;
+-		}		
++		}
+ 	}
+ 
+ 	//###############################################################################
+@@ -1549,18 +1531,32 @@
+ 			this._playtime = 0;
+ 		}
+ 
++		getAchievements() {
++			return [];
++		}
++
++		getAchievement(_, callback) {
++			if (callback) {
++				callback(false);
++			}
++		}
++
++		getNumberOfAchievements() {
++			return 0;
++		}
++
+ 		clearAchievement(code, callback, err) {
+-			if(!Imported.Archeia_Steamworks) {return console.warn("Archeia Achivement is disabled. If you're on MAC, the problem is related to a problem with the library that is going to be fixed. - LUCA")}
+ 			if(!callback) {
+ 				callback = () => {
+-					if(!!$._achievementsUnlocked.contains(code)) {$._achievementsUnlocked.splice($._achievementsUnlocked.indexOf(code), 1)}
+-				}
+-			}
+-			return super.clearAchievement(code, callback, err);			
++					if (!err) {
++						if(!!$._achievementsUnlocked.contains(code)) {$._achievementsUnlocked.splice($._achievementsUnlocked.indexOf(code), 1)}
++					}
++				}
++			}
++			callback();
+ 		}
+ 
+ 		unlockAchievement(code, callback, err) {
+-			if(!Imported.Archeia_Steamworks) {return console.warn("Archeia Achivement is disabled. If you're on MAC, the problem is related to a problem with the library that is going to be fixed. - LUCA")}
+ 			if(!callback) {
+ 				callback = () => {
+ 					if(!err) {
+@@ -1569,14 +1565,12 @@
+ 							$gameSystem.unlockAchievement("IT_IS_ALL_A_DREAM");
+ 						}
+ 					}
+-					
+-				}
+-			}
+-			return super.unlockAchievement(code, callback, err);
++				}
++			}
++			callback();
+ 		}
+ 
+ 		clearAllAchievements() {
+-			if(!Imported.Archeia_Steamworks) {return console.warn("Archeia Achivement is disabled. If you're on MAC, the problem is related to a problem with the library that is going to be fixed. - LUCA")}
+ 			const achievements = this.getAchievements();
+ 			if(!!achievements) {
+ 				for(let achievement of achievements) {
+@@ -1598,14 +1592,14 @@
+ 				this._playtime = Math.floor((this._framesOnSave*1000)/60);
+ 			}
+ 			Playtime_Manager.clear();
+-			//=============================================	
++			//=============================================
+ 			// Clearing EXA Followers global variables on
+ 			// load.
+ 			EXA.FC.followerControl          = false;
+ 			EXA.FC.followerControlId        = -1;
+ 			EXA.FC.followerStop             = false;
+ 			EXA.FC.followerCollision        = false;
+-			//=============================================	
++			//=============================================
+ 			$gameParty.members().forEach(member => {
+ 				member.setLastBattleSkill(null);
+ 				member.setLastCommandSymbol('');
+@@ -1725,8 +1719,8 @@
+ 			const troops = [445];
+ 			if(SceneManager.isPreviousScene(Scene_Battle) && !!troops.contains($gameTroop._troopId)) {return false;}
+ 			return super.needsFadeIn();
+-		}	
+-		
++		}
++
+ 		updateEncounterEffect() {
+ 			if (this._encounterEffectDuration > 0) {
+ 				this._encounterEffectDuration--;
+@@ -1738,7 +1732,7 @@
+ 				}
+ 			}
+ 		}
+-		
++
+ 		terminate() {
+ 			super.terminate();
+ 			// 12/16 Clearing Run Away Switch
+@@ -1787,7 +1781,7 @@
+ 	//###############################################################################
+ 
+ 	Scene_Battle = class extends Scene_Battle {
+-		
++
+ 		createDisplayObjects() {
+ 			super.createDisplayObjects();
+ 			this.addToneFilterCompatibility();
+@@ -1815,7 +1809,7 @@
+ 
+ 		commandEscape() {
+ 			BattleManager.setEscapeMode(true);
+-			super.commandEscape();	
++			super.commandEscape();
+ 		}
+ 
+ 		_defaultStart() {
+@@ -1883,7 +1877,7 @@
+ 					this.startFadeOut(this.slowFadeSpeed(), false);
+ 				} else {
+ 					this.startFadeOut(this.fadeSpeed(), false);
+-				}  				
++				}
+ 			}
+ 			this._statusWindow.close();
+ 			this._partyCommandWindow.close();
+@@ -1911,8 +1905,8 @@
+ 		}
+ 
+ 		_needsMainToneUpdate() {
+-			return (!!$gameSwitches.value(1615) || 
+-					$gameTroop.isHumphreyBattle() || 
++			return (!!$gameSwitches.value(1615) ||
++					$gameTroop.isHumphreyBattle() ||
+ 					!!$gameTemp._toneBelowUI)
+ 		}
+ 
+@@ -2018,7 +2012,7 @@
+ 			for(let target of this._allTargets) {
+ 				this._logWindow.displayActionResults(this._subject, target);
+ 			}
+-			
++
+ 		}
+ 
+ 		static endBattle(result) { // Being sure that Plot Armor is cleared at the end of the battle;
+@@ -2044,15 +2038,15 @@
+ 					if(immortalIndex > -1) {
+ 						this._actionList.splice(immortalIndex, 1);
+ 					}
+-					
++
+ 				}
+ 				if(ACS_CHECK.contains(skillId)) {
+ 					let immortalIndex = this._actionList.findIndex(x => x[0].contains("IMMORTAL"));
+ 					if(immortalIndex > -1) {
+ 						this._actionList.splice(immortalIndex, 1);
+ 					}
+-					this._actionList.push(["EVAL", ["$gameTroop.members().forEach(m => m.removeImmortal())"]])	
+-					this._actionList.push(['WAIT FOR EFFECT'])				
++					this._actionList.push(["EVAL", ["$gameTroop.members().forEach(m => m.removeImmortal())"]])
++					this._actionList.push(['WAIT FOR EFFECT'])
+ 				}
+ 			}
+ 			if(!!$gameTemp._addToFinishActions) {
+@@ -2094,7 +2088,7 @@
+ 		static processRetry() {
+ 			if(!!$gameTroop.isHumphreyBattle() && !!$gameTemp._bb1Name) {
+ 				$gameMap.changeBattleback($gameTemp._bb1Name, $gameMap.battleback2Name());
+-			}			
++			}
+ 			return super.processRetry();
+ 		}
+ 	}
+@@ -2115,7 +2109,7 @@
+ 						this._logWindow.push("addText", subject.name().toUpperCase() + " does not have enough JUICE!");
+ 						this._logWindow.push("wait");
+ 					}
+-				}		
++				}
+ 				//===================================
+ 			}
+ 			subject.removeCurrentAction();
+@@ -2128,7 +2122,7 @@
+ 			this._subject = this.getNextSubject();
+ 		}
+ 	}
+-	
++
+ 
+ 	Yanfly.BEC.BattleManager_processVictory = function() {
+ 		$gameParty.removeBattleStates();
+@@ -2150,15 +2144,15 @@
+ 		} else {
+ 			AudioManager.stopBgm();
+ 		}
+-		this.endBattle(2);		
++		this.endBattle(2);
+ 	}
+ 
+ 	Yanfly.BEC.BattleManager_processAbort = function() {
+ 		$gameParty.removeBattleStates();
+ 		//this.replayBgmAndBgs();
+-		this.endBattle(1);		
+-	}
+-	
++		this.endBattle(1);
++	}
++
+ 	//###############################################################################
+ 	//
+ 	// GAME INTERPRETER
+@@ -2250,7 +2244,7 @@
+ 		}
+ 	};
+ 
+-	const _old_sprite_battler_setBattler = Sprite_Battler.prototype.setBattler; 
++	const _old_sprite_battler_setBattler = Sprite_Battler.prototype.setBattler;
+ 	Sprite_Battler.prototype.setBattler = function(battler) {
+ 		_old_sprite_battler_setBattler.call(this, battler);
+ 		if(!battler) {return;}
+@@ -2271,7 +2265,7 @@
+ 				this._damages.shift();
+ 			}
+ 		}
+-	};	
++	};
+ 
+ 
+ 	//###############################################################################
+@@ -2303,7 +2297,7 @@
+ 				case "bgmVolume": return 70;
+ 				case "bgsVolume": return 90;
+ 				case "seVolume": return 90;
+-				case "meVolume": return 90;					
++				case "meVolume": return 90;
+ 			}
+ 		}
+ 
+@@ -2313,7 +2307,7 @@
+ 			return super.readVolume(config, name);
+ 		}
+ 	}
+-	
++
+ 	Object.defineProperty(ConfigManager, 'commandRemember', {
+ 		get: function() {
+ 			return true; // Force Command Remember to TRUE
+@@ -2354,7 +2348,7 @@
+ 			this._playedCollapseSound = true;
+ 		}
+ 	};
+-	
++
+ 	//###############################################################################
+ 	//
+ 	// SCENE MENU
+@@ -2437,11 +2431,11 @@
+ 		var base = path.dirname(process.mainModule.filename);
+ 		var deskDir = `${base}`;
+ 		fs.writeFileSync(deskDir + `___for_${$gameActors.actor(8).name()}___.txt`, `............. ...   ............................... ..... ............. ..... ..
+-		...........           .    ..       .   . .. ...    .  ..     .. ...    .  ..   
+-		...........   ..     .     .  .    OOZZZZZO    .    ..  ...  ...   .    ..  ... 
+-		...........                .. .OZZZZZZZZZZZZZO,     .   .     ..  ..    .   .   
++		...........           .    ..       .   . .. ...    .  ..     .. ...    .  ..
++		...........   ..     .     .  .    OOZZZZZO    .    ..  ...  ...   .    ..  ...
++		...........                .. .OZZZZZZZZZZZZZO,     .   .     ..  ..    .   .
+ 		............. ..  . .  .    ZZZZZZZZZZZZZZZZZZZZO.... ... ... ... ... ... ... ..
+-		............. ...   ... ?ZZZZZZZZZZZZZZZZZZZZZZZMMZO......  ........ .........  
++		............. ...   ... ?ZZZZZZZZZZZZZZZZZZZZZZZMMZO......  ........ .........
+ 		....................  MZZZZZZZZZZZZZZZZZZZZZZZZZZZMZZZ .........................
+ 		.....  .  .........MMMZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ........................
+ 		   . .    ....... OZZMMZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ$......................
+@@ -2543,7 +2537,7 @@
+ 		........ MM .......... ......MMMMMMMMMMMMMMMMM?.. .... .............. . MM .....
+ 		........ 8M........... . .. .MMMMMMMMMMMMMMMMM. . .... .. ......... . ..M. .. ..
+ 		........ ZM... ..............MMMMMMMMMMMMMMMMM .. ................... ..M ......
+-		.........Z ........... .... .NMMMMMMMMMMMMMMMM... ... ..... ..... ... ......... 
++		.........Z ........... .... .NMMMMMMMMMMMMMMMM... ... ..... ..... ... .........
+ 		.......... ........... ...... MMMMMMMMMMMMMMMM... ................... ..........
+ 		............................. MMMMMMMMMMMMMMMM... ................... ..........
+ 		............................. MMMMMMMMMMMMMMM+... ................... ..........
+@@ -2598,7 +2592,7 @@
+ 		......... ...........  ........ .... ....  . .... .... ......... .... .... .....
+ 		................................................................................
+ 		.. .. . . ............ ........ .... ..... ...... .... .............. .... .....
+-		`)	
++		`)
+ 	}
+ 
+ 	$.parseNoEffectEmotion = function(tname, em) {
+@@ -2664,14 +2658,14 @@
+ 				this.push('addText', target.name() + stateMsg);
+ 				this.push('waitForEffect');
+ 			}
+-		}, this);		
++		}, this);
+ 	}
+ 
+ 	// SPEED UP ACS
+ 	Window_BattleLog = class extends Window_BattleLog {
+ 
+ 		updateWaitCount() {
+-			let ACS_SKILLS = [46,49,52,86,89,92,126,129,132,168,171,174]; 
++			let ACS_SKILLS = [46,49,52,86,89,92,126,129,132,168,171,174];
+ 			let currentSkill = !!BattleManager._action && BattleManager._action._item ? BattleManager._action._item.object() : null;
+ 			let skillId = !!DataManager.isSkill(currentSkill) ? currentSkill.id : 0;
+ 			if(BattleManager._phase === "battleEnd") {return super.updateWaitCount();}
+@@ -2710,7 +2704,7 @@
+ 			if(os.platform() === "darwin") {
+ 				folder = "com.omocat.omori/"
+ 			}
+-			return folder;			
++			return folder;
+ 		}
+ 
+ 		static load() {
+@@ -2740,8 +2734,8 @@
+ 						console.error("An error has occured during permanent data saving process!");
+ 						throw new Error(err);
+ 					}
+-				})	
+-			})			
++				})
++			})
+ 		}
+ 
+ 		static isCutsceneSkippable(key) {
+@@ -2752,7 +2746,7 @@
+ 			if(!!this._cutsceneData[key]) {return;}
+ 			this._cutsceneData[key] = true;
+ 			this.save();
+-		} 
++		}
+ 
+ 		static _deletePermanentCutscenes() {
+ 			const pp = require("path");
+@@ -2768,7 +2762,7 @@
+ 					this._cutsceneData = {};
+ 					console.info("CUTSCENE.json has been correctly deleted.")
+ 				}
+-			})			
++			})
+ 		}
+ 
+ 		static cutsceneData() {return this._cutsceneData}
+@@ -2798,7 +2792,7 @@
+ 	//###############################################################################
+ 
+ 	Game_Party = class extends Game_Party {
+-		
++
+ 		gainItem(item, amount, includeEquip) {
+ 			super.gainItem(item, amount, includeEquip);
+ 			if(!!item) {
+@@ -2880,14 +2874,14 @@
+ 
+ 	Omori_FPSCounter.prototype.show = function() {
+ 		this._boxDiv.style.display = "block";
+-		this._showFps = true;	
+-		this._update();	
++		this._showFps = true;
++		this._update();
+ 	};
+ 
+ 	Omori_FPSCounter.prototype.hide = function() {
+ 		this._boxDiv.style.display = "none";
+-		this._showFps = false;	
+-		this._update();	
++		this._showFps = false;
++		this._update();
+ 	};
+ 
+ 	Omori_FPSCounter.prototype._createElements = function() {
+@@ -2935,16 +2929,13 @@
+ 
+ })(Gamefall.FPSMeter);
+ 
+-
+-Gamefall.Encryption = Gamefall.Encryption || {};
+-
+-(function($) {
++(function() {
+ 
+ 	//###############################################################################
+ 	//
+ 	// DATA MANAGER
+ 	//
+-	//###############################################################################	
++	//###############################################################################
+ 
+ 	DataManager = class extends DataManager {
+ 
+@@ -2953,24 +2944,22 @@
+ 
+ 			const path = require('path');
+ 			const fs = require('fs');
+-			const yaml = require('./js/libs/js-yaml-master')  
++			const yaml = require('./js/libs/js-yaml-master')
+ 			var base = path.dirname(process.mainModule.filename);
+ 			if(window['$externalNotesData'] === undefined) {
+-				let noteBuffer = fs.readFileSync(base + '/data/Notes.PLUTO');
+-				noteBuffer = Encryption.decrypt(noteBuffer);
++				let noteBuffer = fs.readFileSync(base + '/data/Notes.yaml');
+ 				window['$externalNotesData'] = yaml.safeLoad(noteBuffer.toString());
+ 			}
+ 
+ 			if(window["$dataQuests"] === undefined) {
+-				let questBuffer = fs.readFileSync(base + '/data/Quests.PLUTO');
+-				questBuffer = Encryption.decrypt(questBuffer);
++				let questBuffer = fs.readFileSync(base + '/data/Quests.yaml');
+ 				window["$dataQuests"] = yaml.safeLoad(questBuffer.toString());
+ 			}
+ 			for (var i = 0; i < this._databaseFiles.length; i++) {
+ 				var name = this._databaseFiles[i].name;
+-				var src = this._databaseFiles[i].src.replace(".json", ".KEL");
++				var src = this._databaseFiles[i].src;
+ 				this.loadDataFile(name, src);
+-			}		
++			}
+ 		}
+ 
+ 		static loadDataFile(name, src) {
+@@ -2980,8 +2969,7 @@
+ 			var base = path.dirname(process.mainModule.filename);
+ 			fs.readFile(base + "/data/" + src, (err, buffer) => {
+ 				if(err) {throw new Error(err)}
+-				let decrypt = Encryption.decrypt(buffer);
+-				window[name] = JSON.parse(decrypt.toString());
++				window[name] = JSON.parse(buffer.toString());
+ 				DataManager.onLoad(window[name]);
+ 			});
+ 
+@@ -2993,7 +2981,7 @@
+ 			const fs = require('fs');
+ 			var base = path.dirname(process.mainModule.filename);
+ 			if(mapId > 0) {
+-				let filename = 'Map%1.KEL'.format(mapId.padZero(3));
++				let filename = 'Map%1.json'.format(mapId.padZero(3));
+ 				this._mapLoader = false;
+ 				window["$dataMap"] = null;
+ 				Graphics.startLoading();
+@@ -3002,8 +2990,7 @@
+ 						Graphics.printLoadingError(base + "/data/" + filename);
+ 						SceneManager.stop();
+ 					}
+-					let decrypt = Encryption.decrypt(buffer);
+-					window["$dataMap"] = JSON.parse(decrypt.toString());
++					window["$dataMap"] = JSON.parse(buffer.toString());
+ 					DataManager.onLoad(window["$dataMap"])
+ 					Graphics.endLoading();
+ 					this._mapLoader = true;
+@@ -3021,7 +3008,7 @@
+ 			const path = require('path');
+ 			const fs = require('fs');
+ 			var base = path.dirname(process.mainModule.filename);
+-			let mapName = `/maps/map${mapId}.AUBREY`;
++			let mapName = `/maps/map${mapId}.json`;
+ 			this.unloadTiledMapData();
+ 			fs.readFile(base + mapName, (err, buffer) => {
+ 				if(!!err) {
+@@ -3029,8 +3016,7 @@
+ 					Graphics.printLoadingError(base + mapName);
+ 					SceneManager.stop();
+ 				}
+-				let decrypt = Encryption.decrypt(buffer);
+-				DataManager._tempTiledData = JSON.parse(decrypt.toString());
++				DataManager._tempTiledData = JSON.parse(buffer.toString());
+ 	            DataManager.loadTilesetData();
+ 	            DataManager._tiledLoaded = true;
+ 			})
+@@ -3041,7 +3027,7 @@
+ 		static loadCallMapData(mapId) {
+ 			if(!!Utils.isOptionValid("test")) {return super.loadCallMapData(mapId);}
+ 			if(mapId > 0) {
+-				let filename = 'Map%1.KEL'.format(mapId.padZero(3));
++				let filename = 'Map%1.json'.format(mapId.padZero(3));
+ 				this.loadDataFile("$callEventMap", filename);
+ 			}
+ 			else {
+@@ -3050,7 +3036,7 @@
+ 				$callEventMap.events = [];
+ 				$callEventMap.width = 100;
+ 				$callEventMap.height = 100;
+-				$callEventMap.scrollType = 3;			
++				$callEventMap.scrollType = 3;
+ 			}
+ 		}
+ 	}
+@@ -3059,7 +3045,7 @@
+ 	//
+ 	// LANGUAGE MANAGER
+ 	//
+-	//###############################################################################	
++	//###############################################################################
+ 
+ 	LanguageManager = class extends LanguageManager {
+ 
+@@ -3067,7 +3053,7 @@
+ 			if(!!Utils.isOptionValid("test")) {return super.loadLanguageFiles(language);}
+ 			const path = require('path');
+ 			const fs = require('fs');
+-			const yaml = require('./js/libs/js-yaml-master')  
++			const yaml = require('./js/libs/js-yaml-master')
+ 			var base = path.dirname(process.mainModule.filename);
+ 
+ 			let folder = "/Languages/" + language + "/";
+@@ -3077,9 +3063,8 @@
+ 			for(let directory of dirList) {
+ 				let format = path.extname(directory);
+ 				let filename = path.basename(directory, format);
+-				if(format === ".HERO") {
++				if(format === ".yaml") {
+ 					let buff = fs.readFileSync(filePath + '/' + filename + format);
+-					buff = Encryption.decrypt(buff);
+ 					this._data[language].text[filename] = yaml.safeLoad(buff.toString());
+ 				}
+ 			}
+@@ -3093,7 +3078,7 @@
+ 	//
+ 	// ATLAS MANAGER
+ 	//
+-	//###############################################################################	
++	//###############################################################################
+ 
+ 	AtlasManager = class extends AtlasManager {
+ 
+@@ -3104,11 +3089,7 @@
+ 				const fs = require("fs");
+ 				const yaml = require('./js/libs/js-yaml-master')
+ 				var base = path.dirname(process.mainModule.filename);
+-				let folder = '/img/atlases/';
+-				var filePath = base + folder;
+-				var dirList = fs.readdirSync(filePath);
+-				let yy = fs.readFileSync(base + '/data/Atlas.PLUTO');
+-				yy = Encryption.decrypt(yy);
++				let yy = fs.readFileSync(base + '/data/Atlas.yaml');
+ 				var data = yaml.safeLoad(yy);
+ 				window['$atlasData'] = data;
+ 			}
+@@ -3118,7 +3099,7 @@
+ 	// NEED TO CLEAR ATLAS PLUGIN! DON'T FORGET!!
+ 	AtlasManager.initAtlasData()
+ 
+-})(Gamefall.Encryption);
++})();
+ 
+ 
+ Gamefall.FootSound = Gamefall.FootSound || {};
+@@ -3240,7 +3221,7 @@
+ 
+ 
+ 	//=====================================================================
+-	// This addition is inspired from DarkPlasma Japanese Word Wrap 
++	// This addition is inspired from DarkPlasma Japanese Word Wrap
+ 	// approach. Header:
+ 
+ 	// DarkPlasma_WordWrapForJapanese
+@@ -3267,7 +3248,7 @@
+ 	}
+ 
+ 	Window_Base.prototype.isEasternLocale = function() {
+-		return !!$._enable_2byte_linebreak 
++		return !!$._enable_2byte_linebreak
+ 	}
+ 
+ 	const _old_window_base_checkWordWrap = Window_Base.prototype.checkWordWrap;
+@@ -3296,10 +3277,10 @@
+ 			if (this.checkWordWrap(textState)) {
+ 				if(!this._letterEffectsActive) {
+ 					textState.index -= 1;
+-				}	
++				}
+ 				return this.processNewLine(textState);
+ 			}
+-			Yanfly.Message.Window_Base_processNormalCharacter.call(this, textState)		
++			Yanfly.Message.Window_Base_processNormalCharacter.call(this, textState)
+ 		}
+ 	}
+ 
+@@ -3337,7 +3318,7 @@
+ 		["KEL", "ケル", "켈", "凯"],
+ 		["HERO", "ヒロ", "히로", "英雄"]
+ 	];
+-	
++
+ 	DataManager.chapterNamesPerLanguage = [
+ 		["???", "???", "???", "？？？"],
+ 		["MOVING DAY", "引越しの日", "이삿날", "搬家当天"],
+--- a/js/plugins/YED_Tiled.js
++++ b/js/plugins/YED_Tiled.js
+@@ -208,7 +208,7 @@
+ 						}
+ 					};
+ 
+-					xhr.send();					
++					xhr.send();
+ 				}
+ 				else {
+ 					DataManager._tilesetToLoad++;
+@@ -216,10 +216,8 @@
+ 					const path = require('path');
+ 					const fs = require('fs');
+ 					var base = path.dirname(process.mainModule.filename);
+-					filename = filename.replace(".json", ".AUBREY")
+ 					fs.readFile(base + "/maps/" + filename, (err, data) => {
+ 						if(err) {throw new Error(err)}
+-						data = Encryption.decrypt(data);
+ 						Object.assign(tileset,JSON.parse(data.toString()))
+ 						DataManager._tilesetToLoad--;
+ 					});
+--- a/js/plugins/YEP_EventCopier.js
++++ b/js/plugins/YEP_EventCopier.js
+@@ -50,7 +50,7 @@
+  * ============================================================================
+  * Instructions
+  * ============================================================================
+- * 
++ *
+  * First, set aside a dedicated map (or maps) that will be preloaded each time
+  * the game starts. Each preloaded map should contain various events that you
+  * wish to completely copy. These can range from templates to trigger events to
+@@ -121,7 +121,7 @@
+  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  *
+  *  Variables      Description
+- * 
++ *
+  *      mapId      ID of the map to be loaded.
+  *    eventId      ID of the event to be loaded.
+  *     target      The event before it's copied over.
+@@ -137,7 +137,7 @@
+  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  *
+  *  Variables      Description
+- * 
++ *
+  *     target      The loaded event after copied over.
+  *     player      The player character.
+  *
+@@ -240,7 +240,7 @@
+  * @desc The code used after copying over an event.
+  * This is local for only this template.
+  * @default "// Variables      Description\n//\n//    target      The loaded event after copied over.\n//    player      The player character."
+- * 
++ *
+  */
+ //=============================================================================
+ 
+@@ -291,11 +291,10 @@
+   else {
+ 		const path = require('path');
+ 		const fs = require('fs');
+-		var base = path.dirname(process.mainModule.filename);	
+-		let filename = 'Map%1.KEL'.format(mapId.padZero(3));
+-		Yanfly.PreloadedMaps[mapId] = null;	
++		var base = path.dirname(process.mainModule.filename);
++		let filename = 'Map%1.json'.format(mapId.padZero(3));
++		Yanfly.PreloadedMaps[mapId] = null;
+ 		fs.readFile(base + "/data/" + filename, (err, data) => {
+-			data = Encryption.decrypt(data);
+ 			Yanfly.PreloadedMaps[mapId] = JSON.parse(data.toString());
+ 		})
+   }
+--- a/js/plugins/YEP_EventMorpher.js
++++ b/js/plugins/YEP_EventMorpher.js
+@@ -191,7 +191,7 @@
+  * @max 999
+  * @desc The ID of the event to be morphed when using this template.
+  * @default 1
+- * 
++ *
+  */
+ //=============================================================================
+ 
+@@ -230,11 +230,10 @@
+   else {
+ 		const path = require('path');
+ 		const fs = require('fs');
+-		var base = path.dirname(process.mainModule.filename);	
+-		let filename = 'Map%1.KEL'.format(mapId.padZero(3));
+-		Yanfly.PreloadedMaps[mapId] = null;	
++		var base = path.dirname(process.mainModule.filename);
++		let filename = 'Map%1.json'.format(mapId.padZero(3));
++		Yanfly.PreloadedMaps[mapId] = null;
+ 		fs.readFile(base + "/data/" + filename, (err, data) => {
+-			data = Encryption.decrypt(data);
+ 			Yanfly.PreloadedMaps[mapId] = JSON.parse(data.toString());
+ 		})
+   }
+--- a/js/plugins/YEP_EventSpawner.js
++++ b/js/plugins/YEP_EventSpawner.js
+@@ -318,7 +318,7 @@
+  *
+  * @param Name
+  * @desc Name of the template. The template is used with
+- * the script call: 
++ * the script call:
+  * @default Untitled
+  *
+  * @param MapID
+@@ -335,7 +335,7 @@
+  * @max 999
+  * @desc The ID of the event to be spawned when using this template.
+  * @default 1
+- * 
++ *
+  */
+ //=============================================================================
+ 
+@@ -375,11 +375,10 @@
+   else {
+ 		const path = require('path');
+ 		const fs = require('fs');
+-		var base = path.dirname(process.mainModule.filename);	
+-		let filename = 'Map%1.KEL'.format(mapId.padZero(3));
+-		Yanfly.PreloadedMaps[mapId] = null;	
++		var base = path.dirname(process.mainModule.filename);
++		let filename = 'Map%1.json'.format(mapId.padZero(3));
++		Yanfly.PreloadedMaps[mapId] = null;
+ 		fs.readFile(base + "/data/" + filename, (err, data) => {
+-			data = Encryption.decrypt(data);
+ 			Yanfly.PreloadedMaps[mapId] = JSON.parse(data.toString());
+ 		})
+   }
+@@ -429,21 +428,21 @@
+   }
+   if ($gameMap.eventsXy(x, y).length > 0) {
+     if ($gameTemp.isPlaytest()) {
+-      console.log('Cannot spawn event at ' + x + ', ' + y + '.' + 
++      console.log('Cannot spawn event at ' + x + ', ' + y + '.' +
+         'There is already an event there.');
+     }
+     return true;
+   }
+   if ($gameMap.boat().posNt(x, y) || $gameMap.ship().posNt(x, y)) {
+     if ($gameTemp.isPlaytest()) {
+-      console.log('Cannot spawn event at ' + x + ', ' + y + '.' + 
++      console.log('Cannot spawn event at ' + x + ', ' + y + '.' +
+         'There is a vehicle there.');
+     }
+     return true;
+   }
+   if (x < 0 || x >= $gameMap.width() || y < 0 || y >= $gameMap.height()) {
+     if ($gameTemp.isPlaytest()) {
+-      console.log('Cannot spawn event at ' + x + ', ' + y + '.' + 
++      console.log('Cannot spawn event at ' + x + ', ' + y + '.' +
+         "This is outside of the map's boundaries.");
+     }
+     return true;
+@@ -604,8 +603,8 @@
+     baseMapId: this.mapId(),
+     spawnId: spawnId,
+     mapId: mapId,
+-    eventId: eventId, 
+-    x: x, 
++    eventId: eventId,
++    x: x,
+     y: y,
+     preserved: preserved
+   };
+@@ -695,7 +694,7 @@
+   this._spawnData = data;
+   this._spawned = true;
+   this._pageIndex = -2;
+-  
++
+   this._mapId = data.baseMapId;
+   this._eventId = data.spawnId;
+ 

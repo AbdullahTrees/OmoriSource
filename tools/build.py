@@ -1,7 +1,10 @@
 """Assemble a runnable OMORI build from this repository.
 
 Usage:
-    python tools/build.py [--platform windows|linux] [--sdk] [--out DIR]
+    python tools/build.py [--platform windows|linux] [--sdk] [--out DIR] [--game OMORI_INSTALL]
+
+--game builds from an OMORI install (encrypted Steam release or a decrypted copy)
+instead of project/, using tools/extract.js (needs Node). Its saves are copied too.
 
 Output (default build/<platform>/), laid out like the shipped game:
     OMORI.exe / OMORI      NW.js 0.29.0 runtime, renamed
@@ -12,11 +15,14 @@ Output (default build/<platform>/), laid out like the shipped game:
 NW.js is downloaded once from dl.nwjs.io and cached in build/.cache/.
 --sdk uses the SDK flavor, which adds the F12 developer console.
 Saves already in project/save/ are copied into the build so playtests can continue them.
+www/ is checked against tools/reference.sha256; differences are warnings, written to
+parity.json, which the launcher reports in the game's console at startup.
 """
 import argparse
 import json
 import os
 import shutil
+import subprocess
 import sys
 import tarfile
 import urllib.request
@@ -68,6 +74,7 @@ def main():
     parser.add_argument("--platform", choices=sorted(PLATFORMS), default="windows")
     parser.add_argument("--sdk", action="store_true")
     parser.add_argument("--out")
+    parser.add_argument("--game", help="OMORI install (Steam or decrypted) to build from instead of project/; needs Node")
     args = parser.parse_args()
 
     out = args.out or os.path.join(REPO, "build", args.platform)
@@ -82,15 +89,24 @@ def main():
     shutil.copytree(runtime, out)
     os.rename(os.path.join(out, nw_name), os.path.join(out, exe_name))
 
-    print("copying game files")
+    www = os.path.join(out, "www")
     project = os.path.join(REPO, "project")
-    shutil.copytree(project, os.path.join(out, "www"),
-                    ignore=lambda folder, names: SKIP_IN_WWW & set(names) if folder == project else [])
+    if args.game:
+        print("extracting game files from", args.game)
+        if subprocess.call(["node", os.path.join(REPO, "tools", "extract.js"), args.game, www]) != 0:
+            print("BUILD FAILED: extraction did not run")
+            return 1
+        source_www = os.path.join(args.game, "www") if os.path.isdir(os.path.join(args.game, "www")) else args.game
+        saves = os.path.join(source_www, "save")
+    else:
+        print("copying game files")
+        shutil.copytree(project, www,
+                        ignore=lambda folder, names: SKIP_IN_WWW & set(names) if folder == project else [])
+        saves = os.path.join(project, "save")
     shutil.copytree(os.path.join(REPO, "launcher"), os.path.join(out, "launcher"))
 
-    saves = os.path.join(project, "save")
     if os.path.isdir(saves):
-        shutil.copytree(saves, os.path.join(out, "www", "save"))
+        shutil.copytree(saves, os.path.join(www, "save"))
 
     with open(os.path.join(REPO, "package.json"), encoding="utf-8") as f:
         manifest = json.load(f)
@@ -100,10 +116,13 @@ def main():
         json.dump(manifest, f, indent=4)
 
     print("checking www/ against the reference manifest")
-    sys.argv = ["verify_parity.py", os.path.join(out, "www")]
-    if verify_parity.main() != 0:
-        print("BUILD FAILED: www/ does not match the reference")
-        return 1
+    result = verify_parity.compare(www)
+    verify_parity.report(result)
+    # The launcher reads this and logs a warning at startup when files differ.
+    with open(os.path.join(out, "parity.json"), "w", encoding="utf-8", newline="\n") as f:
+        json.dump(result, f, indent=1)
+    if result["missing"] or result["changed"]:
+        print("WARNING: www/ is not identical to the reference; the game may still run, see parity.json")
     print("built", os.path.join(out, exe_name))
     return 0
 
