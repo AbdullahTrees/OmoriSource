@@ -11,6 +11,42 @@
     var path = require('path');
     var os = require('os');
 
+    // tools/build.py writes parity.json next to package.json. Builds made from
+    // incomplete or modified game files still run, but say so in the log.
+    try {
+        var parity = JSON.parse(fs.readFileSync(path.join(nw.__dirname, 'parity.json'), 'utf8'));
+        if (parity.missing.length || parity.changed.length) {
+            console.warn('[compat] game files differ from the reference: ' + parity.missing.length + ' missing, ' +
+                parity.changed.length + ' changed. Missing: ' + parity.missing.slice(0, 20).join(', ') +
+                ' Changed: ' + parity.changed.slice(0, 20).join(', '));
+        }
+    } catch (e) {
+        // No report (running straight from the repository): nothing to check.
+    }
+
+    // OMORI_FPS_LOG=<seconds> logs the rendered frame rate, for measuring ports.
+    var fpsSeconds = Number(process.env.OMORI_FPS_LOG);
+    if (fpsSeconds > 0) {
+        var last = null;
+        setInterval(function () {
+            if (!window.Graphics || !Graphics._renderer) return;
+            var now = performance.now();
+            if (last) {
+                var scene = SceneManager._scene ? SceneManager._scene.constructor.name : '-';
+                var map = window.$gameMap && $gameMap.mapId() ? ' map ' + $gameMap.mapId() : '';
+                console.info('[compat] fps ' + ((Graphics.frameCount - last.frames) * 1000 / (now - last.time)).toFixed(1) +
+                    ' (' + (Graphics.isWebGL() ? 'webgl' : 'canvas') + ', ' + scene + map + ')');
+            }
+            last = { time: now, frames: Graphics.frameCount };
+        }, fpsSeconds * 1000);
+    }
+
+    // OMORI_PERF_SPRITES=1 loads the sprite-update culling patch made for slow handhelds
+    // (launcher/omori-performance.js). It installs itself once the game's plugins have loaded.
+    if (process.env.OMORI_PERF_SPRITES === '1') {
+        (0, eval)(fs.readFileSync(path.join(nw.__dirname, 'launcher', 'omori-performance.js'), 'utf8'));
+    }
+
     if (process.platform !== 'linux') return;
 
     // Permanent_Manager (GTP_OmoriFixes.js) keeps CUTSCENE.json in %LOCALAPPDATA%,
