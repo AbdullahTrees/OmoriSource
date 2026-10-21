@@ -1,0 +1,8 @@
+Read-only device sha256sum after the continuation tours, 2026-10-21.
+All five hashes equal the sourceHash in the captured installed map catalog.
+
+53fc27d4770cea4fd0abe651523e7c0324e88d0316227cb8452ce652bcf59af6  /mnt/mmc/ports/omori-test/www/img/tilesets/Tile_Collision_32x32.png
+479dc1226ab732cb4fa0b37af044fa18e6b8b99f035fe2b32b8e25455c9ca18d  /mnt/mmc/ports/omori-test/www/img/tilesets/Tile_Region_32x32.png
+35814e0f6423780e5a51c024fef90e75f23b09ddf5b88a20835e38fe2a12c90d  /mnt/mmc/ports/omori-test/www/img/tilesets/DW_NorthLake.png
+20677d637d097f61f45d3e5528852f8a26014a421900613e45d2f3354242157f  /mnt/mmc/ports/omori-test/www/img/tilesets/Terrain.png
+8634ef40b2a05166e6f0f23503c9951cd3b21406af156ee0897774647783edbc  /mnt/mmc/ports/omori-test/www/img/tilesets/general_use.png

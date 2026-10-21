@@ -1,0 +1,797 @@
+[
+  {
+    "tickMs": 53.01,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 965,
+    "fps": 17,
+    "ft": [
+      57.6,
+      72,
+      85.2
+    ],
+    "drawMs": 2.49,
+    "uploadMs": 0.23,
+    "draws": 0,
+    "messageShare": 0,
+    "id": 111,
+    "mode": "baseline",
+    "weather": {
+      "mode": "baseline",
+      "updates": 1070,
+      "skipped": 0,
+      "weather": [
+        {
+          "type": "rain",
+          "power": 6,
+          "visible": true,
+          "sprites": 192,
+          "children": 193
+        }
+      ]
+    },
+    "mem": {
+      "rss": 690.4,
+      "heap": 136.9,
+      "imgGpu": 28.8,
+      "imgCpu": 90.5
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "actualMap": 111
+  },
+  {
+    "tickMs": 44.65,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 965,
+    "fps": 19.9,
+    "ft": [
+      49.5,
+      55.5,
+      67.3
+    ],
+    "drawMs": 2.12,
+    "uploadMs": 0.23,
+    "draws": 0,
+    "messageShare": 0,
+    "id": 111,
+    "mode": "hidden",
+    "weather": {
+      "mode": "hidden",
+      "updates": 1710,
+      "skipped": 0,
+      "weather": [
+        {
+          "type": "rain",
+          "power": 6,
+          "visible": false,
+          "sprites": 192,
+          "children": 193
+        }
+      ]
+    },
+    "mem": {
+      "rss": 690.6,
+      "heap": 145.7,
+      "imgGpu": 28.8,
+      "imgCpu": 90.5
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "actualMap": 111
+  },
+  {
+    "tickMs": 41.98,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 965,
+    "fps": 21.1,
+    "ft": [
+      46.9,
+      52.7,
+      64.6
+    ],
+    "drawMs": 2.15,
+    "uploadMs": 0.23,
+    "draws": 0,
+    "messageShare": 0,
+    "id": 111,
+    "mode": "frozen",
+    "weather": {
+      "mode": "frozen",
+      "updates": 1710,
+      "skipped": 676,
+      "weather": [
+        {
+          "type": "rain",
+          "power": 6,
+          "visible": false,
+          "sprites": 192,
+          "children": 193
+        }
+      ]
+    },
+    "mem": {
+      "rss": 690.8,
+      "heap": 152.1,
+      "imgGpu": 28.8,
+      "imgCpu": 90.5
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "actualMap": 111
+  },
+  {
+    "tickMs": 44.22,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 965,
+    "fps": 20.4,
+    "ft": [
+      48.3,
+      53.9,
+      73.8
+    ],
+    "drawMs": 2.15,
+    "uploadMs": 0.14,
+    "draws": 0,
+    "messageShare": 0,
+    "id": 111,
+    "mode": "hidden",
+    "weather": {
+      "mode": "hidden",
+      "updates": 2358,
+      "skipped": 676,
+      "weather": [
+        {
+          "type": "rain",
+          "power": 6,
+          "visible": false,
+          "sprites": 192,
+          "children": 193
+        }
+      ]
+    },
+    "mem": {
+      "rss": 690.8,
+      "heap": 124.2,
+      "imgGpu": 28.8,
+      "imgCpu": 90.5
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "actualMap": 111
+  },
+  {
+    "tickMs": 49.84,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 965,
+    "fps": 18.2,
+    "ft": [
+      54.2,
+      64,
+      71.7
+    ],
+    "drawMs": 2.47,
+    "uploadMs": 0.14,
+    "draws": 0,
+    "messageShare": 0,
+    "id": 111,
+    "mode": "baseline",
+    "weather": {
+      "mode": "baseline",
+      "updates": 2942,
+      "skipped": 676,
+      "weather": [
+        {
+          "type": "rain",
+          "power": 6,
+          "visible": true,
+          "sprites": 192,
+          "children": 193
+        }
+      ]
+    },
+    "mem": {
+      "rss": 690.8,
+      "heap": 132.3,
+      "imgGpu": 28.8,
+      "imgCpu": 90.5
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "actualMap": 111
+  },
+  {
+    "tickMs": 70.82,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 1163,
+    "fps": 12.7,
+    "ft": [
+      76.5,
+      95.7,
+      108.2
+    ],
+    "drawMs": 2.65,
+    "uploadMs": 0.53,
+    "draws": 0,
+    "messageShare": 0,
+    "id": 78,
+    "mode": "baseline",
+    "weather": {
+      "mode": "baseline",
+      "updates": 3846,
+      "skipped": 676,
+      "weather": [
+        {
+          "type": "rain",
+          "power": 6,
+          "visible": true,
+          "sprites": 192,
+          "children": 193
+        }
+      ]
+    },
+    "mem": {
+      "rss": 714.9,
+      "heap": 150.6,
+      "imgGpu": 45.9,
+      "imgCpu": 109.7
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "actualMap": 78
+  },
+  {
+    "tickMs": 60.62,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 1163,
+    "fps": 14.8,
+    "ft": [
+      66.5,
+      72.8,
+      127
+    ],
+    "drawMs": 2.33,
+    "uploadMs": 0.39,
+    "draws": 0,
+    "messageShare": 0,
+    "id": 78,
+    "mode": "hidden",
+    "weather": {
+      "mode": "hidden",
+      "updates": 4322,
+      "skipped": 676,
+      "weather": [
+        {
+          "type": "rain",
+          "power": 6,
+          "visible": false,
+          "sprites": 192,
+          "children": 193
+        }
+      ]
+    },
+    "mem": {
+      "rss": 714.6,
+      "heap": 131.7,
+      "imgGpu": 45.9,
+      "imgCpu": 109.7
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "actualMap": 78
+  },
+  {
+    "tickMs": 58.53,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 1163,
+    "fps": 15.6,
+    "ft": [
+      63.3,
+      73.2,
+      91.1
+    ],
+    "drawMs": 2.34,
+    "uploadMs": 0.26,
+    "draws": 0,
+    "messageShare": 0,
+    "id": 78,
+    "mode": "frozen",
+    "weather": {
+      "mode": "frozen",
+      "updates": 4322,
+      "skipped": 1176,
+      "weather": [
+        {
+          "type": "rain",
+          "power": 6,
+          "visible": false,
+          "sprites": 192,
+          "children": 193
+        }
+      ]
+    },
+    "mem": {
+      "rss": 714.6,
+      "heap": 132.8,
+      "imgGpu": 45.9,
+      "imgCpu": 109.7
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "actualMap": 78
+  },
+  {
+    "tickMs": 60.47,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 1163,
+    "fps": 15.1,
+    "ft": [
+      65.4,
+      71.3,
+      89.8
+    ],
+    "drawMs": 2.3,
+    "uploadMs": 0.26,
+    "draws": 0,
+    "messageShare": 0,
+    "id": 78,
+    "mode": "hidden",
+    "weather": {
+      "mode": "hidden",
+      "updates": 4806,
+      "skipped": 1176,
+      "weather": [
+        {
+          "type": "rain",
+          "power": 6,
+          "visible": false,
+          "sprites": 192,
+          "children": 193
+        }
+      ]
+    },
+    "mem": {
+      "rss": 714.6,
+      "heap": 136.7,
+      "imgGpu": 45.9,
+      "imgCpu": 109.7
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "actualMap": 78
+  },
+  {
+    "tickMs": 67.42,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 1163,
+    "fps": 13.6,
+    "ft": [
+      72.3,
+      90.1,
+      104.7
+    ],
+    "drawMs": 2.69,
+    "uploadMs": 0.26,
+    "draws": 0,
+    "messageShare": 0,
+    "id": 78,
+    "mode": "baseline",
+    "weather": {
+      "mode": "baseline",
+      "updates": 5244,
+      "skipped": 1176,
+      "weather": [
+        {
+          "type": "rain",
+          "power": 6,
+          "visible": true,
+          "sprites": 192,
+          "children": 193
+        }
+      ]
+    },
+    "mem": {
+      "rss": 714.6,
+      "heap": 140.5,
+      "imgGpu": 45.9,
+      "imgCpu": 109.7
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "actualMap": 78
+  },
+  {
+    "tickMs": 28.82,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 837,
+    "fps": 28.7,
+    "ft": [
+      34.5,
+      37.1,
+      46.9
+    ],
+    "drawMs": 1.88,
+    "uploadMs": 0.33,
+    "draws": 0,
+    "messageShare": 0,
+    "id": 461,
+    "mode": "baseline",
+    "weather": {
+      "mode": "baseline",
+      "updates": 7292,
+      "skipped": 1176,
+      "weather": [
+        {
+          "type": "rain",
+          "power": 6,
+          "visible": true,
+          "sprites": 192,
+          "children": 193
+        }
+      ]
+    },
+    "mem": {
+      "rss": 717.6,
+      "heap": 144,
+      "imgGpu": 47.4,
+      "imgCpu": 109.7
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "actualMap": 461
+  },
+  {
+    "tickMs": 22.84,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 837,
+    "fps": 34.7,
+    "ft": [
+      28.2,
+      33,
+      44.5
+    ],
+    "drawMs": 1.62,
+    "uploadMs": 0.35,
+    "draws": 0,
+    "messageShare": 0,
+    "id": 461,
+    "mode": "hidden",
+    "weather": {
+      "mode": "hidden",
+      "updates": 8410,
+      "skipped": 1176,
+      "weather": [
+        {
+          "type": "rain",
+          "power": 6,
+          "visible": false,
+          "sprites": 192,
+          "children": 193
+        }
+      ]
+    },
+    "mem": {
+      "rss": 717.4,
+      "heap": 148,
+      "imgGpu": 47.4,
+      "imgCpu": 109.7
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "actualMap": 461
+  },
+  {
+    "tickMs": 18.58,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 837,
+    "fps": 39.6,
+    "ft": [
+      25.3,
+      29.3,
+      46.6
+    ],
+    "drawMs": 1.62,
+    "uploadMs": 0.34,
+    "draws": 0,
+    "messageShare": 0,
+    "id": 461,
+    "mode": "frozen",
+    "weather": {
+      "mode": "frozen",
+      "updates": 8410,
+      "skipped": 2188,
+      "weather": [
+        {
+          "type": "rain",
+          "power": 6,
+          "visible": false,
+          "sprites": 192,
+          "children": 193
+        }
+      ]
+    },
+    "mem": {
+      "rss": 717.4,
+      "heap": 151.1,
+      "imgGpu": 47.4,
+      "imgCpu": 109.7
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "actualMap": 461
+  },
+  {
+    "tickMs": 22.55,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 837,
+    "fps": 35.2,
+    "ft": [
+      28.1,
+      30.8,
+      38.8
+    ],
+    "drawMs": 1.61,
+    "uploadMs": 0.34,
+    "draws": 0,
+    "messageShare": 0,
+    "id": 461,
+    "mode": "hidden",
+    "weather": {
+      "mode": "hidden",
+      "updates": 9542,
+      "skipped": 2188,
+      "weather": [
+        {
+          "type": "rain",
+          "power": 6,
+          "visible": false,
+          "sprites": 192,
+          "children": 193
+        }
+      ]
+    },
+    "mem": {
+      "rss": 717.4,
+      "heap": 156.8,
+      "imgGpu": 47.4,
+      "imgCpu": 109.7
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "actualMap": 461
+  },
+  {
+    "tickMs": 28.47,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 837,
+    "fps": 28.9,
+    "ft": [
+      34.1,
+      36.9,
+      47.8
+    ],
+    "drawMs": 1.93,
+    "uploadMs": 0.33,
+    "draws": 0,
+    "messageShare": 0,
+    "id": 461,
+    "mode": "baseline",
+    "weather": {
+      "mode": "baseline",
+      "updates": 10472,
+      "skipped": 2188,
+      "weather": [
+        {
+          "type": "rain",
+          "power": 6,
+          "visible": true,
+          "sprites": 192,
+          "children": 193
+        }
+      ]
+    },
+    "mem": {
+      "rss": 717.4,
+      "heap": 158,
+      "imgGpu": 47.4,
+      "imgCpu": 109.7
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "actualMap": 461
+  }
+]

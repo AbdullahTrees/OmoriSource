@@ -1,0 +1,269 @@
+[mem] 20:21:26 used 183 MB, available 774 MB cpu 58C
+generated .cache/pmjs/ca064ebffa43d3505c55a4a8/bootstrap-6979.tmp from 82 modules
+[pmjs-build] engine: mv
+[pmjs-build] detected: mv (mv 1.6.1, pixi 4.8.9), 149/172 plugins enabled
+[pmjs-build] matched adapters: 10
+  YEP_CoreEngine -> js/pmjs-plugins/yanfly/core-transforms.js, js/pmjs-plugins/yanfly/core-character-presentation.js, js/pmjs-plugins/yanfly/core-text.js
+  AudioStreaming -> js/pmjs-plugins/audio-streaming/native-audio.js
+  YEP_MessageCore -> js/pmjs-plugins/yanfly/message-core.js
+  Olivia_HorrorEffects -> js/pmjs-plugins/olivia/horror-effects.js
+  YED_Tiled -> js/pmjs-plugins/yed/retained-tiles.js, js/pmjs-plugins/yed/tiled.js
+  YEP_SlipperyTiles -> js/pmjs-plugins/yanfly/slippery-tiles.js
+  YEP_EventMiniLabel -> js/pmjs-plugins/yanfly/event-mini-label.js
+  Atlas Loader -> js/pmjs-plugins/atlas-loader/image-retention.js
+  YEP_EventCopier -> js/pmjs-plugins/yanfly/event-copier.js
+  GTP_OmoriFixes -> js/pmjs-plugins/omori/permanent-data.js
+[pmjs-build] unmatched enabled plugins: 139
+2026-10-21T14:21:30.481Z INFO [pmjs] system hardware platform=linux arch=arm64 kernel=4.9.170 node=v22.23.2 node_api=10 device="sun50iw9" cpu="Cortex-A53" cpu_threads=4 ram_total_mib=973 ram_available_mib=759 gpu_kernel_modules=mali_kbase
+2026-10-21T14:21:30.484Z INFO [pmjs] launcher identity build=build-2026-10-20-640aaa1-11 source=dirty build_info_sha256=a89f0847eb2e38409c063be58fc534b3c04471922f1e5996753e84e1d497a72c
+2026-10-21T14:21:30.485Z INFO [pmjs] launcher check=runtime pass=cache-lookup duration_ms=84.3 hashed_files=0 hashed_kb=0 reused_files=127
+2026-10-21T14:21:30.486Z INFO [pmjs] launcher check=game-inputs pass=cache-lookup duration_ms=89.5 hashed_files=8 hashed_kb=1986 reused_files=0
+2026-10-21T14:21:30.486Z INFO [pmjs] launcher check=game-inputs pass=bootstrap-integrity duration_ms=1.5 hashed_files=0 hashed_kb=0 reused_files=8
+2026-10-21T14:21:30.487Z INFO [pmjs] launcher check=runtime pass=bootstrap-integrity duration_ms=18.1 hashed_files=0 hashed_kb=0 reused_files=127
+2026-10-21T14:21:30.487Z INFO [pmjs] launcher check=game-inputs pass=prelaunch duration_ms=1.9 hashed_files=0 hashed_kb=0 reused_files=8
+2026-10-21T14:21:30.487Z INFO [pmjs] launcher check=runtime pass=prelaunch duration_ms=16.0 hashed_files=0 hashed_kb=0 reused_files=127
+[pmjs] worker-start pid=7022
+2026-10-21T14:21:31.386Z INFO [pmjs] display=640x480 window=640x480 drawable=640x480
+2026-10-21T14:21:31.386Z INFO [pmjs] gl vendor="ARM" renderer="Mali-G31" version="OpenGL ES 3.2 v1.r20p0-01rel0.8ec337de4ddab3365a32cff58063a9da"
+2026-10-21T14:21:31.386Z INFO [pmjs] egl vendor="ARM" version="1.4 Bifrost-"r20p0-01rel0"" config=9 min_swap=0 max_swap=1
+2026-10-21T14:21:31.387Z INFO [pmjs-gpu] sdl_driver=mali available_drivers=mali display_index=0 display_bounds=640x480 display_usable=640x480 window=640x480 drawable=640x480 display_hz=60 gles=3.2 double_buffer=1 depth_bits=0 stencil_bits=0 rgb_bits=8,8,8 max_texture=8192 max_texture_units=16 max_renderbuffer=8192 max_vertex_attributes=16 software=no
+2026-10-21T14:21:31.387Z INFO [pmjs-gpu] fragment_highp_bits=23 fragment_highp_range=127,127
+2026-10-21T14:21:31.387Z INFO [pmjs] graphics hardware renderer="Mali-G31" software=no
+[mem] 20:21:36 used 251 MB, available 706 MB cpu 62C
+2026-10-21T14:21:37.768Z INFO [pmjs] startup event=start started_at=2026-10-21T14:21:30.823Z preparation=on maps=on
+2026-10-21T14:21:37.776Z INFO [pmjs] startup stage=native-initialize duration_ms=6241.5
+2026-10-21T14:21:37.776Z INFO [pmjs] startup stage=vfs-index statistics={"paths":5148,"directories":55,"canonicalizations":55,"durationMs":444.971833}
+2026-10-21T14:21:37.777Z INFO [pmjs] startup stage=host-initialized elapsed_ms=6436.5
+2026-10-21T14:21:37.777Z INFO [pmjs] preparation event=start workspace_bytes=67108864 processor={"processor":"images-v15-sparse-palette-astcenc4.7","decoder":"libpng-1.6.43-rgba8-v1","pageSize":2048} lz4_version="lz4-1.10.0-sparse-palette-v2"
+2026-10-21T14:21:37.778Z INFO [pmjs] preparation stage=images event=start started_at=2026-10-21T14:21:37.325Z codec=lz4 verify_hashes=false cache_root="/mnt/mmc/ports/omori-pmjs2/.cache"
+2026-10-21T14:21:37.778Z INFO [pmjs] preparation stage=images event=phase phase=discover elapsed_ms=17.0 source=""
+2026-10-21T14:21:39.429Z INFO [pmjs] preparation stage=images event=phase phase=wait elapsed_ms=474.4 source=""
+2026-10-21T14:21:39.430Z INFO [pmjs] preparation stage=images event=phase phase=catalog elapsed_ms=476.9 source=""
+2026-10-21T14:21:39.432Z INFO [pmjs] preparation stage=images event=phase phase=install elapsed_ms=2094.8 source=""
+[pmjs] memory-breakdown-capture-start requestId=1 duration_ms=0.3
+[pmjs] memory-breakdown-capture-complete requestId=1 duration_ms=58.1
+2026-10-21T14:21:40.843Z INFO [pmjs] diagnostic {"reason":"memory-recovered","stage":"asset-preparation","uptimeMs":10056,"context":{"interpreterDepth":0},"thresholdBytes":153117081.6,"availableBytes":655134720}
+2026-10-21T14:21:42.074Z INFO [pmjs] preparation stage=images event=phase phase=complete elapsed_ms=3440.3 source=""
+2026-10-21T14:21:42.075Z INFO [pmjs] preparation stage=images event=finish status=complete cache=warm catalog_hit=true catalog=hit duration_ms=3460.5 codec=lz4 verify_hashes=false cache_root="/mnt/mmc/ports/omori-pmjs2/.cache" generated=0 hits=2460 fallback=12 total=2470 prepared=2458 installed=2458 failed_files=0 install_failures=0 hashed_files=0 hashed_bytes=0 reused_files=0 copied_bytes=0 hash_categories={} snapshot_bytes=0 processing_ms=289832.1 early_refusals=0 phase_ms={"start":17,"discover":457.5,"wait":2.5,"catalog":1617.9,"install":1345.5,"complete":20.2} error=""
+2026-10-21T14:21:42.075Z INFO [pmjs] asset preparation generated=0 hits=2460 decrypted=0 audio_views=0 fallback=12 indexed_negative=0 indexed_layout_attempts=0 indexed_zero_page=0 indexed_page_copies=0 unindexed_processed=1903 hashed_files=0 hashed_bytes=0 reused_files=0 duration_ms=3424.2
+2026-10-21T14:21:42.077Z INFO [pmjs] preparation stage=maps event=start started_at=2026-10-21T14:21:40.771Z codec=png verify_hashes=false cache_root="/mnt/mmc/ports/omori-pmjs2/.cache/maps"
+2026-10-21T14:21:42.077Z INFO [pmjs] preparation stage=maps event=phase phase=map-discover elapsed_ms=8.3 source=""
+2026-10-21T14:21:42.077Z INFO [pmjs] preparation stage=maps event=phase phase=map-wait elapsed_ms=73.7 source=""
+2026-10-21T14:21:42.077Z INFO [pmjs] preparation stage=maps event=phase phase=map-catalog elapsed_ms=74.5 source=""
+2026-10-21T14:21:42.077Z INFO [pmjs] preparation stage=maps event=phase phase=map-discover elapsed_ms=76.9 source=""
+2026-10-21T14:21:42.077Z INFO [pmjs] preparation stage=maps event=phase phase=map-wait elapsed_ms=253.5 source=""
+2026-10-21T14:21:42.077Z INFO [pmjs] preparation stage=maps event=phase phase=map-validate elapsed_ms=254.5 source=""
+[mem] 20:21:46 used 451 MB, available 506 MB cpu 67C
+2026-10-21T14:21:52.014Z INFO [pmjs] preparation stage=maps event=phase phase=map-compile elapsed_ms=11165.0 source="Map001.json"
+2026-10-21T14:21:52.014Z INFO [pmjs] preparation stage=maps event=progress phase=map-compile elapsed_ms=11228.0 phase_elapsed_ms=63.0 no_progress_ms=63.0 completed=0 total=519 generated=0 hits=0 fallback=0 source="Map001.json"
+2026-10-21T14:21:52.014Z WARN [pmjs] map preparation ordinary Map001.json: no compact tile demand
+2026-10-21T14:21:52.168Z WARN [pmjs] map preparation ordinary Map003.json: no compact tile demand
+2026-10-21T14:21:52.429Z WARN [pmjs] map preparation ordinary Map007.json: no compact tile demand
+2026-10-21T14:21:52.471Z WARN [pmjs] map preparation ordinary Map008.json: no compact tile demand
+2026-10-21T14:21:52.490Z WARN [pmjs] map preparation ordinary Map009.json: no compact tile demand
+2026-10-21T14:21:52.509Z WARN [pmjs] map preparation ordinary Map010.json: no compact tile demand
+2026-10-21T14:21:52.524Z WARN [pmjs] map preparation ordinary Map011.json: no compact tile demand
+2026-10-21T14:21:52.530Z WARN [pmjs] map preparation ordinary Map012.json: no compact tile demand
+2026-10-21T14:21:52.724Z WARN [pmjs] map preparation ordinary Map013.json: packed allocations and geometry are not smaller
+2026-10-21T14:21:53.316Z WARN [pmjs] map preparation ordinary Map016.json: packed allocations and geometry are not smaller
+[mem] 20:21:56 used 561 MB, available 396 MB cpu 61C
+2026-10-21T14:21:59.172Z WARN [pmjs] map preparation ordinary Map056.json: packed allocations and geometry are not smaller
+2026-10-21T14:21:59.903Z WARN [pmjs] map preparation ordinary Map066.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:00.384Z WARN [pmjs] map preparation ordinary Map073.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:00.526Z WARN [pmjs] map preparation ordinary Map075.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:00.577Z WARN [pmjs] map preparation ordinary Map076.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:00.588Z WARN [pmjs] map preparation ordinary Map077.json: no compact tile demand
+2026-10-21T14:22:01.190Z WARN [pmjs] map preparation ordinary Map083.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:01.308Z WARN [pmjs] map preparation ordinary Map086.json: no compact tile demand
+2026-10-21T14:22:01.374Z WARN [pmjs] map preparation ordinary Map087.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:01.435Z WARN [pmjs] map preparation ordinary Map088.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:01.794Z WARN [pmjs] map preparation ordinary Map093.json: no compact tile demand
+2026-10-21T14:22:01.804Z WARN [pmjs] map preparation ordinary Map094.json: no compact tile demand
+2026-10-21T14:22:03.016Z INFO [pmjs] preparation stage=maps event=progress phase=map-compile elapsed_ms=21241.3 phase_elapsed_ms=15.3 no_progress_ms=15.3 completed=96 total=519 generated=0 hits=96 fallback=22 source="Map097.json"
+2026-10-21T14:22:06.621Z WARN [pmjs] map preparation ordinary Map146.json: packed allocations and geometry are not smaller
+[mem] 20:22:06 used 553 MB, available 404 MB cpu 62C
+2026-10-21T14:22:08.794Z WARN [pmjs] map preparation ordinary Map171.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:10.220Z WARN [pmjs] map preparation ordinary Map188.json: no compact tile demand
+2026-10-21T14:22:13.020Z INFO [pmjs] preparation stage=maps event=progress phase=map-compile elapsed_ms=31249.4 phase_elapsed_ms=87.6 no_progress_ms=87.6 completed=202 total=519 generated=0 hits=202 fallback=25 source="Map204.json"
+2026-10-21T14:22:13.316Z WARN [pmjs] map preparation ordinary Map217.json: no compact tile demand
+2026-10-21T14:22:13.369Z WARN [pmjs] map preparation ordinary Map218.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:15.449Z WARN [pmjs] map preparation ordinary Map246.json: no compact tile demand
+[mem] 20:22:16 used 554 MB, available 403 MB cpu 62C
+2026-10-21T14:22:16.792Z WARN [pmjs] map preparation ordinary Map262.json: no compact tile demand
+2026-10-21T14:22:16.798Z WARN [pmjs] map preparation ordinary Map263.json: no compact tile demand
+2026-10-21T14:22:17.834Z WARN [pmjs] map preparation ordinary Map279.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:18.143Z WARN [pmjs] map preparation ordinary Map284.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:18.640Z WARN [pmjs] map preparation ordinary Map294.json: no compact tile demand
+2026-10-21T14:22:18.678Z WARN [pmjs] map preparation ordinary Map295.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:18.865Z WARN [pmjs] map preparation ordinary Map298.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:18.871Z WARN [pmjs] map preparation ordinary Map299.json: no compact tile demand
+2026-10-21T14:22:18.934Z WARN [pmjs] map preparation ordinary Map300.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:19.411Z WARN [pmjs] map preparation ordinary Map306.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:19.416Z WARN [pmjs] map preparation ordinary Map307.json: no compact tile demand
+2026-10-21T14:22:19.448Z WARN [pmjs] map preparation ordinary Map308.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:20.112Z WARN [pmjs] map preparation ordinary Map318.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:20.118Z WARN [pmjs] map preparation ordinary Map319.json: no compact tile demand
+2026-10-21T14:22:20.171Z WARN [pmjs] map preparation ordinary Map320.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:20.219Z WARN [pmjs] map preparation ordinary Map321.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:20.278Z WARN [pmjs] map preparation ordinary Map322.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:20.776Z WARN [pmjs] map preparation ordinary Map328.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:22.939Z INFO [pmjs] preparation stage=maps event=progress phase=map-compile elapsed_ms=41257.1 phase_elapsed_ms=99.1 no_progress_ms=99.1 completed=339 total=519 generated=0 hits=339 fallback=46 source="Map341.json"
+2026-10-21T14:22:22.940Z WARN [pmjs] map preparation ordinary Map355.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:23.246Z WARN [pmjs] map preparation ordinary Map360.json: no compact tile demand
+2026-10-21T14:22:23.252Z WARN [pmjs] map preparation ordinary Map361.json: no compact tile demand
+2026-10-21T14:22:23.394Z WARN [pmjs] map preparation ordinary Map364.json: no compact tile demand
+2026-10-21T14:22:23.403Z WARN [pmjs] map preparation ordinary Map365.json: no compact tile demand
+2026-10-21T14:22:23.409Z WARN [pmjs] map preparation ordinary Map366.json: no compact tile demand
+2026-10-21T14:22:23.416Z WARN [pmjs] map preparation ordinary Map367.json: no compact tile demand
+2026-10-21T14:22:23.489Z WARN [pmjs] map preparation ordinary Map369.json: no compact tile demand
+2026-10-21T14:22:24.903Z WARN [pmjs] map preparation ordinary Map385.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:25.183Z WARN [pmjs] map preparation ordinary Map389.json: no compact tile demand
+2026-10-21T14:22:25.299Z WARN [pmjs] map preparation ordinary Map390.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:25.549Z WARN [pmjs] map preparation ordinary Map395.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:25.590Z WARN [pmjs] map preparation ordinary Map396.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:25.922Z WARN [pmjs] map preparation ordinary Map400.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:25.932Z WARN [pmjs] map preparation ordinary Map401.json: incomplete map visual planes
+[mem] 20:22:26 used 549 MB, available 408 MB cpu 60C
+2026-10-21T14:22:27.510Z WARN [pmjs] map preparation ordinary Map417.json: no compact tile demand
+2026-10-21T14:22:27.516Z WARN [pmjs] map preparation ordinary Map418.json: no compact tile demand
+2026-10-21T14:22:27.522Z WARN [pmjs] map preparation ordinary Map419.json: no compact tile demand
+2026-10-21T14:22:27.545Z WARN [pmjs] map preparation ordinary Map420.json: no compact tile demand
+2026-10-21T14:22:27.610Z WARN [pmjs] map preparation ordinary Map422.json: no compact tile demand
+2026-10-21T14:22:27.620Z WARN [pmjs] map preparation ordinary Map423.json: no compact tile demand
+2026-10-21T14:22:27.625Z WARN [pmjs] map preparation ordinary Map424.json: no compact tile demand
+2026-10-21T14:22:29.490Z WARN [pmjs] map preparation ordinary Map445.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:29.845Z WARN [pmjs] map preparation ordinary Map448.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:30.112Z WARN [pmjs] map preparation ordinary Map452.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:31.034Z WARN [pmjs] map preparation ordinary Map461.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:31.444Z WARN [pmjs] map preparation ordinary Map465.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:31.890Z WARN [pmjs] map preparation ordinary Map471.json: no compact tile demand
+2026-10-21T14:22:31.905Z WARN [pmjs] map preparation ordinary Map472.json: no compact tile demand
+2026-10-21T14:22:31.910Z WARN [pmjs] map preparation ordinary Map473.json: no compact tile demand
+2026-10-21T14:22:31.949Z WARN [pmjs] map preparation ordinary Map474.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:31.989Z WARN [pmjs] map preparation ordinary Map475.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:31.994Z WARN [pmjs] map preparation ordinary Map476.json: no compact tile demand
+2026-10-21T14:22:32.007Z WARN [pmjs] map preparation ordinary Map477.json: no compact tile demand
+2026-10-21T14:22:32.018Z WARN [pmjs] map preparation ordinary Map478.json: no compact tile demand
+2026-10-21T14:22:32.022Z WARN [pmjs] map preparation ordinary Map479.json: no compact tile demand
+2026-10-21T14:22:32.034Z WARN [pmjs] map preparation ordinary Map480.json: no compact tile demand
+2026-10-21T14:22:32.045Z INFO [pmjs] preparation stage=maps event=progress phase=map-compile elapsed_ms=51271.1 phase_elapsed_ms=3.1 no_progress_ms=3.1 completed=479 total=519 generated=0 hits=479 fallback=83 source="Map481.json"
+2026-10-21T14:22:32.045Z WARN [pmjs] map preparation ordinary Map481.json: no compact tile demand
+2026-10-21T14:22:32.053Z WARN [pmjs] map preparation ordinary Map482.json: no compact tile demand
+2026-10-21T14:22:32.151Z WARN [pmjs] map preparation ordinary Map484.json: no compact tile demand
+2026-10-21T14:22:32.381Z WARN [pmjs] map preparation ordinary Map488.json: no compact tile demand
+2026-10-21T14:22:32.407Z WARN [pmjs] map preparation ordinary Map489.json: no compact tile demand
+2026-10-21T14:22:32.441Z WARN [pmjs] map preparation ordinary Map490.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:32.475Z WARN [pmjs] map preparation ordinary Map491.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:32.506Z WARN [pmjs] map preparation ordinary Map492.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:32.536Z WARN [pmjs] map preparation ordinary Map493.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:32.579Z WARN [pmjs] map preparation ordinary Map494.json: packed allocations and geometry are not smaller
+2026-10-21T14:22:34.056Z WARN [pmjs] map preparation ordinary Map512.json: no compact tile demand
+2026-10-21T14:22:34.069Z WARN [pmjs] map preparation ordinary Map695.json: no compact tile demand
+2026-10-21T14:22:34.085Z WARN [pmjs] map preparation ordinary Map927.json: no compact tile demand
+2026-10-21T14:22:34.108Z WARN [pmjs] map preparation ordinary Map931.json: no compact tile demand
+2026-10-21T14:22:34.133Z WARN [pmjs] map preparation ordinary Map982.json: no compact tile demand
+2026-10-21T14:22:34.143Z WARN [pmjs] map preparation ordinary Map985.json: no compact tile demand
+2026-10-21T14:22:34.155Z WARN [pmjs] map preparation ordinary Map986.json: no compact tile demand
+2026-10-21T14:22:34.170Z WARN [pmjs] map preparation ordinary Map999.json: no compact tile demand
+[mem] 20:22:36 used 567 MB, available 390 MB cpu 63C
+2026-10-21T14:22:38.736Z INFO [pmjs] preparation stage=maps event=phase phase=map-install elapsed_ms=55185.0 source=""
+2026-10-21T14:22:38.737Z INFO [pmjs] preparation stage=maps event=phase phase=map-publish elapsed_ms=57286.8 source=""
+2026-10-21T14:22:42.027Z INFO [pmjs] preparation stage=maps event=phase phase=map-cleanup elapsed_ms=58765.4 source=""
+2026-10-21T14:22:45.639Z INFO [pmjs] preparation stage=maps event=progress phase=map-cleanup elapsed_ms=63869.8 phase_elapsed_ms=5104.4 no_progress_ms=5104.4 completed=519 total=519 generated=0 hits=519 fallback=101 source=""
+[mem] 20:22:48 used 595 MB, available 362 MB cpu 61C
+  2026-10-21T14:22:49.520Z INFO [pmjs] preparation stage=maps event=finish status=complete cache=warm catalog_hit=false catalog=missing duration_ms=68206.3 codec=png verify_hashes=false cache_root="/mnt/mmc/ports/omori-pmjs2/.cache/maps" generated=0 hits=519 fallback=101 total=519 prepared=418 installed=418 failed_files=0 install_failures=0 hashed_files=2855 hashed_bytes=182740750 reused_files=4851 copied_bytes=0 hash_categories={"map-input":158739233,"output":24001517} snapshot_bytes=0 processing_ms=0.0 early_refusals=0 phase_ms={"start":8.3,"map-discover":242.1,"map-wait":1.7,"map-catalog":2.4,"map-validate":12763.6,"map-compile":42167,"map-install":2101.7,"map-publish":1478.6,"map-cleanup":9440.9} error=""
+  2026-10-21T14:22:49.521Z INFO [pmjs] map preparation generated=0 hits=519 compilation_hits=461 selected=418 indexed_copies=0 native_packs=0 hashed_files=2855 hashed_bytes=182740750 reused_files=4851 duration_ms=68198.9
+  2026-10-21T14:22:49.521Z INFO [pmjs] preparation event=finish status=complete duration_ms=71733.7
+  2026-10-21T14:22:49.521Z INFO [pmjs] map preparation=on
+  2026-10-21T14:22:49.521Z INFO Deprecation Warning: VoidFilter has been renamed to AlphaFilter, please use PIXI.filters.AlphaFilter
+  2026-10-21T14:22:49.521Z WARN     at /mnt/mmc/ports/omori-test/www/js/rpg_core.js:3925:38
+  2026-10-21T14:22:49.521Z WARN     at Script.runInThisContext (node:vm:137:12)
+  2026-10-21T14:22:49.521Z WARN     at Object.runInThisContext (node:vm:317:38)
+  2026-10-21T14:22:49.521Z WARN     at native.runtime.loadScript (/root/pmjs-test2/pmjs-linux-arm64/share/pmjs/runner/index.cjs:557:17)
+  2026-10-21T14:22:49.521Z WARN     at NativeHost.runtime.loadScript (/mnt/mmc/ports/omori-pmjs2/.cache/pmjs/ca064ebffa43d3505c55a4a8/bootstrap-fcd70e2c87a58f36b69c9513a61093659121dd95bc9c6d841c3f2c29ef275c0b.js:6586:30)
+  2026-10-21T14:22:49.521Z WARN     at /mnt/mmc/ports/omori-pmjs2/.cache/pmjs/ca064ebffa43d3505c55a4a8/bootstrap-fcd70e2c87a58f36b69c9513a61093659121dd95bc9c6d841c3f2c29ef275c0b.js:6933:20
+  2026-10-21T14:22:49.521Z WARN     at Script.runInThisContext (node:vm:137:12)
+  2026-10-21T14:22:49.521Z WARN     at Object.runInThisContext (node:vm:317:38)
+2026-10-21T14:22:52.735Z INFO [catalog-probe] installed
+2026-10-21T14:22:52.735Z WARN [pmjs-opt] bitmap.native-draw-text refused: modified Bitmap text method composition; fallback: stock MV Canvas fillText and strokeText
+2026-10-21T14:22:52.740Z WARN [pmjs-opt] plugins.yanfly.event-mini-label refused: unrecognized Yanfly setupMiniLabel method composition; fallback: construct Window_EventMiniLabel for every event without checking page tags
+2026-10-21T14:22:52.742Z WARN [pmjs-opt] plugins.yanfly.slippery-tiles refused: slippery region or array membership composition requires guest query; fallback: stock YEP_SlipperyTiles isSlippery check on every call
+2026-10-21T14:22:52.749Z INFO [pmjs] timing-contract refused: unrecognized-updateMain (updateMain left untouched; logic runs per presentation)
+2026-10-21T14:22:52.749Z WARN [pmjs-opt] mv.logic-timing-contract refused: unrecognized SceneManager.updateMain composition; fallback: leave final guest SceneManager.updateMain unchanged
+2026-10-21T14:22:55.487Z INFO [pmjs] guest plugins: 152 manifest, 149 loaded, 3 disabled
+2026-10-21T14:22:55.488Z INFO [pmjs]   -------------------- disabled (disabled in game manifest)
+2026-10-21T14:22:55.488Z INFO [pmjs]   YEP_TestPlayAssist disabled (disabled in game manifest)
+2026-10-21T14:22:55.488Z INFO [pmjs]   YEP_Debugger disabled (disabled in game manifest)
+2026-10-21T14:22:55.488Z INFO [pmjs] owned method Graphics.render superseded guest changes from GTP_OmoriFixes
+2026-10-21T14:22:55.488Z INFO [pmjs] timing logic_hz=60 render_hz=60
+2026-10-21T14:22:55.488Z INFO [pmjs] ready size=640x480 startup_ms=84680.1
+[mem] 20:22:58 used 647 MB, available 309 MB cpu 65C
+2026-10-21T14:23:03.313Z ERROR [pmjs] uncaught exception in GTP_OmoriFixes fs callback: Error: Error: ENOENT: /save/OMORI/CUTSCENE.json
+2026-10-21T14:23:03.313Z ERROR     at /mnt/mmc/ports/omori-test/www/js/plugins/GTP_OmoriFixes.js:2717:22
+2026-10-21T14:23:03.313Z ERROR     at /mnt/mmc/ports/omori-pmjs2/.cache/pmjs/ca064ebffa43d3505c55a4a8/bootstrap-fcd70e2c87a58f36b69c9513a61093659121dd95bc9c6d841c3f2c29ef275c0b.js:15826:29
+2026-10-21T14:23:03.313Z ERROR     at Object.callback (/mnt/mmc/ports/omori-pmjs2/.cache/pmjs/ca064ebffa43d3505c55a4a8/bootstrap-fcd70e2c87a58f36b69c9513a61093659121dd95bc9c6d841c3f2c29ef275c0b.js:1849:59)
+2026-10-21T14:23:03.313Z ERROR     at Immediate.step [as _onImmediate] (/mnt/mmc/ports/omori-pmjs2/.cache/pmjs/ca064ebffa43d3505c55a4a8/bootstrap-fcd70e2c87a58f36b69c9513a61093659121dd95bc9c6d841c3f2c29ef275c0b.js:1321:17)
+2026-10-21T14:23:03.313Z ERROR     at process.processImmediate (node:internal/timers:484:21)
+2026-10-21T14:23:05.708Z INFO [pmjs] diagnostic {"reason":"game-location","stage":"playing","uptimeMs":94924,"context":{"scene":"Scene_Boot"},"to":{"scene":"Scene_Boot"}}
+[mem] 20:23:08 used 681 MB, available 275 MB cpu 67C
+2026-10-21T14:23:08.565Z INFO [x2] [bench] fps 0.0 (webgl, Scene_Boot)
+[vorbis @ 0x2839fb70] Could not update timestamps for discarded samples.
+[vorbis @ 0x2839fb70] Could not update timestamps for discarded samples.
+[vorbis @ 0x2839fb70] Could not update timestamps for discarded samples.
+[vorbis @ 0x2839fb70] Could not update timestamps for discarded samples.
+2026-10-21T14:23:15.732Z INFO [pmjs] diagnostic {"reason":"map-transition","stage":"playing","uptimeMs":104932,"context":{"mapId":0,"scene":"Scene_SplashScreens","x":0,"y":0,"frameCount":51},"from":{"scene":"Scene_Boot"},"to":{"mapId":0,"scene":"Scene_SplashScreens","x":0,"y":0,"frameCount":51}}
+2026-10-21T14:23:15.860Z INFO [bench] fps 0.2 (webgl, Scene_Boot)
+[mem] 20:23:18 used 684 MB, available 273 MB cpu 62C
+2026-10-21T14:23:20.776Z INFO [bench] fps 59.2 (webgl, Scene_SplashScreens)
+2026-10-21T14:23:25.762Z INFO [bench] fps 58.2 (webgl, Scene_SplashScreens)
+2026-10-21T14:23:27.793Z WARN [Omori Main Menu - Scene Options.js:864] [pmjs-opt] sprite.native-tint refused for this use: sprite subclass requires Canvas tone processing; fallback: Stock Canvas 2D Sprite._executeTint pixel passes
+[mem] 20:23:28 used 686 MB, available 271 MB cpu 64C
+2026-10-21T14:23:29.069Z INFO [tour] starting: 2 maps, settle 20 s, measure 20 s
+2026-10-21T14:23:35.782Z INFO [pmjs] diagnostic {"reason":"map-transition","stage":"playing","uptimeMs":124984,"context":{"mapId":87,"mapName":" -- WHITESPACE","scene":"Scene_Map","x":28,"y":27,"frameCount":138},"from":{"mapId":0,"scene":"Scene_SplashScreens","x":0,"y":0,"frameCount":639},"to":{"mapId":87,"mapName":" -- WHITESPACE","scene":"Scene_Map","x":28,"y":27,"frameCount":138}}
+2026-10-21T14:23:35.782Z WARN [pmjs] diagnostic {"reason":"slow-frame-summary","stage":"playing","uptimeMs":124985,"context":{"mapId":87,"mapName":" -- WHITESPACE","scene":"Scene_Map","x":28,"y":27,"eventId":6,"commandIndex":12,"commandCode":505,"interpreterDepth":0,"waitMode":"route","frameCount":138},"sampledFrames":146,"slowFrames":1,"maxSampledFrameMs":213,"meanFrameWallMs":20.9}
+2026-10-21T14:23:35.837Z INFO [bench] fps 23.5 (webgl, Scene_Map map 87)
+[mem] 20:23:38 used 689 MB, available 268 MB cpu 69C
+2026-10-21T14:23:40.784Z INFO [bench] fps 19.1 (webgl, Scene_Map map 87)
+[vorbis @ 0x2839fb70] Could not update timestamps for discarded samples.
+2026-10-21T14:23:45.788Z INFO [bench] fps 28.7 (webgl, Scene_Map map 87)
+[mem] 20:23:48 used 689 MB, available 268 MB cpu 66C
+2026-10-21T14:23:50.785Z INFO [bench] fps 26.8 (webgl, Scene_Map map 87)
+[vorbis @ 0x2839fb70] Could not update timestamps for discarded samples.
+2026-10-21T14:23:55.776Z INFO [bench] fps 28.1 (webgl, Scene_Map map 87)
+[mem] 20:23:58 used 689 MB, available 268 MB cpu 65C
+2026-10-21T14:24:00.802Z INFO [bench] fps 27.6 (webgl, Scene_Map map 87)
+2026-10-21T14:24:05.826Z INFO [bench] fps 28.3 (webgl, Scene_Map map 87)
+[mem] 20:24:08 used 689 MB, available 268 MB cpu 66C
+[vorbis @ 0x2839fb70] Could not update timestamps for discarded samples.
+2026-10-21T14:24:09.934Z INFO [tour] {"n":1,"id":87,"region":"","name":"","effects":"","arrived":true,"at":[28,27],"tickMs":30.88,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":687,"fps":28.1,"ft":[34.8,42.1,53.5],"drawMs":1.8,"uploadMs":0.16,"draws":0,"messageShare":0,"filters":["BlurFilter{blur=0}","t{strength=0}","n{blur=0 bloomScale=0}","t(off){amplitude=0}","n(off){offset=0}","n(off){blur=0 bloomScale=0.67}","ToneFilter{alpha=1}","AlphaFilter{alpha=1}"],"text":null,"autopilot":{"presses":0,"battles":0,"gameOvers":0},"mem":{"rss":626.8,"heap":133.6,"imgGpu":3.2,"imgCpu":109.4},"prep":{"selected":0,"refused":0,"unscoped":0,"reasons":{},"catalog":true},"state":{"scene":"Scene_Map","map":87,"message":false,"event":false,"pictures":0},"errors":[],"errorCount":0}
+2026-10-21T14:24:09.934Z WARN [YEP_CoreEngine.js:1027] [pmjs-opt] plugins.yanfly.core-native-text refused for this use: Bitmap text methods changed after installation; fallback: captured MV Canvas text drawing
+2026-10-21T14:24:11.201Z INFO [catalog-probe] {"operation":"loadAsync:after","flags":2,"map":90,"source":"img/tilesets/Tile_Collision_32x32.png","tileSet":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","expected":{"identity":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","sources":["img/tilesets/Tile_Collision_32x32.png","img/tilesets/Tile_Region_32x32.png","img/tilesets/DW_NorthLake.png","img/tilesets/DW_VastForest.png","img/tilesets/Terrain.png","img/tilesets/DW_Beach.png","img/tilesets/general_use.png","img/tilesets/DW_Beachpiece.png","img/tilesets/DW_SmallWaves.png"]},"sourcePath":"/mnt/mmc/ports/omori-test/www/img/tilesets/Tile_Collision_32x32.png","sourceIdentity":"/mnt/mmc/ports/omori-test/www/img/tilesets/Tile_Collision_32x32.png:45830:62762:22777:1792528399:0:1792528399:0"}
+2026-10-21T14:24:11.203Z INFO [x7] [catalog-probe-flush] 2
+2026-10-21T14:24:11.205Z INFO [catalog-probe] {"operation":"loadAsync:after","flags":2,"map":90,"source":"img/tilesets/Tile_Region_32x32.png","tileSet":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","expected":{"identity":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","sources":["img/tilesets/Tile_Collision_32x32.png","img/tilesets/Tile_Region_32x32.png","img/tilesets/DW_NorthLake.png","img/tilesets/DW_VastForest.png","img/tilesets/Terrain.png","img/tilesets/DW_Beach.png","img/tilesets/general_use.png","img/tilesets/DW_Beachpiece.png","img/tilesets/DW_SmallWaves.png"]},"sourcePath":"/mnt/mmc/ports/omori-test/www/img/tilesets/Tile_Region_32x32.png","sourceIdentity":"/mnt/mmc/ports/omori-test/www/img/tilesets/Tile_Region_32x32.png:45830:62721:61783:1792528399:0:1792528399:0"}
+2026-10-21T14:24:11.208Z INFO [catalog-probe] {"operation":"loadAsync:after","flags":2,"map":90,"source":"img/tilesets/DW_NorthLake.png","tileSet":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","expected":{"identity":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","sources":["img/tilesets/Tile_Collision_32x32.png","img/tilesets/Tile_Region_32x32.png","img/tilesets/DW_NorthLake.png","img/tilesets/DW_VastForest.png","img/tilesets/Terrain.png","img/tilesets/DW_Beach.png","img/tilesets/general_use.png","img/tilesets/DW_Beachpiece.png","img/tilesets/DW_SmallWaves.png"]},"sourcePath":"/mnt/mmc/ports/omori-test/www/img/tilesets/DW_NorthLake.png","sourceIdentity":"/mnt/mmc/ports/omori-test/www/img/tilesets/DW_NorthLake.png:45830:62765:150268:1792528399:0:1792528399:0"}
+2026-10-21T14:24:11.209Z INFO [catalog-probe] {"operation":"loadAsync:after","flags":2,"map":90,"source":"img/tilesets/DW_VastForest.png","tileSet":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","expected":{"identity":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","sources":["img/tilesets/Tile_Collision_32x32.png","img/tilesets/Tile_Region_32x32.png","img/tilesets/DW_NorthLake.png","img/tilesets/DW_VastForest.png","img/tilesets/Terrain.png","img/tilesets/DW_Beach.png","img/tilesets/general_use.png","img/tilesets/DW_Beachpiece.png","img/tilesets/DW_SmallWaves.png"]},"sourcePath":"/mnt/mmc/ports/omori-test/www/img/tilesets/DW_VastForest.png","sourceIdentity":"/mnt/mmc/ports/omori-test/www/img/tilesets/DW_VastForest.png:45830:53812:174889:1792528399:0:1792528399:0"}
+2026-10-21T14:24:11.209Z INFO [catalog-probe] {"operation":"loadAsync:after","flags":2,"map":90,"source":"img/tilesets/Terrain.png","tileSet":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","expected":{"identity":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","sources":["img/tilesets/Tile_Collision_32x32.png","img/tilesets/Tile_Region_32x32.png","img/tilesets/DW_NorthLake.png","img/tilesets/DW_VastForest.png","img/tilesets/Terrain.png","img/tilesets/DW_Beach.png","img/tilesets/general_use.png","img/tilesets/DW_Beachpiece.png","img/tilesets/DW_SmallWaves.png"]},"sourcePath":"/mnt/mmc/ports/omori-test/www/img/tilesets/Terrain.png","sourceIdentity":"/mnt/mmc/ports/omori-test/www/img/tilesets/Terrain.png:45830:62772:157227:1792528399:0:1792528399:0"}
+2026-10-21T14:24:11.209Z INFO [catalog-probe] {"operation":"loadAsync:after","flags":2,"map":90,"source":"img/tilesets/DW_Beach.png","tileSet":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","expected":{"identity":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","sources":["img/tilesets/Tile_Collision_32x32.png","img/tilesets/Tile_Region_32x32.png","img/tilesets/DW_NorthLake.png","img/tilesets/DW_VastForest.png","img/tilesets/Terrain.png","img/tilesets/DW_Beach.png","img/tilesets/general_use.png","img/tilesets/DW_Beachpiece.png","img/tilesets/DW_SmallWaves.png"]},"sourcePath":"/mnt/mmc/ports/omori-test/www/img/tilesets/DW_Beach.png","sourceIdentity":"/mnt/mmc/ports/omori-test/www/img/tilesets/DW_Beach.png:45830:53774:108703:1792528398:0:1792528398:0"}
+2026-10-21T14:24:11.209Z INFO [catalog-probe] {"operation":"loadAsync:after","flags":2,"map":90,"source":"img/tilesets/general_use.png","tileSet":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","expected":{"identity":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","sources":["img/tilesets/Tile_Collision_32x32.png","img/tilesets/Tile_Region_32x32.png","img/tilesets/DW_NorthLake.png","img/tilesets/DW_VastForest.png","img/tilesets/Terrain.png","img/tilesets/DW_Beach.png","img/tilesets/general_use.png","img/tilesets/DW_Beachpiece.png","img/tilesets/DW_SmallWaves.png"]},"sourcePath":"/mnt/mmc/ports/omori-test/www/img/tilesets/general_use.png","sourceIdentity":"/mnt/mmc/ports/omori-test/www/img/tilesets/general_use.png:45830:62775:203124:1792528399:0:1792528399:0"}
+2026-10-21T14:24:11.209Z INFO [catalog-probe] {"operation":"loadAsync:after","flags":2,"map":90,"source":"img/tilesets/DW_Beachpiece.png","tileSet":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","expected":{"identity":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","sources":["img/tilesets/Tile_Collision_32x32.png","img/tilesets/Tile_Region_32x32.png","img/tilesets/DW_NorthLake.png","img/tilesets/DW_VastForest.png","img/tilesets/Terrain.png","img/tilesets/DW_Beach.png","img/tilesets/general_use.png","img/tilesets/DW_Beachpiece.png","img/tilesets/DW_SmallWaves.png"]},"sourcePath":"/mnt/mmc/ports/omori-test/www/img/tilesets/DW_Beachpiece.png","sourceIdentity":"/mnt/mmc/ports/omori-test/www/img/tilesets/DW_Beachpiece.png:45830:53775:75876:1792528398:0:1792528398:0"}
+2026-10-21T14:24:11.209Z INFO [catalog-probe] {"operation":"loadAsync:after","flags":2,"map":90,"source":"img/tilesets/DW_SmallWaves.png","tileSet":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","expected":{"identity":"aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24","sources":["img/tilesets/Tile_Collision_32x32.png","img/tilesets/Tile_Region_32x32.png","img/tilesets/DW_NorthLake.png","img/tilesets/DW_VastForest.png","img/tilesets/Terrain.png","img/tilesets/DW_Beach.png","img/tilesets/general_use.png","img/tilesets/DW_Beachpiece.png","img/tilesets/DW_SmallWaves.png"]},"sourcePath":"/mnt/mmc/ports/omori-test/www/img/tilesets/DW_SmallWaves.png","sourceIdentity":"/mnt/mmc/ports/omori-test/www/img/tilesets/DW_SmallWaves.png:45830:53799:2459:1792528399:0:1792528399:0"}
+2026-10-21T14:24:11.209Z INFO [bench] fps 24.2 (webgl, Scene_Map map 90)
+2026-10-21T14:24:15.766Z INFO [bench] fps 22.3 (webgl, Scene_Map map 90)
+2026-10-21T14:24:15.842Z INFO [pmjs] diagnostic {"reason":"map-transition","stage":"playing","uptimeMs":165059,"context":{"mapId":90,"mapName":" -- NORTH COAST","scene":"Scene_Map","x":10,"y":28,"frameCount":1175},"from":{"mapId":87,"mapName":" -- WHITESPACE","scene":"Scene_Map","x":28,"y":27,"frameCount":941},"to":{"mapId":90,"mapName":" -- NORTH COAST","scene":"Scene_Map","x":10,"y":28,"frameCount":1175}}
+[mem] 20:24:18 used 716 MB, available 241 MB cpu 67C
+2026-10-21T14:24:20.751Z INFO [bench] fps 24.4 (webgl, Scene_Map map 90)
+2026-10-21T14:24:25.757Z INFO [bench] fps 27.4 (webgl, Scene_Map map 90)
+[mem] 20:24:28 used 722 MB, available 235 MB cpu 68C
+2026-10-21T14:24:30.796Z INFO [bench] fps 27.1 (webgl, Scene_Map map 90)
+2026-10-21T14:24:35.799Z INFO [bench] fps 28.0 (webgl, Scene_Map map 90)
+[mem] 20:24:38 used 730 MB, available 227 MB cpu 66C
+2026-10-21T14:24:40.788Z INFO [bench] fps 27.9 (webgl, Scene_Map map 90)
+2026-10-21T14:24:45.785Z INFO [bench] fps 28.1 (webgl, Scene_Map map 90)
+[mem] 20:24:48 used 733 MB, available 223 MB cpu 67C
+2026-10-21T14:24:50.563Z INFO [bench] fps 28.7 (webgl, Scene_Map map 90)
+2026-10-21T14:24:50.564Z INFO [tour] {"n":2,"id":90,"region":"","name":"","effects":"","arrived":true,"at":[10,28],"tickMs":30.58,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":707,"fps":28.3,"ft":[34.5,39.9,54.2],"drawMs":1.98,"uploadMs":0.16,"draws":0,"messageShare":0,"filters":["BlurFilter{blur=0}","t{strength=0}","n{blur=0 bloomScale=0}","t(off){amplitude=0}","n(off){offset=0}","n(off){blur=0 bloomScale=0.67}","ToneFilter{alpha=1}","AlphaFilter{alpha=1}"],"text":null,"autopilot":{"presses":0,"battles":0,"gameOvers":0},"mem":{"rss":674,"heap":155.9,"imgGpu":17.4,"imgCpu":110.9},"prep":{"selected":9,"refused":0,"unscoped":1,"reasons":{},"catalog":false},"state":{"scene":"Scene_Map","map":90,"message":false,"event":false,"pictures":0},"errors":[],"errorCount":0}
+2026-10-21T14:24:50.564Z INFO [tour-summary]    id  region           fps   p50   p95   max  drawMs draws  msg  textFps rssMB  name  (tickMs = JS per frame)
+2026-10-21T14:24:50.564Z INFO [tour-summary] 87                    28.1  34.8  42.1  53.5  1.8    0     0    -       626.8   tickMs=30.88/null
+2026-10-21T14:24:50.564Z INFO [tour-summary] 90                    28.3  34.5  39.9  54.2  1.98   0     0    -       674     tickMs=30.58/null
+2026-10-21T14:24:50.564Z INFO [tour] autopilot: {"paused":false,"presses":0,"battles":0,"gameOvers":0}
+2026-10-21T14:24:50.564Z INFO [tour] done

@@ -1,0 +1,92 @@
+[
+  {
+    "map": 90,
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "source": "img/tilesets/Tile_Collision_32x32.png",
+    "installedIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/Tile_Collision_32x32.png:45830:47342:22777:1792528399:0:1792528399:0",
+    "liveIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/Tile_Collision_32x32.png:45830:62762:22777:1792528399:0:1792528399:0",
+    "sourceHash": "53fc27d4770cea4fd0abe651523e7c0324e88d0316227cb8452ce652bcf59af6",
+    "matches": false
+  },
+  {
+    "map": 90,
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "source": "img/tilesets/Tile_Region_32x32.png",
+    "installedIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/Tile_Region_32x32.png:45830:47299:61783:1792528399:0:1792528399:0",
+    "liveIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/Tile_Region_32x32.png:45830:62721:61783:1792528399:0:1792528399:0",
+    "sourceHash": "479dc1226ab732cb4fa0b37af044fa18e6b8b99f035fe2b32b8e25455c9ca18d",
+    "matches": false
+  },
+  {
+    "map": 90,
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "source": "img/tilesets/DW_NorthLake.png",
+    "installedIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_NorthLake.png:45830:47357:150268:1792528399:0:1792528399:0",
+    "liveIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_NorthLake.png:45830:62765:150268:1792528399:0:1792528399:0",
+    "sourceHash": "35814e0f6423780e5a51c024fef90e75f23b09ddf5b88a20835e38fe2a12c90d",
+    "matches": false
+  },
+  {
+    "map": 90,
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "source": "img/tilesets/DW_VastForest.png",
+    "installedIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_VastForest.png:45830:53812:174889:1792528399:0:1792528399:0",
+    "liveIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_VastForest.png:45830:53812:174889:1792528399:0:1792528399:0",
+    "sourceHash": "d31d1e38a9da3eb9408d7feed0f5769fd58a3286b132de7c29afe0a21cc12fa0",
+    "matches": true
+  },
+  {
+    "map": 90,
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "source": "img/tilesets/Terrain.png",
+    "installedIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/Terrain.png:45830:47390:157227:1792528399:0:1792528399:0",
+    "liveIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/Terrain.png:45830:62772:157227:1792528399:0:1792528399:0",
+    "sourceHash": "20677d637d097f61f45d3e5528852f8a26014a421900613e45d2f3354242157f",
+    "matches": false
+  },
+  {
+    "map": 90,
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "source": "img/tilesets/DW_Beach.png",
+    "installedIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_Beach.png:45830:53774:108703:1792528398:0:1792528398:0",
+    "liveIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_Beach.png:45830:53774:108703:1792528398:0:1792528398:0",
+    "sourceHash": "b4229447d56af78e7961bb4ead2421030f0577d094281ab3b8ab9b74d4858751",
+    "matches": true
+  },
+  {
+    "map": 90,
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "source": "img/tilesets/general_use.png",
+    "installedIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/general_use.png:45830:47351:203124:1792528399:0:1792528399:0",
+    "liveIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/general_use.png:45830:62775:203124:1792528399:0:1792528399:0",
+    "sourceHash": "8634ef40b2a05166e6f0f23503c9951cd3b21406af156ee0897774647783edbc",
+    "matches": false
+  },
+  {
+    "map": 90,
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "source": "img/tilesets/DW_Beachpiece.png",
+    "installedIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_Beachpiece.png:45830:53775:75876:1792528398:0:1792528398:0",
+    "liveIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_Beachpiece.png:45830:53775:75876:1792528398:0:1792528398:0",
+    "sourceHash": "625806d3c4ae2cfa7692d57e699f1356e4a99cc034f51743a615db5a3ddc0662",
+    "matches": true
+  },
+  {
+    "map": 90,
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "source": "img/tilesets/DW_SmallWaves.png",
+    "installedIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_SmallWaves.png:45830:53799:2459:1792528399:0:1792528399:0",
+    "liveIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_SmallWaves.png:45830:53799:2459:1792528399:0:1792528399:0",
+    "sourceHash": "c5a36b969cfc50bdeae4fe0eee745c3ddf2447f8d552813350cfd529430a6468",
+    "matches": true
+  }
+]

@@ -1,0 +1,649 @@
+// Test-only OMORI runtime experiments. Game files are never rewritten.
+(function() {
+  'use strict';
+  var root = globalThis, require = root.__pmjsBuiltinRequire;
+  var expected = {
+  "update": [
+    "afc0c175fbd5adfb4ffc57345ca0aea27ec1338fe74789c2c3599dca1c001594"
+  ],
+  "synchronize": [
+    "e97a11a96fdaba2f99bfc3e769ab7dd15f7d9c152062c59a2654576da596b7ea"
+  ],
+  "children": [
+    "ed434d771eafc138202664abed6f2c0f86e3142910c285bf9ca7efdbabf4d4ef"
+  ],
+  "base": [
+    "fd9d2f86de93fece0c102aac5e1bb5aec263509403dc05be6d099db79a97f263"
+  ],
+  "visibility": [
+    "2c3e4c95bd9c9c047755085370a835ac99d5eee56c5a30e10512d80f95efa1c7"
+  ],
+  "animations": [
+    "30575574c798ac1d0086edb495a72ab561e65d4ae6090978004e1ed1a426a2fd"
+  ],
+  "noise": [
+    "5886848c86d64f40d6342cd985179c8d0f328e8d4231011f044ebcd3b8c2d686"
+  ],
+  "glitch": [
+    "1dfffbc540671e82481f9d99431290422c72a8c1b036a25c68e52708457b406c"
+  ],
+  "tv": [
+    "f5469ca6d318fe389e00824aa5daf6f698f3e4a300b21a79372910c5434f2254"
+  ],
+  "effects": [
+    "9260befd5b45556ad2fa3d618ba31a782c7b84396828aad1f27a2839d2f270fe"
+  ]
+}; // Filled with reviewed LF-normalized source fingerprints by the host audit.
+  function digest(fn) {
+    return typeof fn === 'function' ? require('node:crypto').createHash('sha256')
+      .update(Function.prototype.toString.call(fn).replace(/\r\n/g, '\n')).digest('hex') : '';
+  }
+  function install() {
+    var sprite = Sprite.prototype, base = Sprite_Base.prototype;
+    var original = sprite.update, synchronize = sprite.synchronizeHorrorFiltersWithSource;
+    var children = Olivia.HorrorEffects.___Sprite_update___;
+    var effects = sprite.updateHorrorEffects;
+    var noise = sprite.updateHorrorNoise, glitch = sprite.updateHorrorGlitch, tv = sprite.updateHorrorTV;
+    var originalBase = base.update, visibility = base.updateVisibility, animations = base.updateAnimationSprites;
+    var checks = { update: original, synchronize: synchronize, children: children,
+      effects: effects, noise: noise, glitch: glitch, tv: tv,
+      base: originalBase, visibility: visibility, animations: animations };
+    var failures = Object.keys(checks).filter(function(key) { return !(expected[key] || []).includes(digest(checks[key])); });
+    if (failures.length) {
+      console.log('[logic-experiment] refused '+JSON.stringify(failures.map(function(key) { return [key, digest(checks[key])]; })));
+      return;
+    }
+    var mode = NativeHost.runtime.env('OMORI_LOGIC_MODE') || 'baseline';
+    var stats = { horrorSkipped: 0, baseSkipped: 0 };
+    function empty(sprite) {
+      var filters = sprite._horrorFilters;
+      return !filters || !(filters.noiseFilter || filters.glitchFilter || filters.tvFilter);
+    }
+    function methods(sprite) {
+      return sprite.synchronizeHorrorFiltersWithSource === synchronize &&
+        sprite.updateHorrorEffects === effects && sprite.updateHorrorNoise === noise &&
+        sprite.updateHorrorGlitch === glitch && sprite.updateHorrorTV === tv &&
+        Olivia.HorrorEffects.___Sprite_update___ === children;
+    }
+    function fastUpdate() {
+      if ((mode !== 'horror' && mode !== 'both') || !methods(this) ||
+          this._horrorFiltersSource || !empty(this)) return original.apply(this, arguments);
+      stats.horrorSkipped++;
+      // Preserve the reviewed alias's live iterator semantics, including appended children.
+      for (var child of this.children) if (child.update) child.update();
+      // A child can activate an effect or replace a delegate during the traversal.
+      if (!methods(this) || !empty(this)) this.updateHorrorEffects();
+    }
+    sprite.update = fastUpdate;
+    base.update = function() {
+      if ((mode === 'base' || mode === 'both') && sprite.update === fastUpdate &&
+          this.updateVisibility === visibility && this.updateAnimationSprites === animations &&
+          this.children.length === 0 && this._animationSprites.length === 0 &&
+          !this._horrorFiltersSource && empty(this) && methods(this)) {
+        stats.baseSkipped++;
+        this.visible = !this._hiding;
+        return;
+      }
+      return originalBase.apply(this, arguments);
+    };
+    root.__omoriLogicExperiments = {
+      setMode: function(value) {
+        if (!['baseline', 'horror', 'base', 'both'].includes(value)) throw new Error('unknown experiment mode');
+        mode = value;
+      },
+      snapshot: function() { return { mode: mode, horrorSkipped: stats.horrorSkipped, baseSkipped: stats.baseSkipped }; }
+    };
+    console.log('[logic-experiment] installed '+JSON.stringify(root.__omoriLogicExperiments.snapshot()));
+  }
+  var timer = setInterval(function() {
+    if (!root.SceneManager || !SceneManager._scene || SceneManager._scene.constructor.name !== 'Scene_OmoriTitleScreen') return;
+    clearInterval(timer);
+    try { install(); } catch (error) { console.log('[logic-experiment] failed '+String(error.stack || error)); }
+  }, 50);
+})();
+
+// Test-only specialization for the reviewed OMORI MV/custom-rectangles/EMF composition.
+(function() {
+  'use strict';
+  var root = globalThis, require = root.__pmjsBuiltinRequire;
+  var expected = {
+  "frame": [
+    "61f013f3e685102f24712e68f58e322320f9d8eeff9a2829c9f892eca7385b61"
+  ],
+  "isSingleFrame": [
+    "d82dd1a23f3ec21e623ae5faecdf50410c05b8fe1262cf02e311ba10b0ff51e2"
+  ],
+  "isEmfCharacter": [
+    "5454731bc7408427dffbdd1209ec84eaa437a3de8b7bc4d4cada019bbdf827d1"
+  ],
+  "inner": [
+    "86e6bf743c4ee448859c60e8706e5e339f6bf0316c42809d8608f7c5065fe3cd"
+  ],
+  "emfWidth": [
+    "46d44179ca8be450446e5486f0833d96341cccf2818bc772256de52f0ab5e3f6"
+  ],
+  "characterBlockX": [
+    "46a829c6b4265898fc47a2077aa9ef5b91640ea111dc46c5877647085d547994"
+  ],
+  "alias_characterBlockX": [
+    "76d7c5af3b172bb03cb15aedf693673a32e4760c0c7a95a79bc420a5983317d1"
+  ],
+  "characterBlockY": [
+    "c7a6a1180963924d85e5690fca7d4c3214723a1ba5745819d6ae8c1276a1a1f4"
+  ],
+  "alias_characterBlockY": [
+    "20953a88f0212e8821f2ed3cc0e3557ecf2988c1082a7c3dbc6444f89cea6de6"
+  ],
+  "characterPatternX": [
+    "19ee1460e719357be72cf38ed13dceca5b29a4ba8dd9c42ffd05f7c503d37c09"
+  ],
+  "alias_characterPatternX": [
+    "d8367f4faa2dd88f43d512d35c9c2af9873798f219bac91f4589c9d88f1c6b95"
+  ],
+  "characterPatternY": [
+    "6d975bc75b8541627c0d60f094d9dfb073b1451f1b715c16ecad858d69ff89c5"
+  ],
+  "alias_characterPatternY": [
+    "d82f8f1ef9c986740a1d6e0aed4c655f17a2847ddfe3305a5737859694d8c59d"
+  ],
+  "patternWidth": [
+    "b1bfbf3b8cf68f9a0affbdebd062f1a2e0678aedc2928a33bbe05ed2d5fcda20"
+  ],
+  "alias_patternWidth": [
+    "11f74cb7dc64c70c7bdca47d687d45670d0e9b9846b52a4539832565055945d6"
+  ],
+  "patternHeight": [
+    "c7c648b4ac8f4b5099de26a264a516827ca8cc24ba409119c1592dcc0d3c3b67"
+  ],
+  "alias_patternHeight": [
+    "6bcbe7b8a62bed13e40f7f299222c571593ee561cc9d1b6e484d0a006318d7d3"
+  ]
+};
+  function hash(fn) {
+    return typeof fn === 'function' ? require('node:crypto').createHash('sha256')
+      .update(Function.prototype.toString.call(fn).replace(/\r\n/g, '\n')).digest('hex') : '';
+  }
+  function install() {
+    var proto = Sprite_Character.prototype, characterProto = Game_CharacterBase.prototype;
+    var custom = _TDS_.CustomCharacterRectangles, emf = ModernAlgebra.EMF;
+    var frame = proto.updateCharacterFrame;
+    var names = ['characterBlockX','characterBlockY','characterPatternX','characterPatternY','patternWidth','patternHeight'];
+    var methods = {}, aliases = {}, checks = { frame: frame,
+      isSingleFrame: characterProto.isSingleFrame, isEmfCharacter: characterProto.isEmfCharacter,
+      inner: _TDS_.OmoriBASE.Sprite_Character_updateCharacterFrame,
+      emfWidth: emf.SpriteCharacter_patternWidth };
+    names.forEach(function(name) {
+      methods[name] = proto[name];
+      aliases[name] = custom['Sprite_Character_'+name];
+      checks[name] = methods[name]; checks['alias_'+name] = aliases[name];
+    });
+    var failures = Object.keys(checks).filter(function(name) { return !(expected[name] || []).includes(hash(checks[name])); });
+    if (failures.length) {
+      console.log('[frame-experiment] refused '+JSON.stringify(failures.map(function(name) { return [name,hash(checks[name])]; })));
+      return;
+    }
+    var enabled = false, hits = 0, fallbacks = 0;
+    proto.updateCharacterFrame = function() {
+      var character = this._character, bitmap = this.bitmap;
+      if (enabled && character && bitmap && bitmap.width > 0 && bitmap.height > 0 && this._tileId === 0 &&
+          character.isSingleFrame === checks.isSingleFrame && !character._singleFrame &&
+          character.isEmfCharacter === checks.isEmfCharacter && !character._isEmfCharacter &&
+          character._customFrameX === null && character._customFrameY === null &&
+          character._customFrameWidth === null && character._customFrameHeight === null &&
+          this.characterBlockX === methods.characterBlockX && this.characterBlockY === methods.characterBlockY &&
+          this.characterPatternX === methods.characterPatternX && this.characterPatternY === methods.characterPatternY &&
+          this.patternWidth === methods.patternWidth && this.patternHeight === methods.patternHeight &&
+          _TDS_.OmoriBASE.Sprite_Character_updateCharacterFrame === checks.inner &&
+          emf.SpriteCharacter_patternWidth === checks.emfWidth &&
+          names.every(function(name) { return custom['Sprite_Character_'+name] === aliases[name]; })) {
+        hits++;
+        var width = bitmap.width / (this._isBigCharacter ? 3 : 12);
+        var height = bitmap.height / (this._isBigCharacter ? 4 : 8);
+        var customX = character._customFrameX;
+        var blockX = customX !== null ? customX : this._isBigCharacter ? 0 : character.characterIndex() % 4 * 3;
+        var patternX = character._customFrameX !== null ? 0 : character.pattern();
+        var x = (blockX + patternX) * width;
+        var customY = character._customFrameY;
+        var blockY = customY !== null ? customY : this._isBigCharacter ? 0 : Math.floor(character.characterIndex()/4) * 4;
+        var patternY = character._customFrameY !== null ? 0 : (character.direction()-2)/2;
+        var y = (blockY + patternY) * height;
+        this.updateHalfBodySprites();
+        if (this._bushDepth > 0) {
+          var depth = this._bushDepth;
+          this._upperBody.setFrame(x,y,width,height-depth);
+          this._lowerBody.setFrame(x,y+height-depth,width,depth);
+          this.setFrame(x,y,0,height);
+        } else this.setFrame(x,y,width,height);
+        return;
+      }
+      if (enabled) fallbacks++;
+      return frame.apply(this, arguments);
+    };
+    root.__omoriFrameExperiment = {
+      setEnabled: function(value) { enabled = !!value; },
+      snapshot: function() { return { enabled: enabled, hits: hits, fallbacks: fallbacks }; }
+    };
+    console.log('[frame-experiment] installed');
+  }
+  var timer = setInterval(function() {
+    if (!root.SceneManager || !SceneManager._scene || SceneManager._scene.constructor.name !== 'Scene_OmoriTitleScreen') return;
+    clearInterval(timer);
+    try { install(); } catch (error) { console.log('[frame-experiment] failed '+String(error.stack || error)); }
+  }, 50);
+})();
+
+// Map tour: visits a spread of OMORI maps and logs per-map performance and state (test only).
+//
+// PMJS:   pmjs <game> --patch map-tour.js        (set PMJS_BENCH_AUTOPLAY=0 if pmjs-bench.js is loaded)
+// NW.js:  load it from the launcher like any injected script; PMJS-only fields are then omitted.
+//
+// After the title screen it starts a new game and, for each map: transfers there, moves the player
+// to a passable tile near the map centre, waits OMORI_TOUR_SETTLE seconds (default 8) for fades and
+// autorun events, then measures for OMORI_TOUR_MEASURE seconds (default 15). Each map logs one
+// "[tour] {json}" line; a "[tour-summary]" table follows the last map. OMORI_TOUR_MAPS overrides the
+// list ("87,90,98" or "87:28:27,..." with explicit coordinates).
+//
+// It needs no input: message boxes and choices are confirmed through the game's own input state,
+// and battles or game over that interrupt it are left (see autopilot). OMORI_TOUR_TEXT sets the
+// per-map text test length in seconds (default 6, 0 disables it).
+//
+// Fields: fps (rendered frames/s), ft = frame time p50/p95/max in ms (stutter shows in p95/max),
+// drawMs/uploadMs = PMJS native renderer CPU time per frame, draws = draw calls per frame,
+// messageShare = fraction of measured frames with a message box open, tickMs = game JavaScript per
+// frame (PMJS __pmjsTick), textDraw = text draw calls/ms through PMJS's native path vs the stock
+// Canvas fallback, nodes = display objects in the scene, text = the same while the standard test
+// message is shown, filters = live filters in the scene tree with their key strengths,
+// mem = process/heap/image MB, state = what the game was doing (scene, actual map, message/event
+// running), autopilot = confirms sent and battles/game overs left so far, errors = uncaught errors.
+// OMORI_TOUR_PROFILE=<dir> also records a V8 CPU profile of every measurement window (see profiler).
+(function () {
+  'use strict';
+  // NW.js 0.29 (Chromium 65) predates globalThis.
+  var root = typeof globalThis !== 'undefined' ? globalThis : window;
+
+  // Spread across regions (ids, names and effect notes from data/MapInfos.json and the map events).
+  var MAPS = [
+    [87, 'DREAM WORLD', 'WHITESPACE', 'horror (cutscene)'],
+    [90, 'DREAM WORLD', 'NORTH COAST', 'displacement'],
+    [98, 'DREAM WORLD', 'OLD SHOE INTERIOR', 'horror'],
+    [111, 'DREAM WORLD', 'RAIN TOWN', ''],
+    [152, 'DREAM WORLD', 'PYREFLY FOREST', 'displacement'],
+    [157, 'DREAM WORLD', 'PYREFLY SIDE-II', ''],
+    [201, 'DREAM WORLD', 'ENTRANCE TO ABYSS', ''],
+    [209, 'DREAM WORLD', 'MAIN PIER', 'displacement'],
+    [245, 'DREAM WORLD', 'MOLLY LOST ROOM 5', ''],
+    [354, 'DREAM WORLD', 'LOST FOREST (VI)', ''],
+    [267, 'BLACKSPACE', 'HUB: LOST FOREST 2 (WATER)', 'horror'],
+    [281, 'BLACKSPACE', 'LIL BASIL FOREST CLEARING', ''],
+    [309, 'BLACKSPACE', 'SOMETHING BATTLE STAGE', 'displacement'],
+    [371, 'BLACKSPACE', 'CROSSROADS DAY', ''],
+    [457, 'BLACKSPACE', 'CHURCH OF SOMETHING LONG', 'horror'],
+    [463, 'BLACKSPACE', 'BASILS RAFT PATH', ''],
+    [14, 'FARAWAY (DAY)', "PLAYER'S HOUSE (DAY)", 'displacement'],
+    [18, 'FARAWAY (DAY)', "PLAYER'S HOUSE (SUNSET)", 'displacement'],
+    [26, 'FARAWAY (DAY)', "CHARLIE'S HOUSE (DAY)", ''],
+    [51, 'FARAWAY (DAY)', "JESSE'S HOUSE (SUNSET)", ''],
+    [75, 'FARAWAY (DAY)', 'CROSSROADS (DAY)', ''],
+    [78, 'FARAWAY (NIGHT)', "PLAYER'S HOME (NIGHT)", 'horror+displacement'],
+    [80, 'FARAWAY (NIGHT)', "BASIL'S HOME (NIGHT)", ''],
+    [85, 'FARAWAY (NIGHT)', 'CHURCH (NIGHT)', ''],
+    [322, 'HALLUCINATION', 'FEAR OF HEIGHTS', 'displacement'],
+    [324, 'HALLUCINATION', 'FEAR OF DROWNING', '']
+  ];
+
+  function env(name) {
+    if (root.NativeHost && NativeHost.runtime && typeof NativeHost.runtime.env === 'function') {
+      return NativeHost.runtime.env(name);
+    }
+    return typeof process !== 'undefined' && process.env ? process.env[name] : undefined;
+  }
+  var SETTLE_MS = (Number(env('OMORI_TOUR_SETTLE')) || 8) * 1000;
+  var MEASURE_MS = (Number(env('OMORI_TOUR_MEASURE')) || 15) * 1000;
+  var TEXT_MS = env('OMORI_TOUR_TEXT') === undefined || env('OMORI_TOUR_TEXT') === '' ? 6000
+    : Number(env('OMORI_TOUR_TEXT')) * 1000;
+  var ARRIVE_TIMEOUT_MS = 60000;
+  var tour = MAPS.map(function (m) { return { id: m[0], region: m[1], name: m[2], effects: m[3] }; });
+  if (env('OMORI_TOUR_MAPS')) {
+    tour = String(env('OMORI_TOUR_MAPS')).split(',').map(function (entry) {
+      var p = entry.split(':').map(Number);
+      return { id: p[0], x: p[1], y: p[2], region: '', name: '', effects: '' };
+    });
+  }
+
+  function log(tag, value) { console.log('[' + tag + '] ' + (typeof value === 'string' ? value : JSON.stringify(value))); }
+  function round(n, d) { var f = Math.pow(10, d || 1); return Math.round(n * f) / f; }
+  function mb(bytes) { return typeof bytes === 'number' ? round(bytes / 1048576, 1) : null; }
+  function percentile(sorted, p) { return sorted.length ? sorted[Math.min(sorted.length - 1, Math.floor(p * sorted.length))] : 0; }
+  function sceneName() { return SceneManager._scene ? SceneManager._scene.constructor.name : '-'; }
+
+  // Uncaught errors during a measurement window are counted and the first few kept.
+  var errors = [];
+  root.addEventListener && root.addEventListener('error', function (event) {
+    errors.push(String(event && (event.message || (event.error && event.error.message)) || 'error').slice(0, 160));
+  });
+
+  function renderStats() {
+    try {
+      var s = root.NativeHost && NativeHost.render && NativeHost.render.stats ? NativeHost.render.stats() : null;
+      // stats() returns one cached object that is mutated in place, so copy the numbers.
+      return s ? { frames: s.frames, drawCalls: s.drawCalls, costs: s.frameCosts ? {
+        drawMs: s.frameCosts.drawMs, uploadMs: s.frameCosts.uploadMs } : null } : null;
+    } catch (_) { return null; }
+  }
+
+  function memory() {
+    var out = {};
+    try {
+      var proc = root.__pmjsBuiltinRequire ? root.__pmjsBuiltinRequire('node:process')
+        : (typeof process !== 'undefined' ? process : null);
+      if (proc && proc.memoryUsage) {
+        var u = proc.memoryUsage();
+        out.rss = mb(u.rss); out.heap = mb(u.heapUsed);
+      }
+    } catch (_) {}
+    try {
+      var images = NativeHost.images.memory(0);
+      out.imgGpu = mb(images.gpuBytes); out.imgCpu = mb(images.cpuBytes);
+    } catch (_) {}
+    return out;
+  }
+
+  // Live filters anywhere in the scene tree, with the values that decide whether they do anything.
+  function filters() {
+    var out = [], seen = new Set();
+    (function walk(node, depth) {
+      if (!node || depth > 8 || seen.has(node)) return;
+      seen.add(node);
+      (node.filters || []).forEach(function (f) {
+        if (!f) return;
+        var name = f.constructor ? f.constructor.name : '?';
+        var bits = [];
+        ['blur', 'strength', 'bloomScale', 'amplitude', 'scale', 'alpha', 'noise', 'offset'].forEach(function (key) {
+          var v = f[key];
+          if (typeof v === 'number') bits.push(key + '=' + round(v, 2));
+          else if (v && typeof v.x === 'number') bits.push(key + '=' + round(v.x, 2) + ',' + round(v.y, 2));
+        });
+        out.push(name + (f.enabled === false ? '(off)' : '') + (bits.length ? '{' + bits.join(' ') + '}' : ''));
+      });
+      (node.children || []).forEach(function (child) { walk(child, depth + 1); });
+    })(SceneManager._scene, 0);
+    return out;
+  }
+
+  function placePlayer() {
+    // Nearest passable, event-free tile to the map centre, so the camera shows a typical view.
+    var cx = Math.floor($gameMap.width() / 2), cy = Math.floor($gameMap.height() / 2);
+    for (var r = 0; r < Math.max($gameMap.width(), $gameMap.height()); r++) {
+      for (var dx = -r; dx <= r; dx++) {
+        for (var dy = -r; dy <= r; dy++) {
+          if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+          var x = cx + dx, y = cy + dy;
+          if ($gameMap.isValid(x, y) && $gameMap.isPassable(x, y, 2) && !$gameMap.eventsXy(x, y).length) {
+            $gamePlayer.locate(x, y);
+            return [x, y];
+          }
+        }
+      }
+    }
+    return [$gamePlayer.x, $gamePlayer.y];
+  }
+
+  function wait(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
+  function until(test, timeoutMs) {
+    var started = performance.now();
+    return new Promise(function (resolve) {
+      (function poll() {
+        if (test()) resolve(true);
+        else if (performance.now() - started > timeoutMs) resolve(false);
+        else setTimeout(poll, 250);
+      })();
+    });
+  }
+
+  // Hands-free play. Message boxes and choices are answered with the game's own confirm input (not a
+  // real button press, so the firmware menu receives nothing); choices take their default option.
+  // Battles and game over that interrupt the tour are left so the next map can load.
+  var autopilot = { paused: false, presses: 0, battles: 0, gameOvers: 0 };
+  setInterval(function () {
+    if (!root.SceneManager || !SceneManager._scene || !root.$gameMessage) return;
+    var scene = SceneManager._scene;
+    if (scene.constructor.name === 'Scene_Battle' && !scene._tourAborted && root.BattleManager) {
+      scene._tourAborted = true;
+      autopilot.battles++;
+      log('tour', 'battle interrupted the tour; aborting it');
+      BattleManager.abort();
+      return;
+    }
+    if (scene.constructor.name === 'Scene_Gameover' && !scene._tourLeft) {
+      scene._tourLeft = true;
+      autopilot.gameOvers++;
+      log('tour', 'game over interrupted the tour; returning to the map');
+      SceneManager.goto(Scene_Map);
+      return;
+    }
+    if (autopilot.paused || !$gameMessage.isBusy()) { Input._currentState.ok = false; return; }
+    // Alternate pressed/released so every press is a fresh trigger.
+    Input._currentState.ok = !Input._currentState.ok;
+    if (Input._currentState.ok) autopilot.presses++;
+  }, 120);
+
+  // Where frame time goes (PMJS only): game JavaScript per frame (__pmjsTick = MV update + scene
+  // command building) and text drawing, split into PMJS's native text path and the stock Canvas
+  // fallback. Installed lazily because PMJS defines these after the patch loads.
+  var probes = { tickMs: 0, ticks: 0, nativeText: 0, nativeTextMs: 0, canvasText: 0, canvasTextMs: 0 };
+  function installProbes() {
+    if (probes.installed) return;
+    var host = root.PMJS && PMJS.web && PMJS.web.canvas;
+    if (typeof root.__pmjsTick !== 'function' || !host || typeof host.drawNativeText !== 'function') return;
+    probes.installed = true;
+    var tick = root.__pmjsTick;
+    root.__pmjsTick = function () {
+      var t0 = performance.now(), result = tick.apply(this, arguments);
+      return Promise.resolve(result).then(function (value) {
+        probes.tickMs += performance.now() - t0; probes.ticks++; return value;
+      });
+    };
+    var nativeText = host.drawNativeText;
+    host.drawNativeText = function () {
+      var t0 = performance.now();
+      try { return nativeText.apply(this, arguments); }
+      finally { probes.nativeText++; probes.nativeTextMs += performance.now() - t0; }
+    };
+    var body = Bitmap.prototype._drawTextBody;
+    Bitmap.prototype._drawTextBody = function () {
+      var t0 = performance.now();
+      try { return body.apply(this, arguments); }
+      finally { probes.canvasText++; probes.canvasTextMs += performance.now() - t0; }
+    };
+  }
+  function probeSnapshot() {
+    return { tickMs: probes.tickMs, ticks: probes.ticks, nativeText: probes.nativeText,
+      nativeTextMs: probes.nativeTextMs, canvasText: probes.canvasText, canvasTextMs: probes.canvasTextMs };
+  }
+  function countNodes() {
+    var n = 0, seen = new Set();
+    (function walk(node, depth) {
+      if (!node || depth > 12 || seen.has(node)) return;
+      seen.add(node); n++;
+      (node.children || []).forEach(function (child) { walk(child, depth + 1); });
+    })(SceneManager._scene, 0);
+    return n;
+  }
+
+  function measure(durationMs) {
+    installProbes();
+    return new Promise(function (resolve) {
+      var times = [], last = 0, started = performance.now();
+      var frames0 = Graphics.frameCount, stats0 = renderStats(), probe0 = probeSnapshot();
+      var drawMs = 0, uploadMs = 0, costSamples = 0, messageFrames = 0, sampled = 0;
+      errors.length = 0;
+      (function frame(now) {
+        if (last) times.push(now - last);
+        last = now;
+        sampled++;
+        if ($gameMessage.isBusy()) messageFrames++;
+        var s = renderStats();
+        if (s && s.costs) { drawMs += s.costs.drawMs || 0; uploadMs += s.costs.uploadMs || 0; costSamples++; }
+        if (now - started < durationMs) return requestAnimationFrame(frame);
+        var elapsed = now - started, rendered = Graphics.frameCount - frames0, stats1 = renderStats();
+        var probe1 = probeSnapshot(), ticks = probe1.ticks - probe0.ticks;
+        times.sort(function (a, b) { return a - b; });
+        resolve({
+          tickMs: ticks ? round((probe1.tickMs - probe0.tickMs) / ticks, 2) : null,
+          textDraw: { native: probe1.nativeText - probe0.nativeText,
+            nativeMs: round(probe1.nativeTextMs - probe0.nativeTextMs, 1),
+            canvas: probe1.canvasText - probe0.canvasText,
+            canvasMs: round(probe1.canvasTextMs - probe0.canvasTextMs, 1) },
+          nodes: countNodes(),
+          fps: round(rendered * 1000 / elapsed),
+          ft: [round(percentile(times, 0.5)), round(percentile(times, 0.95)), round(times[times.length - 1] || 0)],
+          drawMs: costSamples ? round(drawMs / costSamples, 2) : null,
+          uploadMs: costSamples ? round(uploadMs / costSamples, 2) : null,
+          draws: stats0 && stats1 && typeof stats1.drawCalls === 'number' && rendered > 0
+            ? round((stats1.drawCalls - stats0.drawCalls) / rendered) : null,
+          messageShare: sampled ? round(messageFrames / sampled, 2) : 0
+        });
+      })(performance.now());
+    });
+  }
+
+  // Same two-line message on every map: frames while the box opens and the text types out, then
+  // while it sits complete. Comparable text-drawing cost per map, before and after optimisations.
+  async function measureText() {
+    var free = await until(function () { return !$gameMessage.isBusy() && !$gameMap.isEventRunning(); }, 15000);
+    if (!free || sceneName() !== 'Scene_Map') return null;
+    autopilot.paused = true;
+    $gameMessage.add('Map tour text test: the quick brown fox jumps over the lazy dog.');
+    $gameMessage.add('0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz');
+    var result = await measure(TEXT_MS);
+    autopilot.paused = false;
+    await until(function () { return !$gameMessage.isBusy(); }, 15000);
+    return { fps: result.fps, ft: result.ft, tickMs: result.tickMs, textDraw: result.textDraw, nodes: result.nodes };
+  }
+
+  // PMJS map preparation: prepared tile sets used/refused so far with reasons, and whether the startup
+  // catalog still exists. A "stale" reason deletes the catalog, so the next launch revalidates every map.
+  function mapPreparation() {
+    var maps = root.PMJS && PMJS.maps && PMJS.maps.stats, require = root.__pmjsBuiltinRequire;
+    if (!maps) return null;
+    var catalog = null;
+    try {
+      var dir = require('node:path').join(env('XDG_CACHE_HOME') || '', 'maps');
+      catalog = require('node:fs').readdirSync(dir).some(function (f) { return /^catalog-[a-f0-9]{64}\.json$/.test(f); });
+    } catch (_) {}
+    return { selected: maps.selected, refused: maps.refused, unscoped: maps.unscoped, reasons: JSON.parse(JSON.stringify(maps.reasons)), catalog: catalog };
+  }
+
+  // OMORI_TOUR_PROFILE=<dir> (PMJS only): V8 sampling CPU profile of each measurement window, written
+  // as <dir>/map-<id>[-text].cpuprofile (open in Chrome DevTools > Performance, or speedscope).
+  // Sampling costs a little fps, so profiled runs are for finding hot spots, not for the fps table.
+  var profiler = (function () {
+    var dir = env('OMORI_TOUR_PROFILE'), require = root.__pmjsBuiltinRequire, session = null;
+    if (!dir || typeof require !== 'function') return null;
+    function post(method, params) {
+      return new Promise(function (resolve, reject) {
+        session.post(method, params || {}, function (error, result) { if (error) reject(error); else resolve(result); });
+      });
+    }
+    return {
+      start: function () {
+        if (!session) {
+          session = new (require('node:inspector').Session)();
+          session.connect();
+        }
+        return post('Profiler.enable').then(function () { return post('Profiler.setSamplingInterval', { interval: 500 }); })
+          .then(function () { return post('Profiler.start'); });
+      },
+      stop: function (name) {
+        return post('Profiler.stop').then(function (result) {
+          var fs = require('node:fs'), file = require('node:path').join(dir, name + '.cpuprofile');
+          fs.mkdirSync(dir, { recursive: true });
+          fs.writeFileSync(file, JSON.stringify(result.profile));
+          return file;
+        });
+      }
+    };
+  })();
+
+  async function profiled(name, body) {
+    if (!profiler) return body();
+    await profiler.start();
+    try { return await body(); }
+    finally { log('tour', 'profile ' + await profiler.stop(name)); }
+  }
+
+  async function visit(entry, index) {
+    var target = entry.id;
+    $gamePlayer.reserveTransfer(target, entry.x || 0, entry.y || 0, 2, 0);
+    if (sceneName() !== 'Scene_Map') SceneManager.goto(Scene_Map);
+    var arrived = await until(function () {
+      return sceneName() === 'Scene_Map' && $gameMap.mapId() === target && !SceneManager.isSceneChanging() &&
+        !$gamePlayer.isTransferring();
+    }, ARRIVE_TIMEOUT_MS);
+    var at = arrived && entry.x === undefined ? placePlayer() : [$gamePlayer.x, $gamePlayer.y];
+    await wait(SETTLE_MS);
+    var phases = [], experiment = root.__omoriLogicExperiments, frameExperiment = root.__omoriFrameExperiment;
+    if (!experiment || !frameExperiment) throw new Error('runtime experiments did not install');
+    for (var mode of ['baseline', 'frame', 'both', 'all', 'baseline']) {
+      experiment.setMode(mode === 'all' || mode === 'both' ? 'both' : 'baseline');
+      frameExperiment.setEnabled(mode === 'frame' || mode === 'all');
+      await wait(3000);
+      var phase = await measure(12000);
+      phase.id = target; phase.mode = mode; phase.stats = experiment.snapshot(); phase.frameStats = frameExperiment.snapshot(); phase.mem = memory();
+      var counts = { total: 0, character: 0, reflection: 0, emptyCharacter: 0, hiddenBase: 0 };
+      (function walk(node) { if(!node)return; counts.total++; if(node instanceof Sprite_Character) { counts.character++; if(node.constructor.name === 'Sprite_CharacterReflect')counts.reflection++; if(node.bitmap && node.bitmap.width===0 && node.bitmap.height===0)counts.emptyCharacter++; } if(node instanceof Sprite_Base && node._hiding)counts.hiddenBase++; for(var child of node.children || [])walk(child); })(SceneManager._scene);
+      phase.sceneCounts = counts;
+      phases.push(phase); log('frame-phase', phase);
+    }
+    frameExperiment.setEnabled(false); experiment.setMode('baseline');
+    var result = phases[phases.length - 1];
+    var record = {
+      n: index + 1, id: target, region: entry.region, name: entry.name, effects: entry.effects,
+      arrived: arrived, at: at
+    };
+    Object.keys(result).forEach(function (k) { record[k] = result[k]; });
+    record.filters = filters();
+    record.text = TEXT_MS > 0 ? await profiled('map-' + target + '-text', measureText) : null;
+    record.autopilot = { presses: autopilot.presses, battles: autopilot.battles, gameOvers: autopilot.gameOvers };
+    record.mem = memory();
+    record.prep = mapPreparation();
+    record.state = { scene: sceneName(), map: $gameMap.mapId(),
+      message: $gameMessage.isBusy(), event: $gameMap.isEventRunning(), pictures: $gameScreen._pictures.filter(Boolean).length };
+    record.errors = errors.slice(0, 3);
+    record.errorCount = errors.length;
+    log('tour', record);
+    return record;
+  }
+
+  async function run() {
+    log('tour', 'starting: ' + tour.length + ' maps, settle ' + SETTLE_MS / 1000 + ' s, measure ' + MEASURE_MS / 1000 + ' s');
+    DataManager.setupNewGame();
+    var results = [];
+    for (var i = 0; i < tour.length; i++) {
+      try { results.push(await visit(tour[i], i)); }
+      catch (error) { log('tour', { n: i + 1, id: tour[i].id, failed: String(error && error.stack || error).slice(0, 300) }); }
+    }
+    log('tour-summary', '   id  region           fps   p50   p95   max  drawMs draws  msg  textFps rssMB  name  (tickMs = JS per frame)');
+    results.forEach(function (r) {
+      function pad(v, w) { v = v === null || v === undefined ? '-' : String(v); return (v + '                    ').slice(0, w); }
+      log('tour-summary', pad(r.id, 5) + ' ' + pad(r.region, 15) + ' ' + pad(r.fps, 5) + ' ' + pad(r.ft[0], 5) + ' ' +
+        pad(r.ft[1], 5) + ' ' + pad(r.ft[2], 5) + ' ' + pad(r.drawMs, 6) + ' ' + pad(r.draws, 5) + ' ' +
+        pad(r.messageShare, 4) + ' ' + pad(r.text && r.text.fps, 7) + ' ' +
+        pad(r.mem.rss, 6) + ' ' + r.name + ' tickMs=' + r.tickMs + '/' + (r.text && r.text.tickMs) +
+        (r.state.map !== r.id ? ' (ended on map ' + r.state.map + ')' : '') +
+        (r.errorCount ? ' errors=' + r.errorCount : ''));
+    });
+    log('tour', 'autopilot: ' + JSON.stringify(autopilot));
+    log('tour', 'done');
+    if (root.NativeHost && NativeHost.runtime) NativeHost.runtime.quit();
+  }
+
+  var started = false;
+  var timer = setInterval(function () {
+    if (started || !root.SceneManager || !SceneManager._scene) return;
+    if (SceneManager._scene.constructor.name !== 'Scene_OmoriTitleScreen') return;
+    started = true;
+    clearInterval(timer);
+    run();
+  }, 1000);
+})();

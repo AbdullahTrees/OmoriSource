@@ -1,0 +1,209 @@
+[
+  {
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "map": 90,
+    "source": "img/tilesets/Tile_Collision_32x32.png",
+    "tileSet": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+    "expected": {
+      "identity": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+      "sources": [
+        "img/tilesets/Tile_Collision_32x32.png",
+        "img/tilesets/Tile_Region_32x32.png",
+        "img/tilesets/DW_NorthLake.png",
+        "img/tilesets/DW_VastForest.png",
+        "img/tilesets/Terrain.png",
+        "img/tilesets/DW_Beach.png",
+        "img/tilesets/general_use.png",
+        "img/tilesets/DW_Beachpiece.png",
+        "img/tilesets/DW_SmallWaves.png"
+      ]
+    },
+    "sourcePath": "/mnt/mmc/ports/omori-test/www/img/tilesets/Tile_Collision_32x32.png",
+    "sourceIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/Tile_Collision_32x32.png:45830:62762:22777:1792528399:0:1792528399:0"
+  },
+  {
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "map": 90,
+    "source": "img/tilesets/Tile_Region_32x32.png",
+    "tileSet": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+    "expected": {
+      "identity": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+      "sources": [
+        "img/tilesets/Tile_Collision_32x32.png",
+        "img/tilesets/Tile_Region_32x32.png",
+        "img/tilesets/DW_NorthLake.png",
+        "img/tilesets/DW_VastForest.png",
+        "img/tilesets/Terrain.png",
+        "img/tilesets/DW_Beach.png",
+        "img/tilesets/general_use.png",
+        "img/tilesets/DW_Beachpiece.png",
+        "img/tilesets/DW_SmallWaves.png"
+      ]
+    },
+    "sourcePath": "/mnt/mmc/ports/omori-test/www/img/tilesets/Tile_Region_32x32.png",
+    "sourceIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/Tile_Region_32x32.png:45830:62721:61783:1792528399:0:1792528399:0"
+  },
+  {
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "map": 90,
+    "source": "img/tilesets/DW_NorthLake.png",
+    "tileSet": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+    "expected": {
+      "identity": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+      "sources": [
+        "img/tilesets/Tile_Collision_32x32.png",
+        "img/tilesets/Tile_Region_32x32.png",
+        "img/tilesets/DW_NorthLake.png",
+        "img/tilesets/DW_VastForest.png",
+        "img/tilesets/Terrain.png",
+        "img/tilesets/DW_Beach.png",
+        "img/tilesets/general_use.png",
+        "img/tilesets/DW_Beachpiece.png",
+        "img/tilesets/DW_SmallWaves.png"
+      ]
+    },
+    "sourcePath": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_NorthLake.png",
+    "sourceIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_NorthLake.png:45830:62765:150268:1792528399:0:1792528399:0"
+  },
+  {
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "map": 90,
+    "source": "img/tilesets/DW_VastForest.png",
+    "tileSet": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+    "expected": {
+      "identity": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+      "sources": [
+        "img/tilesets/Tile_Collision_32x32.png",
+        "img/tilesets/Tile_Region_32x32.png",
+        "img/tilesets/DW_NorthLake.png",
+        "img/tilesets/DW_VastForest.png",
+        "img/tilesets/Terrain.png",
+        "img/tilesets/DW_Beach.png",
+        "img/tilesets/general_use.png",
+        "img/tilesets/DW_Beachpiece.png",
+        "img/tilesets/DW_SmallWaves.png"
+      ]
+    },
+    "sourcePath": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_VastForest.png",
+    "sourceIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_VastForest.png:45830:53812:174889:1792528399:0:1792528399:0"
+  },
+  {
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "map": 90,
+    "source": "img/tilesets/Terrain.png",
+    "tileSet": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+    "expected": {
+      "identity": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+      "sources": [
+        "img/tilesets/Tile_Collision_32x32.png",
+        "img/tilesets/Tile_Region_32x32.png",
+        "img/tilesets/DW_NorthLake.png",
+        "img/tilesets/DW_VastForest.png",
+        "img/tilesets/Terrain.png",
+        "img/tilesets/DW_Beach.png",
+        "img/tilesets/general_use.png",
+        "img/tilesets/DW_Beachpiece.png",
+        "img/tilesets/DW_SmallWaves.png"
+      ]
+    },
+    "sourcePath": "/mnt/mmc/ports/omori-test/www/img/tilesets/Terrain.png",
+    "sourceIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/Terrain.png:45830:62772:157227:1792528399:0:1792528399:0"
+  },
+  {
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "map": 90,
+    "source": "img/tilesets/DW_Beach.png",
+    "tileSet": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+    "expected": {
+      "identity": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+      "sources": [
+        "img/tilesets/Tile_Collision_32x32.png",
+        "img/tilesets/Tile_Region_32x32.png",
+        "img/tilesets/DW_NorthLake.png",
+        "img/tilesets/DW_VastForest.png",
+        "img/tilesets/Terrain.png",
+        "img/tilesets/DW_Beach.png",
+        "img/tilesets/general_use.png",
+        "img/tilesets/DW_Beachpiece.png",
+        "img/tilesets/DW_SmallWaves.png"
+      ]
+    },
+    "sourcePath": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_Beach.png",
+    "sourceIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_Beach.png:45830:53774:108703:1792528398:0:1792528398:0"
+  },
+  {
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "map": 90,
+    "source": "img/tilesets/general_use.png",
+    "tileSet": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+    "expected": {
+      "identity": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+      "sources": [
+        "img/tilesets/Tile_Collision_32x32.png",
+        "img/tilesets/Tile_Region_32x32.png",
+        "img/tilesets/DW_NorthLake.png",
+        "img/tilesets/DW_VastForest.png",
+        "img/tilesets/Terrain.png",
+        "img/tilesets/DW_Beach.png",
+        "img/tilesets/general_use.png",
+        "img/tilesets/DW_Beachpiece.png",
+        "img/tilesets/DW_SmallWaves.png"
+      ]
+    },
+    "sourcePath": "/mnt/mmc/ports/omori-test/www/img/tilesets/general_use.png",
+    "sourceIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/general_use.png:45830:62775:203124:1792528399:0:1792528399:0"
+  },
+  {
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "map": 90,
+    "source": "img/tilesets/DW_Beachpiece.png",
+    "tileSet": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+    "expected": {
+      "identity": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+      "sources": [
+        "img/tilesets/Tile_Collision_32x32.png",
+        "img/tilesets/Tile_Region_32x32.png",
+        "img/tilesets/DW_NorthLake.png",
+        "img/tilesets/DW_VastForest.png",
+        "img/tilesets/Terrain.png",
+        "img/tilesets/DW_Beach.png",
+        "img/tilesets/general_use.png",
+        "img/tilesets/DW_Beachpiece.png",
+        "img/tilesets/DW_SmallWaves.png"
+      ]
+    },
+    "sourcePath": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_Beachpiece.png",
+    "sourceIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_Beachpiece.png:45830:53775:75876:1792528398:0:1792528398:0"
+  },
+  {
+    "operation": "loadAsync:after",
+    "flags": 2,
+    "map": 90,
+    "source": "img/tilesets/DW_SmallWaves.png",
+    "tileSet": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+    "expected": {
+      "identity": "aa47733ea8163ceb1c31478b92bd5dd74759b760638679a80f925be3c4880e24",
+      "sources": [
+        "img/tilesets/Tile_Collision_32x32.png",
+        "img/tilesets/Tile_Region_32x32.png",
+        "img/tilesets/DW_NorthLake.png",
+        "img/tilesets/DW_VastForest.png",
+        "img/tilesets/Terrain.png",
+        "img/tilesets/DW_Beach.png",
+        "img/tilesets/general_use.png",
+        "img/tilesets/DW_Beachpiece.png",
+        "img/tilesets/DW_SmallWaves.png"
+      ]
+    },
+    "sourcePath": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_SmallWaves.png",
+    "sourceIdentity": "/mnt/mmc/ports/omori-test/www/img/tilesets/DW_SmallWaves.png:45830:53799:2459:1792528399:0:1792528399:0"
+  }
+]

@@ -1,0 +1,486 @@
+{
+  "file": "session-20261021-continuation/profiles-logic-baseline-profile/map-14.cpuprofile",
+  "samples": 34858,
+  "profileWallMs": 21590.307,
+  "firstSampleGapMs": 1505.165,
+  "firstSample": "post node:inspector:118",
+  "analyzedMs": 20084.46,
+  "buckets": [
+    {
+      "name": "gameUpdate",
+      "ms": 12684.83,
+      "percent": 63.16
+    },
+    {
+      "name": "sceneEncoding",
+      "ms": 4591.36,
+      "percent": 22.86
+    },
+    {
+      "name": "nativeRenderSwap",
+      "ms": 1900.23,
+      "percent": 9.46
+    },
+    {
+      "name": "other",
+      "ms": 697.38,
+      "percent": 3.47
+    },
+    {
+      "name": "gc",
+      "ms": 210.66,
+      "percent": 1.05
+    }
+  ],
+  "topSelf": [
+    {
+      "name": "dispose (native):0",
+      "ms": 2019.31,
+      "percent": 10.05
+    },
+    {
+      "name": "writeNativeSceneNode ca064ebffa43d3505c55a4a8/bootstrap-f87d5d595d0f07c84f4aea0ae114c9e504fb0e46c5d3a49ad07ef1eb51d597d4.js:11096",
+      "ms": 859.3,
+      "percent": 4.28
+    },
+    {
+      "name": "Sprite_Character.update js/rpg_sprites.js:211",
+      "ms": 758.25,
+      "percent": 3.78
+    },
+    {
+      "name": "Sprite_Base.update js/rpg_sprites.js:24",
+      "ms": 757.26,
+      "percent": 3.77
+    },
+    {
+      "name": "Sprite_Character.updateCharacterFrame ca064ebffa43d3505c55a4a8/bootstrap-f87d5d595d0f07c84f4aea0ae114c9e504fb0e46c5d3a49ad07ef1eb51d597d4.js:7658",
+      "ms": 757,
+      "percent": 3.77
+    },
+    {
+      "name": "Game_CharacterBase.onSlipperyFloor plugins/YEP_SlipperyTiles.js:148",
+      "ms": 643.72,
+      "percent": 3.21
+    },
+    {
+      "name": "Sprite.update plugins/Olivia_HorrorEffects.js:981",
+      "ms": 511.46,
+      "percent": 2.55
+    },
+    {
+      "name": "Tilemap.update plugins/GTP_CoreUpdates.js:37",
+      "ms": 395.34,
+      "percent": 1.97
+    },
+    {
+      "name": "Sprite_Character.updateCharacterFrame js/rpg_sprites.js:284",
+      "ms": 322.99,
+      "percent": 1.61
+    },
+    {
+      "name": "nativeSceneDirectFilters ca064ebffa43d3505c55a4a8/bootstrap-f87d5d595d0f07c84f4aea0ae114c9e504fb0e46c5d3a49ad07ef1eb51d597d4.js:9493",
+      "ms": 295.21,
+      "percent": 1.47
+    },
+    {
+      "name": "Sprite_Character.updatePosition js/rpg_sprites.js:380",
+      "ms": 271.14,
+      "percent": 1.35
+    },
+    {
+      "name": "updatePosition plugins/YED_Tiled.js:2398",
+      "ms": 266.28,
+      "percent": 1.33
+    },
+    {
+      "name": "Olivia.HorrorEffects.___Sprite_update___ plugins/GTP_OmoriFixes.js:1136",
+      "ms": 252.85,
+      "percent": 1.26
+    },
+    {
+      "name": "Game_CharacterBase.update js/rpg_objects.js:6561",
+      "ms": 246.99,
+      "percent": 1.23
+    },
+    {
+      "name": "Sprite_Character.setupMiniLabel plugins/YEP_EventMiniLabel.js:514",
+      "ms": 234.14,
+      "percent": 1.17
+    },
+    {
+      "name": "nativePlainSpriteBinding ca064ebffa43d3505c55a4a8/bootstrap-f87d5d595d0f07c84f4aea0ae114c9e504fb0e46c5d3a49ad07ef1eb51d597d4.js:11004",
+      "ms": 229.71,
+      "percent": 1.14
+    },
+    {
+      "name": "Game_CharacterBase.screenY plugins/YEP_EventSpriteOffset.js:153",
+      "ms": 227.44,
+      "percent": 1.13
+    },
+    {
+      "name": "(anonymous) ca064ebffa43d3505c55a4a8/bootstrap-f87d5d595d0f07c84f4aea0ae114c9e504fb0e46c5d3a49ad07ef1eb51d597d4.js:15135",
+      "ms": 227.12,
+      "percent": 1.13
+    },
+    {
+      "name": "Sprite_Character.update plugins/Omori BASE.js:4746",
+      "ms": 219.78,
+      "percent": 1.09
+    },
+    {
+      "name": "Game_Event.update js/rpg_objects.js:8860",
+      "ms": 217.66,
+      "percent": 1.08
+    },
+    {
+      "name": "(garbage collector) (native):0",
+      "ms": 210.66,
+      "percent": 1.05
+    },
+    {
+      "name": "Sprite.setFrame js/rpg_core.js:4067",
+      "ms": 204.61,
+      "percent": 1.02
+    },
+    {
+      "name": "visit ca064ebffa43d3505c55a4a8/bootstrap-f87d5d595d0f07c84f4aea0ae114c9e504fb0e46c5d3a49ad07ef1eb51d597d4.js:8856",
+      "ms": 202.83,
+      "percent": 1.01
+    },
+    {
+      "name": "Tilemap._sortChildren js/rpg_core.js:5224",
+      "ms": 202.38,
+      "percent": 1.01
+    },
+    {
+      "name": "Game_Map.setupAutorunCommonEvent js/rpg_objects.js:6211",
+      "ms": 196.69,
+      "percent": 0.98
+    },
+    {
+      "name": "Game_CharacterBase.slipperyPose plugins/YEP_SlipperyTiles.js:152",
+      "ms": 181.73,
+      "percent": 0.9
+    },
+    {
+      "name": "get libs/pixi.js:10210",
+      "ms": 170.23,
+      "percent": 0.85
+    },
+    {
+      "name": "visit ca064ebffa43d3505c55a4a8/bootstrap-f87d5d595d0f07c84f4aea0ae114c9e504fb0e46c5d3a49ad07ef1eb51d597d4.js:11846",
+      "ms": 166.21,
+      "percent": 0.83
+    },
+    {
+      "name": "Game_Map.update js/rpg_objects.js:6056",
+      "ms": 164.81,
+      "percent": 0.82
+    },
+    {
+      "name": "Game_Map.isEventRunning js/rpg_objects.js:5486",
+      "ms": 162.3,
+      "percent": 0.81
+    },
+    {
+      "name": "update plugins/YED_Tiled.js:2381",
+      "ms": 155.77,
+      "percent": 0.78
+    },
+    {
+      "name": "prepareNativeBitmapCaches ca064ebffa43d3505c55a4a8/bootstrap-f87d5d595d0f07c84f4aea0ae114c9e504fb0e46c5d3a49ad07ef1eb51d597d4.js:11586",
+      "ms": 151.24,
+      "percent": 0.75
+    },
+    {
+      "name": "Number.clamp js/rpg_core.js:24",
+      "ms": 143.55,
+      "percent": 0.71
+    },
+    {
+      "name": "Game_CharacterBase.screenY plugins/fuku_testpack.js:47",
+      "ms": 130.01,
+      "percent": 0.65
+    },
+    {
+      "name": "Sprite.updateTransform plugins/YEP_CoreEngine.js:1117",
+      "ms": 129.22,
+      "percent": 0.64
+    }
+  ],
+  "topInclusive": [
+    {
+      "name": "(root) (native):0",
+      "ms": 20084.46,
+      "percent": 100
+    },
+    {
+      "name": "processImmediate node:internal/timers:436",
+      "ms": 17926.71,
+      "percent": 89.26
+    },
+    {
+      "name": "step ca064ebffa43d3505c55a4a8/bootstrap-f87d5d595d0f07c84f4aea0ae114c9e504fb0e46c5d3a49ad07ef1eb51d597d4.js:1289",
+      "ms": 17727.24,
+      "percent": 88.26
+    },
+    {
+      "name": "callback ca064ebffa43d3505c55a4a8/bootstrap-f87d5d595d0f07c84f4aea0ae114c9e504fb0e46c5d3a49ad07ef1eb51d597d4.js:1254",
+      "ms": 17422.06,
+      "percent": 86.74
+    },
+    {
+      "name": "(anonymous) ca064ebffa43d3505c55a4a8/bootstrap-f87d5d595d0f07c84f4aea0ae114c9e504fb0e46c5d3a49ad07ef1eb51d597d4.js:1429",
+      "ms": 17414.86,
+      "percent": 86.71
+    },
+    {
+      "name": "Ticker._tick libs/pixi.js:28166",
+      "ms": 17311.04,
+      "percent": 86.19
+    },
+    {
+      "name": "update libs/pixi.js:28396",
+      "ms": 17302.03,
+      "percent": 86.15
+    },
+    {
+      "name": "emit libs/pixi.js:28593",
+      "ms": 17299.43,
+      "percent": 86.13
+    },
+    {
+      "name": "update plugins/GTP_OmoriFixes.js:1183",
+      "ms": 17297.06,
+      "percent": 86.12
+    },
+    {
+      "name": "updateMain plugins/GTP_OmoriFixes.js:1266",
+      "ms": 12684.83,
+      "percent": 63.16
+    },
+    {
+      "name": "updateScene plugins/GTP_OmoriFixes.js:1327",
+      "ms": 12557.4,
+      "percent": 62.52
+    },
+    {
+      "name": "Scene_Map.update plugins/YIN_OmoriFixes.js:25",
+      "ms": 12543.15,
+      "percent": 62.45
+    },
+    {
+      "name": "Scene_Base.update js/rpg_scenes.js:111",
+      "ms": 9843.46,
+      "percent": 49.01
+    },
+    {
+      "name": "Scene_Base.updateChildren plugins/GTP_CoreUpdates.js:165",
+      "ms": 9838.3,
+      "percent": 48.98
+    },
+    {
+      "name": "Spriteset_Map.update plugins/Omori BASE.js:6560",
+      "ms": 9131.96,
+      "percent": 45.47
+    },
+    {
+      "name": "Spriteset_Map.update plugins/YED_Tiled.js:2232",
+      "ms": 9125.1,
+      "percent": 45.43
+    },
+    {
+      "name": "Sprite.update plugins/Olivia_HorrorEffects.js:981",
+      "ms": 9118.68,
+      "percent": 45.4
+    },
+    {
+      "name": "Spriteset_Map.update js/rpg_sprites.js:2274",
+      "ms": 9048.98,
+      "percent": 45.05
+    },
+    {
+      "name": "Olivia.HorrorEffects.___Sprite_update___ plugins/GTP_OmoriFixes.js:1136",
+      "ms": 9042.66,
+      "percent": 45.02
+    },
+    {
+      "name": "Spriteset_Base.update plugins/Aries001_AnimationScreenEffects.js:484",
+      "ms": 9005.91,
+      "percent": 44.84
+    },
+    {
+      "name": "Spriteset_Base.update js/rpg_sprites.js:2144",
+      "ms": 8999.08,
+      "percent": 44.81
+    },
+    {
+      "name": "update plugins/YED_Tiled.js:569",
+      "ms": 8705.39,
+      "percent": 43.34
+    },
+    {
+      "name": "Tilemap.update plugins/GTP_CoreUpdates.js:37",
+      "ms": 8449.62,
+      "percent": 42.07
+    },
+    {
+      "name": "Sprite_Character.update plugins/Omori BASE.js:4746",
+      "ms": 7381.43,
+      "percent": 36.75
+    },
+    {
+      "name": "Sprite_Character.update plugins/Liquid_EventIcons.js:225",
+      "ms": 7046.71,
+      "percent": 35.09
+    },
+    {
+      "name": "Sprite_Character.update plugins/YEP_EventMiniLabel.js:502",
+      "ms": 7007.66,
+      "percent": 34.89
+    },
+    {
+      "name": "Sprite_Character.update js/rpg_sprites.js:211",
+      "ms": 6182.64,
+      "percent": 30.78
+    },
+    {
+      "name": "SceneManager.renderScene js/rpg_managers.js:2009",
+      "ms": 4594.63,
+      "percent": 22.88
+    },
+    {
+      "name": "renderScene plugins/GTP_OmoriFixes.js:1340",
+      "ms": 4594.63,
+      "percent": 22.88
+    },
+    {
+      "name": "renderNativeMvStage ca064ebffa43d3505c55a4a8/bootstrap-f87d5d595d0f07c84f4aea0ae114c9e504fb0e46c5d3a49ad07ef1eb51d597d4.js:13669",
+      "ms": 4591.36,
+      "percent": 22.86
+    },
+    {
+      "name": "render ca064ebffa43d3505c55a4a8/bootstrap-f87d5d595d0f07c84f4aea0ae114c9e504fb0e46c5d3a49ad07ef1eb51d597d4.js:13118",
+      "ms": 4585.44,
+      "percent": 22.83
+    },
+    {
+      "name": "renderNativeStage ca064ebffa43d3505c55a4a8/bootstrap-f87d5d595d0f07c84f4aea0ae114c9e504fb0e46c5d3a49ad07ef1eb51d597d4.js:11690",
+      "ms": 4354.24,
+      "percent": 21.68
+    },
+    {
+      "name": "update plugins/YED_Tiled.js:2381",
+      "ms": 3886.16,
+      "percent": 19.35
+    },
+    {
+      "name": "Sprite_Character.updateFrame js/rpg_sprites.js:268",
+      "ms": 2546.96,
+      "percent": 12.68
+    },
+    {
+      "name": "Sprite_Character.updateCharacterFrame plugins/Omori BASE.js:4759",
+      "ms": 2500.93,
+      "percent": 12.45
+    }
+  ],
+  "targets": [
+    {
+      "name": "updateScene",
+      "ms": 12557.4,
+      "percent": 62.52
+    },
+    {
+      "name": "Sprite.update",
+      "ms": 9118.68,
+      "percent": 45.4
+    },
+    {
+      "name": "Sprite_Character.update",
+      "ms": 7381.43,
+      "percent": 36.75
+    },
+    {
+      "name": "writeNativeSceneNode",
+      "ms": 2300.83,
+      "percent": 11.46
+    },
+    {
+      "name": "Game_Map.update",
+      "ms": 1890.19,
+      "percent": 9.41
+    },
+    {
+      "name": "prepareTransforms",
+      "ms": 1715.77,
+      "percent": 8.54
+    },
+    {
+      "name": "Sprite_Base.update",
+      "ms": 1455.84,
+      "percent": 7.25
+    },
+    {
+      "name": "Game_Map.updateEvents",
+      "ms": 1414.12,
+      "percent": 7.04
+    },
+    {
+      "name": "Game_Event.update",
+      "ms": 1368.97,
+      "percent": 6.82
+    },
+    {
+      "name": "Game_CharacterBase.slipperyPose",
+      "ms": 802.27,
+      "percent": 3.99
+    },
+    {
+      "name": "Game_CharacterBase.onSlipperyFloor",
+      "ms": 739.84,
+      "percent": 3.68
+    },
+    {
+      "name": "Game_Map.isSlippery",
+      "ms": 96.12,
+      "percent": 0.48
+    },
+    {
+      "name": "Game_Map.regionId",
+      "ms": 94.38,
+      "percent": 0.47
+    },
+    {
+      "name": "hideOnLevel",
+      "ms": 63.46,
+      "percent": 0.32
+    },
+    {
+      "name": "weatherUpdateUnion",
+      "ms": 28.35,
+      "percent": 0.14
+    },
+    {
+      "name": "Game_Map.terrainTag",
+      "ms": 2.88,
+      "percent": 0.01
+    },
+    {
+      "name": "Game_Interpreter.update",
+      "ms": 1.35,
+      "percent": 0.01
+    },
+    {
+      "name": "Game_Event.updateParallel",
+      "ms": 0,
+      "percent": 0
+    },
+    {
+      "name": "_sortChildren",
+      "ms": 0,
+      "percent": 0
+    }
+  ]
+}

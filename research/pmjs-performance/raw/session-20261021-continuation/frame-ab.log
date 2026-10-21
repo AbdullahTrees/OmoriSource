@@ -1,0 +1,419 @@
+[mem] 20:07:05 used 181 MB, available 776 MB cpu 63C
+generated .cache/pmjs/ca064ebffa43d3505c55a4a8/bootstrap-818.tmp from 82 modules
+[pmjs-build] engine: mv
+[pmjs-build] detected: mv (mv 1.6.1, pixi 4.8.9), 149/172 plugins enabled
+[pmjs-build] matched adapters: 10
+  YEP_CoreEngine -> js/pmjs-plugins/yanfly/core-transforms.js, js/pmjs-plugins/yanfly/core-character-presentation.js, js/pmjs-plugins/yanfly/core-text.js
+  AudioStreaming -> js/pmjs-plugins/audio-streaming/native-audio.js
+  YEP_MessageCore -> js/pmjs-plugins/yanfly/message-core.js
+  Olivia_HorrorEffects -> js/pmjs-plugins/olivia/horror-effects.js
+  YED_Tiled -> js/pmjs-plugins/yed/retained-tiles.js, js/pmjs-plugins/yed/tiled.js
+  YEP_SlipperyTiles -> js/pmjs-plugins/yanfly/slippery-tiles.js
+  YEP_EventMiniLabel -> js/pmjs-plugins/yanfly/event-mini-label.js
+  Atlas Loader -> js/pmjs-plugins/atlas-loader/image-retention.js
+  YEP_EventCopier -> js/pmjs-plugins/yanfly/event-copier.js
+  GTP_OmoriFixes -> js/pmjs-plugins/omori/permanent-data.js
+[pmjs-build] unmatched enabled plugins: 139
+2026-10-21T14:07:09.118Z INFO [pmjs] system hardware platform=linux arch=arm64 kernel=4.9.170 node=v22.23.2 node_api=10 device="sun50iw9" cpu="Cortex-A53" cpu_threads=4 ram_total_mib=973 ram_available_mib=760 gpu_kernel_modules=mali_kbase
+2026-10-21T14:07:09.121Z INFO [pmjs] launcher identity build=build-2026-10-20-640aaa1-11 source=dirty build_info_sha256=a89f0847eb2e38409c063be58fc534b3c04471922f1e5996753e84e1d497a72c
+2026-10-21T14:07:09.122Z INFO [pmjs] launcher check=runtime pass=cache-lookup duration_ms=85.9 hashed_files=0 hashed_kb=0 reused_files=127
+2026-10-21T14:07:09.123Z INFO [pmjs] launcher check=game-inputs pass=cache-lookup duration_ms=89.4 hashed_files=8 hashed_kb=1997 reused_files=0
+2026-10-21T14:07:09.123Z INFO [pmjs] launcher check=game-inputs pass=bootstrap-integrity duration_ms=1.7 hashed_files=0 hashed_kb=0 reused_files=8
+2026-10-21T14:07:09.123Z INFO [pmjs] launcher check=runtime pass=bootstrap-integrity duration_ms=18.1 hashed_files=0 hashed_kb=0 reused_files=127
+2026-10-21T14:07:09.123Z INFO [pmjs] launcher check=game-inputs pass=prelaunch duration_ms=1.5 hashed_files=0 hashed_kb=0 reused_files=8
+2026-10-21T14:07:09.123Z INFO [pmjs] launcher check=runtime pass=prelaunch duration_ms=16.6 hashed_files=0 hashed_kb=0 reused_files=127
+[pmjs] worker-start pid=868
+2026-10-21T14:07:10.007Z INFO [pmjs] display=640x480 window=640x480 drawable=640x480
+2026-10-21T14:07:10.008Z INFO [pmjs] gl vendor="ARM" renderer="Mali-G31" version="OpenGL ES 3.2 v1.r20p0-01rel0.8ec337de4ddab3365a32cff58063a9da"
+2026-10-21T14:07:10.008Z INFO [pmjs] egl vendor="ARM" version="1.4 Bifrost-"r20p0-01rel0"" config=9 min_swap=0 max_swap=1
+2026-10-21T14:07:10.008Z INFO [pmjs-gpu] sdl_driver=mali available_drivers=mali display_index=0 display_bounds=640x480 display_usable=640x480 window=640x480 drawable=640x480 display_hz=60 gles=3.2 double_buffer=1 depth_bits=0 stencil_bits=0 rgb_bits=8,8,8 max_texture=8192 max_texture_units=16 max_renderbuffer=8192 max_vertex_attributes=16 software=no
+2026-10-21T14:07:10.008Z INFO [pmjs-gpu] fragment_highp_bits=23 fragment_highp_range=127,127
+2026-10-21T14:07:10.008Z INFO [pmjs] graphics hardware renderer="Mali-G31" software=no
+[mem] 20:07:15 used 263 MB, available 694 MB cpu 67C
+2026-10-21T14:07:16.424Z INFO [pmjs] startup event=start started_at=2026-10-21T14:07:09.458Z preparation=on maps=on
+2026-10-21T14:07:16.432Z INFO [pmjs] startup stage=native-initialize duration_ms=6204.0
+2026-10-21T14:07:16.432Z INFO [pmjs] startup stage=vfs-index statistics={"paths":5148,"directories":55,"canonicalizations":55,"durationMs":455.005}
+2026-10-21T14:07:16.432Z INFO [pmjs] startup stage=host-initialized elapsed_ms=6387.6
+2026-10-21T14:07:16.432Z INFO [pmjs] preparation event=start workspace_bytes=67108864 processor={"processor":"images-v15-sparse-palette-astcenc4.7","decoder":"libpng-1.6.43-rgba8-v1","pageSize":2048} lz4_version="lz4-1.10.0-sparse-palette-v2"
+2026-10-21T14:07:16.433Z INFO [pmjs] preparation stage=images event=start started_at=2026-10-21T14:07:15.917Z codec=lz4 verify_hashes=false cache_root="/mnt/mmc/ports/omori-pmjs2/.cache"
+2026-10-21T14:07:16.433Z INFO [pmjs] preparation stage=images event=phase phase=discover elapsed_ms=16.5 source=""
+2026-10-21T14:07:18.041Z INFO [pmjs] preparation stage=images event=phase phase=wait elapsed_ms=535.5 source=""
+2026-10-21T14:07:18.043Z INFO [pmjs] preparation stage=images event=phase phase=catalog elapsed_ms=538.0 source=""
+2026-10-21T14:07:18.045Z INFO [pmjs] preparation stage=images event=phase phase=install elapsed_ms=2101.8 source=""
+[pmjs] memory-breakdown-capture-start requestId=1 duration_ms=0.7
+[pmjs] memory-breakdown-capture-complete requestId=1 duration_ms=59.2
+2026-10-21T14:07:19.481Z INFO [pmjs] diagnostic {"reason":"memory-recovered","stage":"asset-preparation","uptimeMs":10044,"context":{"interpreterDepth":0},"thresholdBytes":153117081.6,"availableBytes":660496384}
+2026-10-21T14:07:20.642Z INFO [pmjs] preparation stage=images event=phase phase=complete elapsed_ms=3467.1 source=""
+2026-10-21T14:07:20.643Z INFO [pmjs] preparation stage=images event=finish status=complete cache=warm catalog_hit=true catalog=hit duration_ms=3487.2 codec=lz4 verify_hashes=false cache_root="/mnt/mmc/ports/omori-pmjs2/.cache" generated=0 hits=2460 fallback=12 total=2470 prepared=2458 installed=2458 failed_files=0 install_failures=0 hashed_files=0 hashed_bytes=0 reused_files=0 copied_bytes=0 hash_categories={} snapshot_bytes=0 processing_ms=289832.1 early_refusals=0 phase_ms={"start":16.5,"discover":519,"wait":2.6,"catalog":1563.8,"install":1365.3,"complete":20} error=""
+2026-10-21T14:07:20.643Z INFO [pmjs] asset preparation generated=0 hits=2460 decrypted=0 audio_views=0 fallback=12 indexed_negative=0 indexed_layout_attempts=0 indexed_zero_page=0 indexed_page_copies=0 unindexed_processed=1903 hashed_files=0 hashed_bytes=0 reused_files=0 duration_ms=3451.6
+2026-10-21T14:07:20.644Z INFO [pmjs] preparation stage=maps event=start started_at=2026-10-21T14:07:19.406Z codec=png verify_hashes=false cache_root="/mnt/mmc/ports/omori-pmjs2/.cache/maps"
+2026-10-21T14:07:20.645Z INFO [pmjs] preparation stage=maps event=phase phase=map-discover elapsed_ms=9.0 source=""
+2026-10-21T14:07:20.645Z INFO [pmjs] preparation stage=maps event=phase phase=map-wait elapsed_ms=76.8 source=""
+2026-10-21T14:07:20.645Z INFO [pmjs] preparation stage=maps event=phase phase=map-catalog elapsed_ms=78.2 source=""
+2026-10-21T14:07:20.645Z INFO [pmjs] preparation stage=maps event=phase phase=map-discover elapsed_ms=80.7 source=""
+2026-10-21T14:07:20.645Z INFO [pmjs] preparation stage=maps event=phase phase=map-wait elapsed_ms=255.2 source=""
+2026-10-21T14:07:20.645Z INFO [pmjs] preparation stage=maps event=phase phase=map-validate elapsed_ms=256.1 source=""
+[mem] 20:07:25 used 451 MB, available 506 MB cpu 67C
+2026-10-21T14:07:30.223Z INFO [pmjs] preparation stage=maps event=phase phase=map-compile elapsed_ms=10753.1 source="Map001.json"
+2026-10-21T14:07:30.224Z INFO [pmjs] preparation stage=maps event=progress phase=map-compile elapsed_ms=10814.7 phase_elapsed_ms=61.6 no_progress_ms=61.6 completed=0 total=519 generated=0 hits=0 fallback=0 source="Map001.json"
+2026-10-21T14:07:30.224Z WARN [pmjs] map preparation ordinary Map001.json: no compact tile demand
+2026-10-21T14:07:30.394Z WARN [pmjs] map preparation ordinary Map003.json: no compact tile demand
+2026-10-21T14:07:30.692Z WARN [pmjs] map preparation ordinary Map007.json: no compact tile demand
+2026-10-21T14:07:30.713Z WARN [pmjs] map preparation ordinary Map008.json: no compact tile demand
+2026-10-21T14:07:30.731Z WARN [pmjs] map preparation ordinary Map009.json: no compact tile demand
+2026-10-21T14:07:30.751Z WARN [pmjs] map preparation ordinary Map010.json: no compact tile demand
+2026-10-21T14:07:30.767Z WARN [pmjs] map preparation ordinary Map011.json: no compact tile demand
+2026-10-21T14:07:30.775Z WARN [pmjs] map preparation ordinary Map012.json: no compact tile demand
+2026-10-21T14:07:31.027Z WARN [pmjs] map preparation ordinary Map013.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:31.747Z WARN [pmjs] map preparation ordinary Map016.json: packed allocations and geometry are not smaller
+[mem] 20:07:35 used 552 MB, available 405 MB cpu 67C
+2026-10-21T14:07:37.626Z WARN [pmjs] map preparation ordinary Map056.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:38.315Z WARN [pmjs] map preparation ordinary Map066.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:38.770Z WARN [pmjs] map preparation ordinary Map073.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:38.876Z WARN [pmjs] map preparation ordinary Map075.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:38.928Z WARN [pmjs] map preparation ordinary Map076.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:38.933Z WARN [pmjs] map preparation ordinary Map077.json: no compact tile demand
+2026-10-21T14:07:39.493Z WARN [pmjs] map preparation ordinary Map083.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:39.618Z WARN [pmjs] map preparation ordinary Map086.json: no compact tile demand
+2026-10-21T14:07:39.678Z WARN [pmjs] map preparation ordinary Map087.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:39.736Z WARN [pmjs] map preparation ordinary Map088.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:40.205Z WARN [pmjs] map preparation ordinary Map093.json: no compact tile demand
+2026-10-21T14:07:40.215Z WARN [pmjs] map preparation ordinary Map094.json: no compact tile demand
+2026-10-21T14:07:41.218Z INFO [pmjs] preparation stage=maps event=progress phase=map-compile elapsed_ms=20823.5 phase_elapsed_ms=1.6 no_progress_ms=1.6 completed=94 total=519 generated=0 hits=94 fallback=22 source="Map095.json"
+[mem] 20:07:45 used 543 MB, available 414 MB cpu 65C
+2026-10-21T14:07:45.671Z WARN [pmjs] map preparation ordinary Map146.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:47.634Z WARN [pmjs] map preparation ordinary Map171.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:49.001Z WARN [pmjs] map preparation ordinary Map188.json: no compact tile demand
+2026-10-21T14:07:51.241Z INFO [pmjs] preparation stage=maps event=progress phase=map-compile elapsed_ms=30836.4 phase_elapsed_ms=11.2 no_progress_ms=11.2 completed=197 total=519 generated=0 hits=197 fallback=25 source="Map199.json"
+2026-10-21T14:07:52.057Z WARN [pmjs] map preparation ordinary Map217.json: no compact tile demand
+2026-10-21T14:07:52.081Z WARN [pmjs] map preparation ordinary Map218.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:54.096Z WARN [pmjs] map preparation ordinary Map246.json: no compact tile demand
+2026-10-21T14:07:55.299Z WARN [pmjs] map preparation ordinary Map262.json: no compact tile demand
+2026-10-21T14:07:55.309Z WARN [pmjs] map preparation ordinary Map263.json: no compact tile demand
+[mem] 20:07:55 used 544 MB, available 413 MB cpu 67C
+2026-10-21T14:07:56.348Z WARN [pmjs] map preparation ordinary Map279.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:56.708Z WARN [pmjs] map preparation ordinary Map284.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:57.205Z WARN [pmjs] map preparation ordinary Map294.json: no compact tile demand
+2026-10-21T14:07:57.233Z WARN [pmjs] map preparation ordinary Map295.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:57.384Z WARN [pmjs] map preparation ordinary Map298.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:57.389Z WARN [pmjs] map preparation ordinary Map299.json: no compact tile demand
+2026-10-21T14:07:57.434Z WARN [pmjs] map preparation ordinary Map300.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:57.867Z WARN [pmjs] map preparation ordinary Map306.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:57.873Z WARN [pmjs] map preparation ordinary Map307.json: no compact tile demand
+2026-10-21T14:07:57.913Z WARN [pmjs] map preparation ordinary Map308.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:58.605Z WARN [pmjs] map preparation ordinary Map318.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:58.609Z WARN [pmjs] map preparation ordinary Map319.json: no compact tile demand
+2026-10-21T14:07:58.650Z WARN [pmjs] map preparation ordinary Map320.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:58.688Z WARN [pmjs] map preparation ordinary Map321.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:58.733Z WARN [pmjs] map preparation ordinary Map322.json: packed allocations and geometry are not smaller
+2026-10-21T14:07:59.259Z WARN [pmjs] map preparation ordinary Map328.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:01.253Z INFO [pmjs] preparation stage=maps event=progress phase=map-compile elapsed_ms=40847.8 phase_elapsed_ms=15.9 no_progress_ms=15.9 completed=337 total=519 generated=0 hits=337 fallback=46 source="Map339.json"
+2026-10-21T14:08:01.432Z WARN [pmjs] map preparation ordinary Map355.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:01.669Z WARN [pmjs] map preparation ordinary Map360.json: no compact tile demand
+2026-10-21T14:08:01.673Z WARN [pmjs] map preparation ordinary Map361.json: no compact tile demand
+2026-10-21T14:08:01.777Z WARN [pmjs] map preparation ordinary Map364.json: no compact tile demand
+2026-10-21T14:08:01.783Z WARN [pmjs] map preparation ordinary Map365.json: no compact tile demand
+2026-10-21T14:08:01.789Z WARN [pmjs] map preparation ordinary Map366.json: no compact tile demand
+2026-10-21T14:08:01.795Z WARN [pmjs] map preparation ordinary Map367.json: no compact tile demand
+2026-10-21T14:08:01.860Z WARN [pmjs] map preparation ordinary Map369.json: no compact tile demand
+2026-10-21T14:08:03.342Z WARN [pmjs] map preparation ordinary Map385.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:03.590Z WARN [pmjs] map preparation ordinary Map389.json: no compact tile demand
+2026-10-21T14:08:03.710Z WARN [pmjs] map preparation ordinary Map390.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:03.923Z WARN [pmjs] map preparation ordinary Map395.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:03.953Z WARN [pmjs] map preparation ordinary Map396.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:04.198Z WARN [pmjs] map preparation ordinary Map400.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:04.208Z WARN [pmjs] map preparation ordinary Map401.json: incomplete map visual planes
+[mem] 20:08:05 used 542 MB, available 415 MB cpu 66C
+2026-10-21T14:08:05.767Z WARN [pmjs] map preparation ordinary Map417.json: no compact tile demand
+2026-10-21T14:08:05.774Z WARN [pmjs] map preparation ordinary Map418.json: no compact tile demand
+2026-10-21T14:08:05.779Z WARN [pmjs] map preparation ordinary Map419.json: no compact tile demand
+2026-10-21T14:08:05.802Z WARN [pmjs] map preparation ordinary Map420.json: no compact tile demand
+2026-10-21T14:08:05.869Z WARN [pmjs] map preparation ordinary Map422.json: no compact tile demand
+2026-10-21T14:08:05.878Z WARN [pmjs] map preparation ordinary Map423.json: no compact tile demand
+2026-10-21T14:08:05.884Z WARN [pmjs] map preparation ordinary Map424.json: no compact tile demand
+2026-10-21T14:08:07.827Z WARN [pmjs] map preparation ordinary Map445.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:08.155Z WARN [pmjs] map preparation ordinary Map448.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:08.423Z WARN [pmjs] map preparation ordinary Map452.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:09.300Z WARN [pmjs] map preparation ordinary Map461.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:09.683Z WARN [pmjs] map preparation ordinary Map465.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:10.225Z WARN [pmjs] map preparation ordinary Map471.json: no compact tile demand
+2026-10-21T14:08:10.245Z WARN [pmjs] map preparation ordinary Map472.json: no compact tile demand
+2026-10-21T14:08:10.250Z WARN [pmjs] map preparation ordinary Map473.json: no compact tile demand
+2026-10-21T14:08:10.289Z INFO [pmjs] preparation stage=maps event=progress phase=map-compile elapsed_ms=50848.9 phase_elapsed_ms=2.9 no_progress_ms=2.9 completed=472 total=519 generated=0 hits=472 fallback=76 source="Map474.json"
+2026-10-21T14:08:10.289Z WARN [pmjs] map preparation ordinary Map474.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:10.327Z WARN [pmjs] map preparation ordinary Map475.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:10.332Z WARN [pmjs] map preparation ordinary Map476.json: no compact tile demand
+2026-10-21T14:08:10.343Z WARN [pmjs] map preparation ordinary Map477.json: no compact tile demand
+2026-10-21T14:08:10.354Z WARN [pmjs] map preparation ordinary Map478.json: no compact tile demand
+2026-10-21T14:08:10.359Z WARN [pmjs] map preparation ordinary Map479.json: no compact tile demand
+2026-10-21T14:08:10.370Z WARN [pmjs] map preparation ordinary Map480.json: no compact tile demand
+2026-10-21T14:08:10.381Z WARN [pmjs] map preparation ordinary Map481.json: no compact tile demand
+2026-10-21T14:08:10.386Z WARN [pmjs] map preparation ordinary Map482.json: no compact tile demand
+2026-10-21T14:08:10.485Z WARN [pmjs] map preparation ordinary Map484.json: no compact tile demand
+2026-10-21T14:08:10.723Z WARN [pmjs] map preparation ordinary Map488.json: no compact tile demand
+2026-10-21T14:08:10.750Z WARN [pmjs] map preparation ordinary Map489.json: no compact tile demand
+2026-10-21T14:08:10.783Z WARN [pmjs] map preparation ordinary Map490.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:10.817Z WARN [pmjs] map preparation ordinary Map491.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:10.850Z WARN [pmjs] map preparation ordinary Map492.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:10.885Z WARN [pmjs] map preparation ordinary Map493.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:10.916Z WARN [pmjs] map preparation ordinary Map494.json: packed allocations and geometry are not smaller
+2026-10-21T14:08:12.504Z WARN [pmjs] map preparation ordinary Map512.json: no compact tile demand
+2026-10-21T14:08:12.516Z WARN [pmjs] map preparation ordinary Map695.json: no compact tile demand
+2026-10-21T14:08:12.545Z WARN [pmjs] map preparation ordinary Map927.json: no compact tile demand
+2026-10-21T14:08:12.569Z WARN [pmjs] map preparation ordinary Map931.json: no compact tile demand
+2026-10-21T14:08:12.594Z WARN [pmjs] map preparation ordinary Map982.json: no compact tile demand
+2026-10-21T14:08:12.604Z WARN [pmjs] map preparation ordinary Map985.json: no compact tile demand
+2026-10-21T14:08:12.616Z WARN [pmjs] map preparation ordinary Map986.json: no compact tile demand
+2026-10-21T14:08:12.631Z WARN [pmjs] map preparation ordinary Map999.json: no compact tile demand
+[mem] 20:08:15 used 563 MB, available 394 MB cpu 67C
+2026-10-21T14:08:17.038Z INFO [pmjs] preparation stage=maps event=phase phase=map-install elapsed_ms=54870.3 source=""
+2026-10-21T14:08:17.039Z INFO [pmjs] preparation stage=maps event=phase phase=map-publish elapsed_ms=56975.0 source=""
+2026-10-21T14:08:20.179Z INFO [pmjs] preparation stage=maps event=phase phase=map-cleanup elapsed_ms=58388.2 source=""
+2026-10-21T14:08:23.704Z INFO [pmjs] preparation stage=maps event=progress phase=map-cleanup elapsed_ms=63300.2 phase_elapsed_ms=4912.0 no_progress_ms=4912.0 completed=519 total=519 generated=0 hits=519 fallback=101 source=""
+[mem] 20:08:26 used 597 MB, available 360 MB cpu 65C
+  2026-10-21T14:08:27.717Z INFO [pmjs] preparation stage=maps event=finish status=complete cache=warm catalog_hit=false catalog=missing duration_ms=67777.2 codec=png verify_hashes=false cache_root="/mnt/mmc/ports/omori-pmjs2/.cache/maps" generated=0 hits=519 fallback=101 total=519 prepared=418 installed=418 failed_files=0 install_failures=0 hashed_files=3168 hashed_bytes=187761987 reused_files=4538 copied_bytes=0 hash_categories={"map-input":158576077,"output":29185910} snapshot_bytes=0 processing_ms=0.0 early_refusals=0 phase_ms={"start":9,"map-discover":242.3,"map-wait":2.2,"map-catalog":2.5,"map-validate":12115.5,"map-compile":42498.7,"map-install":2104.7,"map-publish":1413.2,"map-cleanup":9389} error=""
+  2026-10-21T14:08:27.718Z INFO [pmjs] map preparation generated=0 hits=519 compilation_hits=461 selected=418 indexed_copies=0 native_packs=0 hashed_files=3168 hashed_bytes=187761987 reused_files=4538 duration_ms=67769.6
+  2026-10-21T14:08:27.718Z INFO [pmjs] preparation event=finish status=complete duration_ms=71335.9
+  2026-10-21T14:08:27.718Z INFO [pmjs] map preparation=on
+  2026-10-21T14:08:27.718Z INFO Deprecation Warning: VoidFilter has been renamed to AlphaFilter, please use PIXI.filters.AlphaFilter
+  2026-10-21T14:08:27.718Z WARN     at /mnt/mmc/ports/omori-test/www/js/rpg_core.js:3925:38
+  2026-10-21T14:08:27.718Z WARN     at Script.runInThisContext (node:vm:137:12)
+  2026-10-21T14:08:27.718Z WARN     at Object.runInThisContext (node:vm:317:38)
+  2026-10-21T14:08:27.718Z WARN     at native.runtime.loadScript (/root/pmjs-test2/pmjs-linux-arm64/share/pmjs/runner/index.cjs:557:17)
+  2026-10-21T14:08:27.718Z WARN     at NativeHost.runtime.loadScript (/mnt/mmc/ports/omori-pmjs2/.cache/pmjs/ca064ebffa43d3505c55a4a8/bootstrap-e386cb8ecae8b879cea4e3a048a25afb95fff0d855df1d590b268fb1d1a9d01b.js:6586:30)
+  2026-10-21T14:08:27.718Z WARN     at /mnt/mmc/ports/omori-pmjs2/.cache/pmjs/ca064ebffa43d3505c55a4a8/bootstrap-e386cb8ecae8b879cea4e3a048a25afb95fff0d855df1d590b268fb1d1a9d01b.js:6933:20
+  2026-10-21T14:08:27.718Z WARN     at Script.runInThisContext (node:vm:137:12)
+  2026-10-21T14:08:27.718Z WARN     at Object.runInThisContext (node:vm:317:38)
+2026-10-21T14:08:30.965Z WARN [pmjs-opt] bitmap.native-draw-text refused: modified Bitmap text method composition; fallback: stock MV Canvas fillText and strokeText
+2026-10-21T14:08:30.970Z WARN [pmjs-opt] plugins.yanfly.event-mini-label refused: unrecognized Yanfly setupMiniLabel method composition; fallback: construct Window_EventMiniLabel for every event without checking page tags
+2026-10-21T14:08:30.971Z WARN [pmjs-opt] plugins.yanfly.slippery-tiles refused: slippery region or array membership composition requires guest query; fallback: stock YEP_SlipperyTiles isSlippery check on every call
+2026-10-21T14:08:30.979Z INFO [pmjs] timing-contract refused: unrecognized-updateMain (updateMain left untouched; logic runs per presentation)
+2026-10-21T14:08:30.979Z WARN [pmjs-opt] mv.logic-timing-contract refused: unrecognized SceneManager.updateMain composition; fallback: leave final guest SceneManager.updateMain unchanged
+2026-10-21T14:08:33.732Z INFO [pmjs] guest plugins: 152 manifest, 149 loaded, 3 disabled
+2026-10-21T14:08:33.733Z INFO [pmjs]   -------------------- disabled (disabled in game manifest)
+2026-10-21T14:08:33.733Z INFO [pmjs]   YEP_TestPlayAssist disabled (disabled in game manifest)
+2026-10-21T14:08:33.733Z INFO [pmjs]   YEP_Debugger disabled (disabled in game manifest)
+2026-10-21T14:08:33.733Z INFO [pmjs] owned method Graphics.render superseded guest changes from GTP_OmoriFixes
+2026-10-21T14:08:33.733Z INFO [pmjs] timing logic_hz=60 render_hz=60
+2026-10-21T14:08:33.733Z INFO [pmjs] ready size=640x480 startup_ms=84280.3
+[mem] 20:08:36 used 647 MB, available 310 MB cpu 70C
+2026-10-21T14:08:41.749Z ERROR [pmjs] uncaught exception in GTP_OmoriFixes fs callback: Error: Error: ENOENT: /save/OMORI/CUTSCENE.json
+2026-10-21T14:08:41.749Z ERROR     at /mnt/mmc/ports/omori-test/www/js/plugins/GTP_OmoriFixes.js:2717:22
+2026-10-21T14:08:41.749Z ERROR     at /mnt/mmc/ports/omori-pmjs2/.cache/pmjs/ca064ebffa43d3505c55a4a8/bootstrap-e386cb8ecae8b879cea4e3a048a25afb95fff0d855df1d590b268fb1d1a9d01b.js:15826:29
+2026-10-21T14:08:41.749Z ERROR     at Object.callback (/mnt/mmc/ports/omori-pmjs2/.cache/pmjs/ca064ebffa43d3505c55a4a8/bootstrap-e386cb8ecae8b879cea4e3a048a25afb95fff0d855df1d590b268fb1d1a9d01b.js:1849:59)
+2026-10-21T14:08:41.749Z ERROR     at Immediate.step [as _onImmediate] (/mnt/mmc/ports/omori-pmjs2/.cache/pmjs/ca064ebffa43d3505c55a4a8/bootstrap-e386cb8ecae8b879cea4e3a048a25afb95fff0d855df1d590b268fb1d1a9d01b.js:1321:17)
+2026-10-21T14:08:41.749Z ERROR     at process.processImmediate (node:internal/timers:484:21)
+2026-10-21T14:08:43.755Z INFO [pmjs] diagnostic {"reason":"game-location","stage":"playing","uptimeMs":94315,"context":{"scene":"Scene_Boot"},"to":{"scene":"Scene_Boot"}}
+[mem] 20:08:46 used 660 MB, available 297 MB cpu 70C
+2026-10-21T14:08:47.282Z INFO [bench] fps 0.0 (webgl, Scene_Boot)
+[vorbis @ 0x2edf1a40] Could not update timestamps for discarded samples.
+[vorbis @ 0x2f0b2760] Could not update timestamps for discarded samples.
+[vorbis @ 0x2f169590] Could not update timestamps for discarded samples.
+[vorbis @ 0x2f169590] Could not update timestamps for discarded samples.
+2026-10-21T14:08:53.756Z INFO [pmjs] diagnostic {"reason":"map-transition","stage":"playing","uptimeMs":104315,"context":{"mapId":0,"scene":"Scene_SplashScreens","x":0,"y":0,"frameCount":10},"from":{"scene":"Scene_Boot"},"to":{"mapId":0,"scene":"Scene_SplashScreens","x":0,"y":0,"frameCount":10}}
+2026-10-21T14:08:54.584Z INFO [bench] fps 0.1 (webgl, Scene_Boot)
+[mem] 20:08:56 used 670 MB, available 287 MB cpu 65C
+2026-10-21T14:08:58.970Z INFO [bench] fps 59.3 (webgl, Scene_SplashScreens)
+2026-10-21T14:09:03.956Z INFO [bench] fps 57.8 (webgl, Scene_SplashScreens)
+2026-10-21T14:09:06.417Z WARN [Omori Main Menu - Scene Options.js:864] [pmjs-opt] sprite.native-tint refused for this use: sprite subclass requires Canvas tone processing; fallback: Stock Canvas 2D Sprite._executeTint pixel passes
+[mem] 20:09:06 used 671 MB, available 286 MB cpu 64C
+2026-10-21T14:09:08.078Z INFO [logic-experiment] installed {"mode":"baseline","horrorSkipped":0,"baseSkipped":0}
+2026-10-21T14:09:08.078Z INFO [frame-experiment] installed
+2026-10-21T14:09:08.078Z INFO [tour] starting: 4 maps, settle 20 s, measure 20 s
+2026-10-21T14:09:13.804Z INFO [pmjs] diagnostic {"reason":"map-transition","stage":"playing","uptimeMs":124364,"context":{"mapId":87,"mapName":" -- WHITESPACE","scene":"Scene_Map","x":28,"y":27,"frameCount":117},"from":{"mapId":0,"scene":"Scene_SplashScreens","x":0,"y":0,"frameCount":597},"to":{"mapId":87,"mapName":" -- WHITESPACE","scene":"Scene_Map","x":28,"y":27,"frameCount":117}}
+2026-10-21T14:09:13.805Z WARN [pmjs] diagnostic {"reason":"slow-frame-summary","stage":"playing","uptimeMs":124365,"context":{"mapId":87,"mapName":" -- WHITESPACE","scene":"Scene_Map","x":28,"y":27,"eventId":6,"commandIndex":12,"commandCode":505,"interpreterDepth":0,"waitMode":"route","frameCount":117},"sampledFrames":144,"slowFrames":2,"maxSampledFrameMs":306.9,"meanFrameWallMs":22}
+2026-10-21T14:09:13.991Z INFO [bench] fps 19.9 (webgl, Scene_Map map 87)
+[mem] 20:09:16 used 683 MB, available 274 MB cpu 71C
+2026-10-21T14:09:18.964Z INFO [bench] fps 19.0 (webgl, Scene_Map map 87)
+[vorbis @ 0x2f169590] Could not update timestamps for discarded samples.
+2026-10-21T14:09:23.987Z INFO [bench] fps 27.2 (webgl, Scene_Map map 87)
+[mem] 20:09:26 used 685 MB, available 272 MB cpu 70C
+2026-10-21T14:09:28.993Z INFO [bench] fps 26.3 (webgl, Scene_Map map 87)
+2026-10-21T14:09:33.968Z INFO [bench] fps 26.1 (webgl, Scene_Map map 87)
+[vorbis @ 0x2f169590] Could not update timestamps for discarded samples.
+[mem] 20:09:36 used 684 MB, available 273 MB cpu 69C
+2026-10-21T14:09:39.007Z INFO [bench] fps 27.4 (webgl, Scene_Map map 87)
+2026-10-21T14:09:43.970Z INFO [bench] fps 27.7 (webgl, Scene_Map map 87)
+2026-10-21T14:09:43.970Z INFO [frame-phase] {"tickMs":32.25,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":687,"fps":27.5,"ft":[35.8,40.8,58.9],"drawMs":1.79,"uploadMs":0.1,"draws":0,"messageShare":0,"id":87,"mode":"baseline","stats":{"mode":"baseline","horrorSkipped":0,"baseSkipped":0},"frameStats":{"enabled":false,"hits":0,"fallbacks":0},"mem":{"rss":621.5,"heap":121.2,"imgGpu":4.7,"imgCpu":110.2},"sceneCounts":{"total":687,"character":100,"reflection":50,"emptyCharacter":0,"hiddenBase":254}}
+[mem] 20:09:46 used 685 MB, available 272 MB cpu 69C
+[vorbis @ 0x2f169590] Could not update timestamps for discarded samples.
+2026-10-21T14:09:48.993Z INFO [bench] fps 26.7 (webgl, Scene_Map map 87)
+2026-10-21T14:09:53.985Z INFO [bench] fps 27.1 (webgl, Scene_Map map 87)
+[mem] 20:09:57 used 684 MB, available 273 MB cpu 69C
+2026-10-21T14:09:58.991Z INFO [bench] fps 27.1 (webgl, Scene_Map map 87)
+2026-10-21T14:09:58.991Z INFO [frame-phase] {"tickMs":32.79,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":687,"fps":27.1,"ft":[36.2,42.9,49.8],"drawMs":1.8,"uploadMs":0.1,"draws":0,"messageShare":0,"id":87,"mode":"frame","stats":{"mode":"baseline","horrorSkipped":0,"baseSkipped":0},"frameStats":{"enabled":true,"hits":81400,"fallbacks":0},"mem":{"rss":621.5,"heap":129.8,"imgGpu":4.7,"imgCpu":110.2},"sceneCounts":{"total":687,"character":100,"reflection":50,"emptyCharacter":0,"hiddenBase":254}}
+[vorbis @ 0x2f169590] Could not update timestamps for discarded samples.
+2026-10-21T14:10:03.984Z INFO [bench] fps 28.1 (webgl, Scene_Map map 87)
+[mem] 20:10:07 used 685 MB, available 272 MB cpu 70C
+2026-10-21T14:10:08.955Z INFO [bench] fps 27.9 (webgl, Scene_Map map 87)
+2026-10-21T14:10:13.989Z INFO [bench] fps 28.9 (webgl, Scene_Map map 87)
+2026-10-21T14:10:13.989Z INFO [frame-phase] {"tickMs":31.15,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":687,"fps":28.3,"ft":[34.7,38.8,56.2],"drawMs":1.83,"uploadMs":0.1,"draws":0,"messageShare":0,"id":87,"mode":"both","stats":{"mode":"both","horrorSkipped":211792,"baseSkipped":218624},"frameStats":{"enabled":false,"hits":81400,"fallbacks":0},"mem":{"rss":621.7,"heap":138.7,"imgGpu":4.7,"imgCpu":110.2},"sceneCounts":{"total":687,"character":100,"reflection":50,"emptyCharacter":0,"hiddenBase":254}}
+[vorbis @ 0x2f169590] Could not update timestamps for discarded samples.
+[mem] 20:10:17 used 685 MB, available 272 MB cpu 69C
+2026-10-21T14:10:18.987Z INFO [bench] fps 28.2 (webgl, Scene_Map map 87)
+2026-10-21T14:10:23.980Z INFO [bench] fps 28.3 (webgl, Scene_Map map 87)
+[mem] 20:10:27 used 686 MB, available 271 MB cpu 69C
+2026-10-21T14:10:28.974Z INFO [bench] fps 28.7 (webgl, Scene_Map map 87)
+2026-10-21T14:10:28.974Z INFO [frame-phase] {"tickMs":30.97,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":687,"fps":28.6,"ft":[34.4,38.8,63.5],"drawMs":1.76,"uploadMs":0.1,"draws":0,"messageShare":0,"id":87,"mode":"all","stats":{"mode":"both","horrorSkipped":424080,"baseSkipped":437760},"frameStats":{"enabled":true,"hits":167000,"fallbacks":0},"mem":{"rss":621.7,"heap":150.1,"imgGpu":4.7,"imgCpu":110.2},"sceneCounts":{"total":687,"character":100,"reflection":50,"emptyCharacter":0,"hiddenBase":254}}
+[vorbis @ 0x2f169590] Could not update timestamps for discarded samples.
+2026-10-21T14:10:33.973Z INFO [bench] fps 29.3 (webgl, Scene_Map map 87)
+[mem] 20:10:37 used 685 MB, available 271 MB cpu 69C
+2026-10-21T14:10:38.985Z INFO [bench] fps 29.3 (webgl, Scene_Map map 87)
+2026-10-21T14:10:44.028Z INFO [bench] fps 28.7 (webgl, Scene_Map map 87)
+2026-10-21T14:10:44.029Z INFO [frame-phase] {"tickMs":30.45,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":687,"fps":29,"ft":[33.7,39.8,87.8],"drawMs":1.81,"uploadMs":0.1,"draws":0,"messageShare":0,"id":87,"mode":"baseline","stats":{"mode":"baseline","horrorSkipped":424080,"baseSkipped":437760},"frameStats":{"enabled":false,"hits":167000,"fallbacks":0},"mem":{"rss":621.9,"heap":116.1,"imgGpu":4.7,"imgCpu":110.2},"sceneCounts":{"total":687,"character":100,"reflection":50,"emptyCharacter":0,"hiddenBase":254}}
+2026-10-21T14:10:44.029Z INFO [tour] {"n":1,"id":87,"region":"","name":"","effects":"","arrived":true,"at":[28,27],"tickMs":30.45,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":687,"fps":29,"ft":[33.7,39.8,87.8],"drawMs":1.81,"uploadMs":0.1,"draws":0,"messageShare":0,"mode":"baseline","stats":{"mode":"baseline","horrorSkipped":424080,"baseSkipped":437760},"frameStats":{"enabled":false,"hits":167000,"fallbacks":0},"mem":{"rss":621.9,"heap":116.4,"imgGpu":4.7,"imgCpu":110.2},"sceneCounts":{"total":687,"character":100,"reflection":50,"emptyCharacter":0,"hiddenBase":254},"filters":["BlurFilter{blur=0}","t{strength=0}","n{blur=0 bloomScale=0}","t(off){amplitude=0}","n(off){offset=0}","n(off){blur=0 bloomScale=0.67}","ToneFilter{alpha=1}","AlphaFilter{alpha=1}"],"text":null,"autopilot":{"presses":0,"battles":0,"gameOvers":0},"prep":{"selected":0,"refused":0,"unscoped":0,"reasons":{},"catalog":true},"state":{"scene":"Scene_Map","map":87,"message":false,"event":false,"pictures":0},"errors":[],"errorCount":0}
+[vorbis @ 0x2f169590] Could not update timestamps for discarded samples.
+2026-10-21T14:10:44.730Z WARN [YEP_CoreEngine.js:1027] [pmjs-opt] plugins.yanfly.core-native-text refused for this use: Bitmap text methods changed after installation; fallback: captured MV Canvas text drawing
+[mem] 20:10:47 used 696 MB, available 261 MB cpu 71C
+2026-10-21T14:10:49.048Z INFO [bench] fps 12.3 (webgl, Scene_Map map 14)
+2026-10-21T14:10:53.938Z INFO [pmjs] diagnostic {"reason":"map-transition","stage":"playing","uptimeMs":224505,"context":{"mapId":14,"mapName":"MOM'S ROOM","scene":"Scene_Map","x":45,"y":44,"frameCount":2709},"from":{"mapId":87,"mapName":" -- WHITESPACE","scene":"Scene_Map","x":28,"y":27,"frameCount":2584},"to":{"mapId":14,"mapName":"MOM'S ROOM","scene":"Scene_Map","x":45,"y":44,"frameCount":2709}}
+2026-10-21T14:10:54.024Z INFO [bench] fps 15.1 (webgl, Scene_Map map 14)
+[mem] 20:10:57 used 696 MB, available 261 MB cpu 70C
+[vorbis @ 0x2f169590] Could not update timestamps for discarded samples.
+2026-10-21T14:10:59.060Z INFO [bench] fps 13.3 (webgl, Scene_Map map 14)
+2026-10-21T14:11:04.046Z INFO [bench] fps 12.4 (webgl, Scene_Map map 14)
+[mem] 20:11:07 used 696 MB, available 261 MB cpu 72C
+2026-10-21T14:11:09.006Z INFO [bench] fps 12.2 (webgl, Scene_Map map 14)
+[vorbis @ 0x2f169590] Could not update timestamps for discarded samples.
+2026-10-21T14:11:14.004Z WARN [pmjs] diagnostic {"reason":"slow-frame-summary","stage":"playing","uptimeMs":244572,"context":{"mapId":14,"mapName":"MOM'S ROOM","scene":"Scene_Map","x":45,"y":44,"eventId":0,"commandIndex":0,"interpreterDepth":0,"waitMode":"","frameCount":2969},"sampledFrames":158,"slowFrames":1,"maxSampledFrameMs":882.6,"meanFrameWallMs":51}
+2026-10-21T14:11:14.012Z INFO [bench] fps 14.1 (webgl, Scene_Map map 14)
+[mem] 20:11:17 used 696 MB, available 260 MB cpu 71C
+2026-10-21T14:11:18.976Z INFO [bench] fps 14.4 (webgl, Scene_Map map 14)
+2026-10-21T14:11:21.562Z INFO [frame-phase] {"tickMs":63.16,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":977,"fps":14.5,"ft":[67.6,80.1,93.3],"drawMs":2.04,"uploadMs":0.31,"draws":0,"messageShare":0,"id":14,"mode":"baseline","stats":{"mode":"baseline","horrorSkipped":424080,"baseSkipped":437760},"frameStats":{"enabled":false,"hits":167000,"fallbacks":0},"mem":{"rss":632.4,"heap":132.4,"imgGpu":17.8,"imgCpu":105.9},"sceneCounts":{"total":977,"character":370,"reflection":185,"emptyCharacter":0,"hiddenBase":254}}
+2026-10-21T14:11:23.979Z INFO [bench] fps 14.4 (webgl, Scene_Map map 14)
+[vorbis @ 0x2f169590] Could not update timestamps for discarded samples.
+[mem] 20:11:27 used 696 MB, available 261 MB cpu 69C
+[vorbis @ 0x2edf1a40] Could not update timestamps for discarded samples.
+2026-10-21T14:11:28.999Z INFO [bench] fps 14.0 (webgl, Scene_Map map 14)
+2026-10-21T14:11:34.015Z INFO [bench] fps 14.4 (webgl, Scene_Map map 14)
+2026-10-21T14:11:36.697Z INFO [frame-phase] {"tickMs":64.21,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":977,"fps":14.3,"ft":[69.3,73.9,97.4],"drawMs":2,"uploadMs":0.31,"draws":0,"messageShare":0,"id":14,"mode":"frame","stats":{"mode":"baseline","horrorSkipped":424080,"baseSkipped":437760},"frameStats":{"enabled":true,"hits":325360,"fallbacks":0},"mem":{"rss":632.1,"heap":137.9,"imgGpu":17.8,"imgCpu":105.9},"sceneCounts":{"total":977,"character":370,"reflection":185,"emptyCharacter":0,"hiddenBase":254}}
+[mem] 20:11:37 used 697 MB, available 260 MB cpu 70C
+2026-10-21T14:11:39.012Z INFO [bench] fps 14.6 (webgl, Scene_Map map 14)
+[vorbis @ 0x2f169590] Could not update timestamps for discarded samples.
+2026-10-21T14:11:43.948Z INFO [bench] fps 14.8 (webgl, Scene_Map map 14)
+[mem] 20:11:47 used 696 MB, available 261 MB cpu 70C
+2026-10-21T14:11:48.964Z INFO [bench] fps 15.0 (webgl, Scene_Map map 14)
+2026-10-21T14:11:51.819Z INFO [frame-phase] {"tickMs":61.05,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":977,"fps":15,"ft":[66.2,70.5,90.3],"drawMs":1.98,"uploadMs":0.31,"draws":0,"messageShare":0,"id":14,"mode":"both","stats":{"mode":"both","horrorSkipped":536176,"baseSkipped":553472},"frameStats":{"enabled":false,"hits":325360,"fallbacks":0},"mem":{"rss":632.1,"heap":140.1,"imgGpu":17.8,"imgCpu":105.9},"sceneCounts":{"total":977,"character":370,"reflection":185,"emptyCharacter":0,"hiddenBase":254}}
+2026-10-21T14:11:54.040Z INFO [bench] fps 14.5 (webgl, Scene_Map map 14)
+[vorbis @ 0x2f169590] Could not update timestamps for discarded samples.
+[mem] 20:11:57 used 697 MB, available 260 MB cpu 69C
+2026-10-21T14:11:58.974Z INFO [bench] fps 14.1 (webgl, Scene_Map map 14)
+2026-10-21T14:12:04.008Z INFO [bench] fps 14.2 (webgl, Scene_Map map 14)
+2026-10-21T14:12:07.021Z INFO [frame-phase] {"tickMs":64.85,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":977,"fps":14.2,"ft":[69.3,79,101.6],"drawMs":1.99,"uploadMs":0.3,"draws":0,"messageShare":0,"id":14,"mode":"all","stats":{"mode":"both","horrorSkipped":642320,"baseSkipped":663040},"frameStats":{"enabled":true,"hits":483720,"fallbacks":0},"mem":{"rss":632.1,"heap":145.1,"imgGpu":17.8,"imgCpu":105.9},"sceneCounts":{"total":977,"character":370,"reflection":185,"emptyCharacter":0,"hiddenBase":254}}
+[mem] 20:12:07 used 696 MB, available 261 MB cpu 69C
+[vorbis @ 0x2f169590] Could not update timestamps for discarded samples.
+2026-10-21T14:12:08.981Z INFO [bench] fps 14.2 (webgl, Scene_Map map 14)
+[vorbis @ 0x2edf1a40] Could not update timestamps for discarded samples.
+2026-10-21T14:12:14.006Z INFO [bench] fps 14.5 (webgl, Scene_Map map 14)
+[mem] 20:12:17 used 697 MB, available 260 MB cpu 69C
+2026-10-21T14:12:19.007Z INFO [bench] fps 14.6 (webgl, Scene_Map map 14)
+[vorbis @ 0x2f169590] Could not update timestamps for discarded samples.
+2026-10-21T14:12:22.619Z INFO [frame-phase] {"tickMs":62.26,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":977,"fps":14.7,"ft":[66.8,86.4,96.7],"drawMs":2.06,"uploadMs":0.3,"draws":0,"messageShare":0,"id":14,"mode":"baseline","stats":{"mode":"baseline","horrorSkipped":642320,"baseSkipped":663040},"frameStats":{"enabled":false,"hits":483720,"fallbacks":0},"mem":{"rss":632.1,"heap":148.3,"imgGpu":17.8,"imgCpu":105.9},"sceneCounts":{"total":977,"character":370,"reflection":185,"emptyCharacter":0,"hiddenBase":254}}
+2026-10-21T14:12:22.620Z INFO [tour] {"n":2,"id":14,"region":"","name":"","effects":"","arrived":true,"at":[45,44],"tickMs":62.26,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":977,"fps":14.7,"ft":[66.8,86.4,96.7],"drawMs":2.06,"uploadMs":0.3,"draws":0,"messageShare":0,"mode":"baseline","stats":{"mode":"baseline","horrorSkipped":642320,"baseSkipped":663040},"frameStats":{"enabled":false,"hits":483720,"fallbacks":0},"mem":{"rss":632.1,"heap":148.6,"imgGpu":17.8,"imgCpu":105.9},"sceneCounts":{"total":977,"character":370,"reflection":185,"emptyCharacter":0,"hiddenBase":254},"filters":["BlurFilter{blur=0}","t{strength=0}","n{blur=0 bloomScale=0}","t(off){amplitude=0}","n(off){offset=0}","n(off){blur=0 bloomScale=0.67}","ToneFilter{alpha=1}","AlphaFilter{alpha=1}"],"text":null,"autopilot":{"presses":0,"battles":0,"gameOvers":0},"prep":{"selected":5,"refused":0,"unscoped":3,"reasons":{},"catalog":false},"state":{"scene":"Scene_Map","map":14,"message":false,"event":false,"pictures":0},"errors":[],"errorCount":0}
+2026-10-21T14:12:23.910Z INFO [bench] fps 11.0 (webgl, Scene_Map map 111)
+2026-10-21T14:12:23.911Z INFO SCRIPT CALL ERROR
+2026-10-21T14:12:23.911Z INFO var id = 100;
+2026-10-21T14:12:23.911Z INFO this.setupPictureCustomFrames(id, 1920, 2400, 3, 5);
+2026-10-21T14:12:23.911Z INFO this.setPictureAnimation(id,[12],0,0,false);
+2026-10-21T14:12:23.911Z INFO 
+2026-10-21T14:12:23.923Z ERROR [YEP_EventTimerControl.js:387] TypeError: Cannot read properties of undefined (reading 'updateCustomFrame')
+2026-10-21T14:12:23.923Z ERROR [YEP_EventTimerControl.js:387]     at Game_Interpreter.setPictureAnimation (/mnt/mmc/ports/omori-test/www/js/plugins/Custom Picture Controls.js:120:37)
+2026-10-21T14:12:23.923Z ERROR [YEP_EventTimerControl.js:387]     at eval (eval at Game_Interpreter.command355 (/mnt/mmc/ports/omori-test/www/js/plugins/YEP_CoreEngine.js:1853:5), <anonymous>:3:6)
+2026-10-21T14:12:23.923Z ERROR [YEP_EventTimerControl.js:387]     at Game_Interpreter.command355 (/mnt/mmc/ports/omori-test/www/js/plugins/YEP_CoreEngine.js:1853:5)
+2026-10-21T14:12:23.923Z ERROR [YEP_EventTimerControl.js:387]     at Game_Interpreter.executeCommand (/mnt/mmc/ports/omori-test/www/js/rpg_objects.js:9053:34)
+2026-10-21T14:12:23.923Z ERROR [YEP_EventTimerControl.js:387]     at Game_Interpreter.executeCommand (/mnt/mmc/ports/omori-test/www/js/plugins/Exhydra_FollowerControl.js:316:48)
+2026-10-21T14:12:23.923Z ERROR [YEP_EventTimerControl.js:387]     at Game_Interpreter.update (/mnt/mmc/ports/omori-test/www/js/rpg_objects.js:8961:19)
+2026-10-21T14:12:23.923Z ERROR [YEP_EventTimerControl.js:387]     at Game_Interpreter.update (/mnt/mmc/ports/omori-test/www/js/plugins/Gacha.js:301:32)
+2026-10-21T14:12:23.923Z ERROR [YEP_EventTimerControl.js:387]     at Game_Map.updateInterpreter (/mnt/mmc/ports/omori-test/www/js/rpg_objects.js:6152:27)
+2026-10-21T14:12:23.923Z ERROR [YEP_EventTimerControl.js:387]     at Game_Map.update (/mnt/mmc/ports/omori-test/www/js/rpg_objects.js:6059:14)
+2026-10-21T14:12:23.923Z ERROR [YEP_EventTimerControl.js:387]     at Scene_Map.updateMain (/mnt/mmc/ports/omori-test/www/js/rpg_scenes.js:608:14)
+2026-10-21T14:12:24.309Z INFO [pmjs] diagnostic {"reason":"map-transition","stage":"playing","uptimeMs":314871,"context":{"mapId":111,"mapName":"RAIN TOWN","scene":"Scene_Map","x":15,"y":25,"frameCount":3956},"from":{"mapId":14,"mapName":"MOM'S ROOM","scene":"Scene_Map","x":45,"y":44,"frameCount":3838},"to":{"mapId":111,"mapName":"RAIN TOWN","scene":"Scene_Map","x":15,"y":25,"frameCount":3956}}
+[mem] 20:12:27 used 735 MB, available 222 MB cpu 71C
+2026-10-21T14:12:29.003Z INFO [bench] fps 13.6 (webgl, Scene_Map map 111)
+2026-10-21T14:12:34.041Z INFO [bench] fps 15.0 (webgl, Scene_Map map 111)
+[mem] 20:12:37 used 723 MB, available 234 MB cpu 72C
+2026-10-21T14:12:39.057Z INFO [bench] fps 13.8 (webgl, Scene_Map map 111)
+[vorbis @ 0x30efc7d0] Could not update timestamps for discarded samples.
+2026-10-21T14:12:44.014Z INFO [bench] fps 16.3 (webgl, Scene_Map map 111)
+[mem] 20:12:47 used 723 MB, available 234 MB cpu 70C
+2026-10-21T14:12:48.984Z INFO [bench] fps 16.8 (webgl, Scene_Map map 111)
+2026-10-21T14:12:54.014Z INFO [bench] fps 16.6 (webgl, Scene_Map map 111)
+[mem] 20:12:57 used 723 MB, available 234 MB cpu 70C
+2026-10-21T14:12:58.743Z INFO [frame-phase] {"tickMs":52.82,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":965,"fps":17.1,"ft":[57.8,67.3,82.9],"drawMs":2.52,"uploadMs":0.25,"draws":0,"messageShare":0,"id":111,"mode":"baseline","stats":{"mode":"baseline","horrorSkipped":642320,"baseSkipped":663040},"frameStats":{"enabled":false,"hits":483720,"fallbacks":0},"mem":{"rss":659.2,"heap":144.9,"imgGpu":44.2,"imgCpu":95.5},"sceneCounts":{"total":965,"character":158,"reflection":79,"emptyCharacter":0,"hiddenBase":242}}
+2026-10-21T14:12:58.743Z INFO [bench] fps 17.1 (webgl, Scene_Map map 111)
+[vorbis @ 0x30efc7d0] Could not update timestamps for discarded samples.
+2026-10-21T14:13:03.962Z INFO [bench] fps 16.8 (webgl, Scene_Map map 111)
+[mem] 20:13:07 used 722 MB, available 235 MB cpu 70C
+2026-10-21T14:13:09.039Z INFO [bench] fps 16.9 (webgl, Scene_Map map 111)
+2026-10-21T14:13:13.918Z INFO [frame-phase] {"tickMs":52.86,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":965,"fps":17.1,"ft":[58.4,63.2,68.3],"drawMs":2.51,"uploadMs":0.26,"draws":0,"messageShare":0,"id":111,"mode":"frame","stats":{"mode":"baseline","horrorSkipped":642320,"baseSkipped":663040},"frameStats":{"enabled":true,"hits":564300,"fallbacks":0},"mem":{"rss":659.3,"heap":152.2,"imgGpu":44.2,"imgCpu":95.5},"sceneCounts":{"total":965,"character":158,"reflection":79,"emptyCharacter":0,"hiddenBase":242}}
+2026-10-21T14:13:13.918Z INFO [bench] fps 17.0 (webgl, Scene_Map map 111)
+2026-10-21T14:13:14.441Z WARN [pmjs] diagnostic {"reason":"slow-frame-summary","stage":"playing","uptimeMs":365004,"context":{"mapId":111,"mapName":"RAIN TOWN","scene":"Scene_Map","x":15,"y":25,"eventId":0,"commandIndex":0,"interpreterDepth":0,"waitMode":"","frameCount":4771},"sampledFrames":118,"slowFrames":1,"maxSampledFrameMs":185.2,"meanFrameWallMs":62.2}
+[mem] 20:13:17 used 723 MB, available 234 MB cpu 69C
+2026-10-21T14:13:18.982Z INFO [bench] fps 17.2 (webgl, Scene_Map map 111)
+2026-10-21T14:13:24.029Z INFO [bench] fps 16.7 (webgl, Scene_Map map 111)
+[vorbis @ 0x30efc7d0] Could not update timestamps for discarded samples.
+[mem] 20:13:27 used 722 MB, available 235 MB cpu 69C
+2026-10-21T14:13:28.977Z INFO [frame-phase] {"tickMs":52.61,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":965,"fps":17.2,"ft":[56.8,66.6,163.3],"drawMs":2.54,"uploadMs":0.2,"draws":0,"messageShare":0,"id":111,"mode":"both","stats":{"mode":"both","horrorSkipped":770784,"baseSkipped":796684},"frameStats":{"enabled":false,"hits":564300,"fallbacks":0},"mem":{"rss":659.4,"heap":125.4,"imgGpu":44.2,"imgCpu":95.5},"sceneCounts":{"total":965,"character":158,"reflection":79,"emptyCharacter":0,"hiddenBase":242}}
+2026-10-21T14:13:28.978Z INFO [bench] fps 17.5 (webgl, Scene_Map map 111)
+2026-10-21T14:13:34.001Z INFO [bench] fps 16.9 (webgl, Scene_Map map 111)
+[mem] 20:13:37 used 723 MB, available 234 MB cpu 69C
+2026-10-21T14:13:38.985Z INFO [bench] fps 17.2 (webgl, Scene_Map map 111)
+2026-10-21T14:13:44.002Z INFO [bench] fps 17.2 (webgl, Scene_Map map 111)
+2026-10-21T14:13:44.002Z INFO [frame-phase] {"tickMs":52.76,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":965,"fps":17.3,"ft":[56.9,65,76.8],"drawMs":2.52,"uploadMs":0.17,"draws":0,"messageShare":0,"id":111,"mode":"all","stats":{"mode":"both","horrorSkipped":898752,"baseSkipped":929812},"frameStats":{"enabled":true,"hits":645828,"fallbacks":0},"mem":{"rss":659.3,"heap":131.4,"imgGpu":44.2,"imgCpu":95.5},"sceneCounts":{"total":965,"character":158,"reflection":79,"emptyCharacter":0,"hiddenBase":242}}
+[vorbis @ 0x30efc7d0] Could not update timestamps for discarded samples.
+[mem] 20:13:47 used 723 MB, available 234 MB cpu 69C
+2026-10-21T14:13:48.991Z INFO [bench] fps 17.7 (webgl, Scene_Map map 111)
+2026-10-21T14:13:53.979Z INFO [bench] fps 17.2 (webgl, Scene_Map map 111)
+[mem] 20:13:57 used 723 MB, available 234 MB cpu 70C
+2026-10-21T14:13:58.964Z INFO [bench] fps 17.2 (webgl, Scene_Map map 111)
+2026-10-21T14:13:58.965Z INFO [frame-phase] {"tickMs":52.23,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":965,"fps":17.4,"ft":[55.8,69.7,110.1],"drawMs":2.54,"uploadMs":0.17,"draws":0,"messageShare":0,"id":111,"mode":"baseline","stats":{"mode":"baseline","horrorSkipped":898752,"baseSkipped":929812},"frameStats":{"enabled":false,"hits":645828,"fallbacks":0},"mem":{"rss":659.2,"heap":123.8,"imgGpu":44.2,"imgCpu":95.5},"sceneCounts":{"total":965,"character":158,"reflection":79,"emptyCharacter":0,"hiddenBase":242}}
+2026-10-21T14:13:58.965Z INFO [tour] {"n":3,"id":111,"region":"","name":"","effects":"","arrived":true,"at":[15,25],"tickMs":52.23,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":965,"fps":17.4,"ft":[55.8,69.7,110.1],"drawMs":2.54,"uploadMs":0.17,"draws":0,"messageShare":0,"mode":"baseline","stats":{"mode":"baseline","horrorSkipped":898752,"baseSkipped":929812},"frameStats":{"enabled":false,"hits":645828,"fallbacks":0},"mem":{"rss":659.2,"heap":124.2,"imgGpu":44.2,"imgCpu":95.5},"sceneCounts":{"total":965,"character":158,"reflection":79,"emptyCharacter":0,"hiddenBase":242},"filters":["BlurFilter{blur=0}","t{strength=0}","n{blur=0 bloomScale=0}","t(off){amplitude=0}","n(off){offset=0}","n(off){blur=0 bloomScale=0.67}","ToneFilter{alpha=1}","AlphaFilter{alpha=1}"],"text":null,"autopilot":{"presses":0,"battles":0,"gameOvers":0},"prep":{"selected":9,"refused":0,"unscoped":4,"reasons":{},"catalog":false},"state":{"scene":"Scene_Map","map":111,"message":false,"event":false,"pictures":0},"errors":[],"errorCount":0}
+2026-10-21T14:14:03.996Z INFO [bench] fps 9.7 (webgl, Scene_Map map 78)
+[vorbis @ 0x2ffc4950] Could not update timestamps for discarded samples.
+2026-10-21T14:14:04.577Z INFO [pmjs] diagnostic {"reason":"map-transition","stage":"playing","uptimeMs":415143,"context":{"mapId":78,"mapName":"MOM'S ROOM","scene":"Scene_Map","x":45,"y":44,"frameCount":5590},"from":{"mapId":111,"mapName":"RAIN TOWN","scene":"Scene_Map","x":15,"y":25,"frameCount":5460},"to":{"mapId":78,"mapName":"MOM'S ROOM","scene":"Scene_Map","x":45,"y":44,"frameCount":5590}}
+[vorbis @ 0x30efc7d0] Could not update timestamps for discarded samples.
+[mem] 20:14:07 used 739 MB, available 218 MB cpu 70C
+2026-10-21T14:14:09.077Z INFO [bench] fps 13.3 (webgl, Scene_Map map 78)
+2026-10-21T14:14:14.008Z INFO [bench] fps 12.2 (webgl, Scene_Map map 78)
+2026-10-21T14:14:14.673Z WARN [pmjs] diagnostic {"reason":"slow-frame-summary","stage":"playing","uptimeMs":425239,"context":{"mapId":78,"mapName":"MOM'S ROOM","scene":"Scene_Map","x":45,"y":44,"eventId":0,"commandIndex":0,"interpreterDepth":0,"waitMode":"","frameCount":5715},"sampledFrames":120,"slowFrames":1,"maxSampledFrameMs":647.4,"meanFrameWallMs":66.8}
+[mem] 20:14:17 used 738 MB, available 218 MB cpu 69C
+2026-10-21T14:14:19.043Z INFO [bench] fps 11.0 (webgl, Scene_Map map 78)
+2026-10-21T14:14:24.064Z INFO [bench] fps 10.9 (webgl, Scene_Map map 78)
+[vorbis @ 0x30efc7d0] Could not update timestamps for discarded samples.
+[mem] 20:14:27 used 739 MB, available 218 MB cpu 69C
+2026-10-21T14:14:29.021Z INFO [bench] fps 10.9 (webgl, Scene_Map map 78)
+2026-10-21T14:14:34.041Z INFO [bench] fps 12.5 (webgl, Scene_Map map 78)
+2026-10-21T14:14:36.127Z INFO [frame-phase] {"tickMs":76.91,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":1163,"fps":11.9,"ft":[81.2,96,125.9],"drawMs":2.65,"uploadMs":0.43,"draws":0,"messageShare":0,"id":78,"mode":"baseline","stats":{"mode":"baseline","horrorSkipped":898752,"baseSkipped":929812},"frameStats":{"enabled":false,"hits":645828,"fallbacks":0},"mem":{"rss":675.3,"heap":142.8,"imgGpu":56.4,"imgCpu":111.7},"sceneCounts":{"total":1163,"character":364,"reflection":182,"emptyCharacter":0,"hiddenBase":256}}
+[mem] 20:14:37 used 739 MB, available 218 MB cpu 69C
+2026-10-21T14:14:39.048Z INFO [bench] fps 12.0 (webgl, Scene_Map map 78)
+2026-10-21T14:14:44.063Z INFO [bench] fps 12.0 (webgl, Scene_Map map 78)
+[vorbis @ 0x30efc7d0] Could not update timestamps for discarded samples.
+[mem] 20:14:47 used 739 MB, available 218 MB cpu 69C
+2026-10-21T14:14:48.981Z INFO [bench] fps 11.8 (webgl, Scene_Map map 78)
+2026-10-21T14:14:51.335Z INFO [frame-phase] {"tickMs":75.88,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":1163,"fps":12,"ft":[82.8,92.3,110.1],"drawMs":2.69,"uploadMs":0.45,"draws":0,"messageShare":0,"id":78,"mode":"frame","stats":{"mode":"baseline","horrorSkipped":898752,"baseSkipped":929812},"frameStats":{"enabled":true,"hits":775424,"fallbacks":2172},"mem":{"rss":675.4,"heap":144.7,"imgGpu":56.4,"imgCpu":111.7},"sceneCounts":{"total":1163,"character":364,"reflection":182,"emptyCharacter":0,"hiddenBase":256}}
+2026-10-21T14:14:54.027Z INFO [bench] fps 12.2 (webgl, Scene_Map map 78)
+[mem] 20:14:57 used 739 MB, available 218 MB cpu 69C
+2026-10-21T14:14:59.032Z INFO [bench] fps 12.4 (webgl, Scene_Map map 78)
+2026-10-21T14:15:04.017Z INFO [bench] fps 12.2 (webgl, Scene_Map map 78)
+2026-10-21T14:15:06.535Z INFO [frame-phase] {"tickMs":73.06,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":1163,"fps":12.4,"ft":[79.8,91.5,108.3],"drawMs":2.68,"uploadMs":0.45,"draws":0,"messageShare":0,"id":78,"mode":"both","stats":{"mode":"both","horrorSkipped":991130,"baseSkipped":1025556},"frameStats":{"enabled":false,"hits":775424,"fallbacks":2172},"mem":{"rss":675.4,"heap":150,"imgGpu":56.4,"imgCpu":111.7},"sceneCounts":{"total":1163,"character":364,"reflection":182,"emptyCharacter":0,"hiddenBase":256}}
+[vorbis @ 0x30efc7d0] Could not update timestamps for discarded samples.
+[mem] 20:15:07 used 740 MB, available 217 MB cpu 69C
+2026-10-21T14:15:08.997Z INFO [bench] fps 12.3 (webgl, Scene_Map map 78)
+2026-10-21T14:15:14.032Z INFO [bench] fps 11.7 (webgl, Scene_Map map 78)
+[mem] 20:15:17 used 739 MB, available 218 MB cpu 69C
+2026-10-21T14:15:19.053Z INFO [bench] fps 11.8 (webgl, Scene_Map map 78)
+2026-10-21T14:15:21.732Z INFO [frame-phase] {"tickMs":76.35,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":1163,"fps":11.9,"ft":[82.6,95.4,118.9],"drawMs":2.68,"uploadMs":0.46,"draws":0,"messageShare":0,"id":78,"mode":"all","stats":{"mode":"both","horrorSkipped":1080544,"baseSkipped":1118228},"frameStats":{"enabled":true,"hits":905020,"fallbacks":4344},"mem":{"rss":675.4,"heap":152.7,"imgGpu":56.4,"imgCpu":111.7},"sceneCounts":{"total":1163,"character":364,"reflection":182,"emptyCharacter":0,"hiddenBase":256}}
+2026-10-21T14:15:24.016Z INFO [bench] fps 12.4 (webgl, Scene_Map map 78)
+[mem] 20:15:27 used 739 MB, available 218 MB cpu 69C
+[vorbis @ 0x30efc7d0] Could not update timestamps for discarded samples.
+2026-10-21T14:15:28.996Z INFO [bench] fps 12.4 (webgl, Scene_Map map 78)
+2026-10-21T14:15:34.035Z INFO [bench] fps 12.3 (webgl, Scene_Map map 78)
+2026-10-21T14:15:35.819Z INFO [frame-phase] {"tickMs":72.75,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":1163,"fps":12.5,"ft":[79.9,84.5,112.6],"drawMs":2.7,"uploadMs":0.45,"draws":0,"messageShare":0,"id":78,"mode":"baseline","stats":{"mode":"baseline","horrorSkipped":1080544,"baseSkipped":1118228},"frameStats":{"enabled":false,"hits":905020,"fallbacks":4344},"mem":{"rss":675.4,"heap":158.7,"imgGpu":56.4,"imgCpu":111.7},"sceneCounts":{"total":1163,"character":364,"reflection":182,"emptyCharacter":0,"hiddenBase":256}}
+2026-10-21T14:15:35.819Z INFO [tour] {"n":4,"id":78,"region":"","name":"","effects":"","arrived":true,"at":[45,44],"tickMs":72.75,"textDraw":{"native":0,"nativeMs":0,"canvas":0,"canvasMs":0},"nodes":1163,"fps":12.5,"ft":[79.9,84.5,112.6],"drawMs":2.7,"uploadMs":0.45,"draws":0,"messageShare":0,"mode":"baseline","stats":{"mode":"baseline","horrorSkipped":1080544,"baseSkipped":1118228},"frameStats":{"enabled":false,"hits":905020,"fallbacks":4344},"mem":{"rss":675.4,"heap":159.1,"imgGpu":56.4,"imgCpu":111.7},"sceneCounts":{"total":1163,"character":364,"reflection":182,"emptyCharacter":0,"hiddenBase":256},"filters":["BlurFilter{blur=0}","t{strength=0}","n{blur=0 bloomScale=0}","t(off){amplitude=0}","n(off){offset=0}","n(off){blur=0 bloomScale=0.67}","ToneFilter{alpha=1}","AlphaFilter{alpha=1}"],"text":null,"autopilot":{"presses":0,"battles":0,"gameOvers":0},"prep":{"selected":14,"refused":0,"unscoped":5,"reasons":{},"catalog":false},"state":{"scene":"Scene_Map","map":78,"message":false,"event":false,"pictures":2},"errors":[],"errorCount":0}
+2026-10-21T14:15:35.819Z INFO [tour-summary]    id  region           fps   p50   p95   max  drawMs draws  msg  textFps rssMB  name  (tickMs = JS per frame)
+2026-10-21T14:15:35.819Z INFO [tour-summary] 87                    29    33.7  39.8  87.8  1.81   0     0    -       621.9   tickMs=30.45/null
+2026-10-21T14:15:35.819Z INFO [tour-summary] 14                    14.7  66.8  86.4  96.7  2.06   0     0    -       632.1   tickMs=62.26/null
+2026-10-21T14:15:35.819Z INFO [tour-summary] 111                   17.4  55.8  69.7  110.1 2.54   0     0    -       659.2   tickMs=52.23/null
+2026-10-21T14:15:35.820Z INFO [tour-summary] 78                    12.5  79.9  84.5  112.6 2.7    0     0    -       675.4   tickMs=72.75/null
+2026-10-21T14:15:35.820Z INFO [tour] autopilot: {"paused":false,"presses":0,"battles":0,"gameOvers":0}
+2026-10-21T14:15:35.820Z INFO [tour] done

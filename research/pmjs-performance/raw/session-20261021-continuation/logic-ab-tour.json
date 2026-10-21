@@ -1,0 +1,298 @@
+[
+  {
+    "n": 1,
+    "id": 87,
+    "region": "",
+    "name": "",
+    "effects": "",
+    "arrived": true,
+    "at": [
+      28,
+      27
+    ],
+    "tickMs": 28.81,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 687,
+    "fps": 30.4,
+    "ft": [
+      32,
+      36.3,
+      79
+    ],
+    "drawMs": 1.81,
+    "uploadMs": 0.1,
+    "draws": 0,
+    "messageShare": 0,
+    "mode": "baseline",
+    "stats": {
+      "mode": "baseline",
+      "horrorSkipped": 655120,
+      "baseSkipped": 455168
+    },
+    "mem": {
+      "rss": 653.5,
+      "heap": 116.9,
+      "imgGpu": 3.2,
+      "imgCpu": 108.9
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "text": null,
+    "autopilot": {
+      "presses": 0,
+      "battles": 0,
+      "gameOvers": 0
+    },
+    "prep": {
+      "selected": 0,
+      "refused": 0,
+      "unscoped": 0,
+      "reasons": {},
+      "catalog": true
+    },
+    "state": {
+      "scene": "Scene_Map",
+      "map": 87,
+      "message": false,
+      "event": false,
+      "pictures": 0
+    },
+    "errors": [],
+    "errorCount": 0
+  },
+  {
+    "n": 2,
+    "id": 14,
+    "region": "",
+    "name": "",
+    "effects": "",
+    "arrived": true,
+    "at": [
+      45,
+      44
+    ],
+    "tickMs": 60.63,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 977,
+    "fps": 15.1,
+    "ft": [
+      64.5,
+      79.1,
+      167.2
+    ],
+    "drawMs": 2.09,
+    "uploadMs": 0.27,
+    "draws": 0,
+    "messageShare": 0,
+    "mode": "baseline",
+    "stats": {
+      "mode": "baseline",
+      "horrorSkipped": 987984,
+      "baseSkipped": 684544
+    },
+    "mem": {
+      "rss": 672.1,
+      "heap": 133.7,
+      "imgGpu": 16.3,
+      "imgCpu": 109
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "text": null,
+    "autopilot": {
+      "presses": 0,
+      "battles": 0,
+      "gameOvers": 0
+    },
+    "prep": {
+      "selected": 5,
+      "refused": 0,
+      "unscoped": 3,
+      "reasons": {},
+      "catalog": false
+    },
+    "state": {
+      "scene": "Scene_Map",
+      "map": 14,
+      "message": false,
+      "event": false,
+      "pictures": 0
+    },
+    "errors": [],
+    "errorCount": 0
+  },
+  {
+    "n": 3,
+    "id": 111,
+    "region": "",
+    "name": "",
+    "effects": "",
+    "arrived": true,
+    "at": [
+      15,
+      25
+    ],
+    "tickMs": 51.54,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 965,
+    "fps": 17.7,
+    "ft": [
+      55.9,
+      61.5,
+      80
+    ],
+    "drawMs": 2.53,
+    "uploadMs": 0.17,
+    "draws": 0,
+    "messageShare": 0,
+    "mode": "baseline",
+    "stats": {
+      "mode": "baseline",
+      "horrorSkipped": 1380044,
+      "baseSkipped": 955960
+    },
+    "mem": {
+      "rss": 693.8,
+      "heap": 128.6,
+      "imgGpu": 42.6,
+      "imgCpu": 95.5
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "text": null,
+    "autopilot": {
+      "presses": 0,
+      "battles": 0,
+      "gameOvers": 0
+    },
+    "prep": {
+      "selected": 9,
+      "refused": 0,
+      "unscoped": 4,
+      "reasons": {},
+      "catalog": false
+    },
+    "state": {
+      "scene": "Scene_Map",
+      "map": 111,
+      "message": false,
+      "event": false,
+      "pictures": 0
+    },
+    "errors": [],
+    "errorCount": 0
+  },
+  {
+    "n": 4,
+    "id": 78,
+    "region": "",
+    "name": "",
+    "effects": "",
+    "arrived": true,
+    "at": [
+      45,
+      44
+    ],
+    "tickMs": 71.11,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 1163,
+    "fps": 12.9,
+    "ft": [
+      77.2,
+      83.2,
+      107.3
+    ],
+    "drawMs": 2.69,
+    "uploadMs": 0.34,
+    "draws": 0,
+    "messageShare": 0,
+    "mode": "baseline",
+    "stats": {
+      "mode": "baseline",
+      "horrorSkipped": 1667514,
+      "baseSkipped": 1155128
+    },
+    "mem": {
+      "rss": 706.3,
+      "heap": 151.3,
+      "imgGpu": 54.9,
+      "imgCpu": 111.7
+    },
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "text": null,
+    "autopilot": {
+      "presses": 0,
+      "battles": 0,
+      "gameOvers": 0
+    },
+    "prep": {
+      "selected": 14,
+      "refused": 0,
+      "unscoped": 5,
+      "reasons": {},
+      "catalog": false
+    },
+    "state": {
+      "scene": "Scene_Map",
+      "map": 78,
+      "message": false,
+      "event": false,
+      "pictures": 2
+    },
+    "errors": [],
+    "errorCount": 0
+  }
+]

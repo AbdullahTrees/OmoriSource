@@ -1,0 +1,227 @@
+[
+  {
+    "n": 1,
+    "id": 14,
+    "region": "",
+    "name": "",
+    "effects": "",
+    "arrived": true,
+    "at": [
+      45,
+      44
+    ],
+    "tickMs": 70.38,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 977,
+    "fps": 13,
+    "hostPresents": 259,
+    "hostPresentHz": 12.9,
+    "weather": {
+      "type": "none",
+      "power": 0,
+      "sprites": 0
+    },
+    "ft": [
+      71,
+      99.5,
+      1579.1
+    ],
+    "drawMs": 2.14,
+    "uploadMs": 0.31,
+    "draws": 0,
+    "messageShare": 0,
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "text": null,
+    "autopilot": {
+      "presses": 0,
+      "battles": 0,
+      "gameOvers": 0
+    },
+    "mem": {
+      "rss": 618.8,
+      "heap": 136.7,
+      "imgGpu": 15.5,
+      "imgCpu": 103.6
+    },
+    "prep": {
+      "selected": 5,
+      "refused": 0,
+      "unscoped": 3,
+      "reasons": {},
+      "catalog": false
+    },
+    "state": {
+      "scene": "Scene_Map",
+      "map": 14,
+      "message": false,
+      "event": false,
+      "pictures": 0
+    },
+    "errors": [],
+    "errorCount": 0
+  },
+  {
+    "n": 2,
+    "id": 78,
+    "region": "",
+    "name": "",
+    "effects": "",
+    "arrived": true,
+    "at": [
+      45,
+      44
+    ],
+    "tickMs": 66.79,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 971,
+    "fps": 13.6,
+    "hostPresents": 271,
+    "hostPresentHz": 13.5,
+    "weather": {
+      "type": "none",
+      "power": 0,
+      "sprites": 0
+    },
+    "ft": [
+      71,
+      86.1,
+      122.2
+    ],
+    "drawMs": 2.42,
+    "uploadMs": 0.35,
+    "draws": 0,
+    "messageShare": 0,
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "text": null,
+    "autopilot": {
+      "presses": 0,
+      "battles": 0,
+      "gameOvers": 0
+    },
+    "mem": {
+      "rss": 637.8,
+      "heap": 141.8,
+      "imgGpu": 27.8,
+      "imgCpu": 107.5
+    },
+    "prep": {
+      "selected": 10,
+      "refused": 0,
+      "unscoped": 4,
+      "reasons": {},
+      "catalog": false
+    },
+    "state": {
+      "scene": "Scene_Map",
+      "map": 78,
+      "message": false,
+      "event": false,
+      "pictures": 2
+    },
+    "errors": [],
+    "errorCount": 0
+  },
+  {
+    "n": 3,
+    "id": 461,
+    "region": "",
+    "name": "",
+    "effects": "",
+    "arrived": true,
+    "at": [
+      45,
+      44
+    ],
+    "tickMs": 22.06,
+    "textDraw": {
+      "native": 0,
+      "nativeMs": 0,
+      "canvas": 0,
+      "canvasMs": 0
+    },
+    "nodes": 645,
+    "fps": 34.5,
+    "hostPresents": 690,
+    "hostPresentHz": 34.5,
+    "weather": {
+      "type": "none",
+      "power": 0,
+      "sprites": 0
+    },
+    "ft": [
+      28.2,
+      32.1,
+      67.7
+    ],
+    "drawMs": 1.62,
+    "uploadMs": 0.43,
+    "draws": 0,
+    "messageShare": 0,
+    "filters": [
+      "BlurFilter{blur=0}",
+      "t{strength=0}",
+      "n{blur=0 bloomScale=0}",
+      "t(off){amplitude=0}",
+      "n(off){offset=0}",
+      "n(off){blur=0 bloomScale=0.67}",
+      "ToneFilter{alpha=1}",
+      "AlphaFilter{alpha=1}"
+    ],
+    "text": null,
+    "autopilot": {
+      "presses": 11,
+      "battles": 0,
+      "gameOvers": 0
+    },
+    "mem": {
+      "rss": 640.8,
+      "heap": 160.2,
+      "imgGpu": 29.2,
+      "imgCpu": 107.5
+    },
+    "prep": {
+      "selected": 10,
+      "refused": 0,
+      "unscoped": 4,
+      "reasons": {},
+      "catalog": false
+    },
+    "state": {
+      "scene": "Scene_Map",
+      "map": 461,
+      "message": false,
+      "event": false,
+      "pictures": 0
+    },
+    "errors": [],
+    "errorCount": 0
+  }
+]
