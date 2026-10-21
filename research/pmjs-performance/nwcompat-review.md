@@ -94,3 +94,33 @@ the same eight build-environment failures occur on `1590601`, and both versions
 hang in `runner.test.cjs` until that test process is killed. Thus the broader
 comparison found no new failure names but is not a clean full-suite pass.
 Details and raw log paths are in `../omori-handover/DELIVER.md`.
+
+## Subsequent device validation
+
+The user approved one two-map test and supplied the device's current address,
+`192.168.68.105`. With the three fixes installed, a catalog-missing startup
+completed map validation in 71.56 seconds and visited both maps successfully:
+
+| Map | FPS | JS tick ms | RSS MiB | JS heap MiB | Map catalog |
+| --- | ---: | ---: | ---: | ---: | --- |
+| 87 White Space | 27.1 | 32.11 | 711.3 | 135.0 | present |
+| 90 North Coast | 28.3 | 30.68 | 718.2 | 119.3 | deleted |
+
+The heap readings support releasing the slow-path receipts; RSS remains high.
+The diagnostic also reports ~154 MiB free inside malloc arenas and ~110 MiB
+CPU image data. These categories overlap other accounting and should not be
+summed as an RSS breakdown.
+
+**The unused-sheet workaround does not finish the catalog fix.** North Coast
+records nine scoped loads, one unscoped load, and no guest refusal reason, but
+the catalog still disappears. The image catalog survives. Native source,
+page/snapshot, or VFS mismatch paths need instrumentation before another fix
+is selected. The handover's unused-sheet explanation was incomplete.
+
+Both maps recorded zero error events; the tour finished and exited without a
+watchdog kill. A White Space framebuffer looks normal, but no matched baseline
+capture or isolated FPS comparison was made. No second game run was started.
+
+Evidence: `raw/session-20261021-two-map.log` and
+`raw/session-20261021-two-map-summary.json`. The delivery document records
+device backups, exact settings, and the remaining approval boundary.

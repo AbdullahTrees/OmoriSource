@@ -1,0 +1,71 @@
+{
+  "maps": [
+    {
+      "id": 87,
+      "fps": 27.1,
+      "ft": [
+        35.5,
+        46.8,
+        73
+      ],
+      "tickMs": 32.11,
+      "drawMs": 1.86,
+      "mem": {
+        "rss": 711.3,
+        "heap": 135,
+        "imgGpu": 8.8,
+        "imgCpu": 110.2
+      },
+      "prep": {
+        "selected": 0,
+        "refused": 0,
+        "unscoped": 0,
+        "reasons": {},
+        "catalog": true
+      },
+      "errorCount": 0
+    },
+    {
+      "id": 90,
+      "fps": 28.3,
+      "ft": [
+        34.2,
+        40.6,
+        155.7
+      ],
+      "tickMs": 30.68,
+      "drawMs": 1.96,
+      "mem": {
+        "rss": 718.2,
+        "heap": 119.3,
+        "imgGpu": 12.9,
+        "imgCpu": 116.4
+      },
+      "prep": {
+        "selected": 9,
+        "refused": 0,
+        "unscoped": 1,
+        "reasons": {},
+        "catalog": false
+      },
+      "errorCount": 0
+    }
+  ],
+  "fallbackReasons": {
+    "no compact tile demand": 57,
+    "packed allocations and geometry are not smaller": 43,
+    "incomplete map visual planes": 1
+  },
+  "memoryPressureSamples": [
+    {
+      "scene": "Scene_Map",
+      "map": 87,
+      "rss": 744083456,
+      "heap": 119954816,
+      "freeArena": 161782704,
+      "imagesCpu": 115596762
+    }
+  ],
+  "watchdogFired": false,
+  "tourFinished": true
+}
