@@ -112,7 +112,8 @@
     for (var i = 0; i < pins.length; i++) {
       if (pins[i].digests.length && pins[i].digests.indexOf(digest(pins[i].fn)) < 0) {
         perf[item].refused = pins[i].name;
-        console.log('[omori-perf] ' + item + ' refused: ' + pins[i].name);
+        console.log('[omori-perf] ' + item + ' refused: ' + pins[i].name +
+          ' digest ' + (digest(pins[i].fn) || '(missing)'));
         return false;
       }
     }
@@ -129,8 +130,6 @@
 
     // ---- slipperyCache: Game_Map.isSlippery, YEP_SlipperyTiles.js:132 (region mode) --------
     if (!disabled.slipperyCache) {
-      var tiledGet = Object.getOwnPropertyDescriptor(Game_Map.prototype, 'tiledData');
-      var levelGet = Object.getOwnPropertyDescriptor(Game_Map.prototype, 'currentMapLevel');
       var slipPins = checkPins('slipperyCache', [
         { name: 'isSlippery', fn: Game_Map.prototype.isSlippery,
           digests: ['425386319071765fdcb4f7874c65eb031dbe13f651098a84b1e1ff633505ccbe'] },
@@ -145,17 +144,41 @@
         { name: 'terrainTag', fn: Game_Map.prototype.terrainTag,
           digests: ['c486790fa3a2b6c29178f7ba022359887fbb889cc1e5c0288e57cde42241ea57'] },
         { name: 'tileset', fn: Game_Map.prototype.tileset,
-          digests: ['83062238a79ce3b5ac490dfcb6b5987ea9875872fbd19b91c48ef5adb0ac111b'] },
-        { name: 'tiledData.get', fn: tiledGet && tiledGet.get,
-          digests: ['e687609b1430802d1ccfad336b7fdfb9c13a5a0747799b335420b2b4b4534beb'] },
-        { name: 'currentMapLevel.get', fn: levelGet && levelGet.get,
-          digests: ['cd9c0d777cfc22b9405f01ae0b87db05fc8bc5d215aa81e858f0cba04439ef27'] }
+          digests: ['83062238a79ce3b5ac490dfcb6b5987ea9875872fbd19b91c48ef5adb0ac111b'] }
       ]);
       if (slipPins) {
         var c = { ok: false, mapId: 0, level: 0, tiles: null, tiled: null, dm: null,
           regions: null, region: -1, w: 0, h: 0, bits: null };
         var originalSlippery = Game_Map.prototype.isSlippery;
         perf.slipperyCache.installed = true;
+        // YED's module that defines these getters is not loaded at afterPlugins on classic
+        // maps, so they are absent here. Verify them lazily, when the cache rebuilds its key
+        // (map/tileset/level change); if they never appear, the cache reads the same backing
+        // values the reviewed getters would return. A getter that appears with another source
+        // refuses the cache and keeps vanilla.
+        var optionalGetters = [
+          { name: 'tiledData', fn: null,
+            digests: ['e687609b1430802d1ccfad336b7fdfb9c13a5a0747799b335420b2b4b4534beb'] },
+          { name: 'currentMapLevel', fn: null,
+            digests: ['cd9c0d777cfc22b9405f01ae0b87db05fc8bc5d215aa81e858f0cba04439ef27'] }
+        ];
+        function optionalGettersOk() {
+          for (var g = 0; g < optionalGetters.length; g++) {
+            var pin = optionalGetters[g];
+            var descriptor = Object.getOwnPropertyDescriptor(Game_Map.prototype, pin.name);
+            var getter = descriptor && descriptor.get;
+            if (!getter) continue;
+            if (pin.fn !== getter) {
+              pin.fn = getter;
+              if (pin.digests.indexOf(digest(getter)) < 0) {
+                perf.slipperyCache.refused = pin.name + '.get';
+                console.log('[omori-perf] slipperyCache refused: ' + pin.name + '.get source');
+                return false;
+              }
+            }
+          }
+          return true;
+        }
         Game_Map.prototype.isSlippery = function (mx, my) {
           if (!perf.enabled) {
             perf.slipperyCache.vanilla++;
@@ -177,6 +200,10 @@
           if (!c.ok || c.mapId !== this._mapId || c.level !== level || c.tiles !== tiles ||
               c.tiled !== tiled || c.dm !== dm || c.regions !== this._regions ||
               c.region !== region) {
+            if (!optionalGettersOk()) {
+              perf.slipperyCache.vanilla++;
+              return originalSlippery.call(this, mx, my);
+            }
             c.ok = true;
             c.mapId = this._mapId; c.level = level; c.tiles = tiles; c.tiled = tiled;
             c.dm = dm; c.regions = this._regions; c.region = region;
