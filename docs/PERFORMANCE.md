@@ -137,14 +137,27 @@ assumed.
   7.2%, audio ~2.5%; walking main 97.4%, V8 workers 8-15% (GC/compilation), Mali 5.5%. The game
   is one sequential JS stream with idle cores; parallelism helps presentation (render thread)
   or boot preparation, not game logic.
+- Standing time series from arrival (2 s windows, no breakdown): 55.1-58.2 fps for the full
+  30 s, p50 16.9-17.7 ms. Walking the loop: 30-48 fps windows, full character updates swinging
+  66-150/frame with the area's visible-event density; the 2-step catch-up amplifies each swing.
+  The pan drop is workload density plus catch-up, not a tilemap repaint.
+- Plugin census walking (`map92-walk.cpuprofile`, self ms/frame): PMJS bootstrap 13.93, native
+  6.71, rpg_objects 2.71, pixi 2.09, YED_Tiled 1.44, rpg_sprites 1.22, rpg_core 1.20,
+  GTP_CoreUpdates 0.72, GTP_OmoriFixes 0.43, EventSpriteOffset 0.33, YEP_CoreEngine 0.30,
+  MoveRouteCore 0.22, Slippery 0.21 (cache), Olivia 0.20. YED's `_sortChildren` is
+  **1.10 ms/frame** inclusive (comparator 0.99), the largest single plugin pass while walking.
 
 ## 8. Open candidates (rationale before implementation)
 
-- **Stock ShaderTilemap pan spikes.** Map 92 has no YED Tiled data; `_paintAllTiles` clears and
-  re-adds the 15x11 window at every tile boundary (`rpg_core.js:5547-5658`, mirrored by
-  `pmjs/js/pmjs-mv/render-prepare.js:33-45`). Walking build is 11.2 ms vs 8.4 standing and p95
-  hits 55 ms (max 137). An absolute-coordinate/persistent layer (as YED maps have) would remove
-  the repeated work; pixel parity over a scroll sweep is required.
+- **YED child sort (walking).** `_sortChildren` costs 1.10 ms/frame walking, 0.99 of it in
+  `_compareChildOrder`'s `z`/`y`/`priority` reads. V8 already sorts with TimSort, so another
+  algorithm will not help; a precheck using adjacent comparator calls costs the same as TimSort's
+  sorted-run scan. The viable change is to extract each child's sort keys once per frame, sort
+  indices by those numbers (stable), and reorder `children`, avoiding repeated getter reads; it
+  must reproduce the exact comparator/stability and pin the YED comparator. Not implemented.
+- **Stock ShaderTilemap pan spikes (earlier hypothesis, disproved).** The walking profile shows
+  `_paintAllTiles`/`_paintTiles` at 0.00 ms: map 92 uses YED's retained `TiledTilemap` (its
+  `_compareChildOrder` is in the profile), so the stock window repaint is not the pan cost.
 - **Retained/delta scene encoding.** The encoder re-walks and re-serializes every node each
   frame; per-node classification memoization (~0.4 ms) and retained records (~1 ms) are the
   candidates. The culling experiment (integration-2 feature restored) was neutral on map 92
