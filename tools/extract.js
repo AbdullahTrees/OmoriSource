@@ -1,7 +1,11 @@
 // Turn an OMORI install (encrypted Steam release or already-decrypted copy)
 // into a plain www/ folder that matches tools/reference.sha256.
 //
-// Usage: node tools/extract.js <OMORI install or its www folder> <output www folder>
+// Usage: node tools/extract.js <OMORI install or its www folder> <output www folder> [--key KEY]
+//
+// The Steam release is encrypted. The key is never embedded here: it is found
+// in a .bat/.sh/.cmd launch script next to the game, in appinfo.vdf, in
+// OMORI_KEY/OMORI_AES_KEY, in omori-key.txt/key.txt, or passed with --key.
 //
 // Every source file is handled on its own, so encrypted, decrypted and mixed
 // installs all work:
@@ -22,7 +26,7 @@ var path = require('path');
 var crypto = require('crypto');
 
 var TOOLS = __dirname;
-var AES_KEY = '6bdb2e585882fbd48826ef9cffd4c511';
+var AES_KEY = null;
 var AES_EXT = { '.OMORI': '.js', '.KEL': '.json', '.AUBREY': '.json', '.HERO': '.yaml', '.PLUTO': '.yaml' };
 var RPG_EXT = { '.rpgmvp': '.png', '.rpgmvo': '.ogg', '.rpgmvm': '.m4a' };
 var RPG_HEADER_LENGTH = 16;
@@ -37,9 +41,148 @@ function sha256(buffer) {
     return crypto.createHash('sha256').update(buffer).digest('hex');
 }
 
-function aesDecrypt(buffer) {
-    var decipher = crypto.createDecipheriv('aes-256-ctr', AES_KEY, buffer.slice(0, 16));
+// The key is the 32-character hexadecimal string that Steam passes to OMORI as
+// an argument. It is never shipped with this tool: it is found in the player's
+// own install, launch script, appinfo.vdf, environment, or a key file.
+function validKey(value) {
+    return typeof value === 'string' && /^[0-9a-fA-F]{32}$/.test(value) ? value : null;
+}
+
+function stripKey(value) {
+    var key = typeof value === 'string' ? value.trim() : '';
+    if (key.indexOf('--') === 0) key = key.slice(2);
+    return validKey(key);
+}
+
+function scanKey(buffer) {
+    for (var i = 0; i + 34 <= buffer.length; i++) {
+        if (buffer[i] !== 45 || buffer[i + 1] !== 45) continue;
+        var key = buffer.toString('latin1', i + 2, i + 34);
+        if (!validKey(key)) continue;
+        if (i + 34 < buffer.length && /[0-9a-fA-F]/.test(String.fromCharCode(buffer[i + 34]))) continue;
+        return key;
+    }
+    return null;
+}
+
+function scanKeyFile(file) {
+    var fd;
+    try {
+        fd = fs.openSync(file, 'r');
+    } catch (e) {
+        return null;
+    }
+    var chunk = Buffer.alloc(1 << 20);
+    var carry = Buffer.alloc(0);
+    try {
+        for (;;) {
+            var read = fs.readSync(fd, chunk, 0, chunk.length, null);
+            if (read <= 0) break;
+            var window = Buffer.concat([carry, chunk.slice(0, read)]);
+            var key = scanKey(window);
+            if (key) return key;
+            carry = window.slice(Math.max(0, window.length - 64));
+        }
+    } finally {
+        fs.closeSync(fd);
+    }
+    return null;
+}
+
+function aesDecryptWith(key, buffer) {
+    var decipher = crypto.createDecipheriv('aes-256-ctr', key, buffer.slice(0, 16));
     return Buffer.concat([decipher.update(buffer.slice(16)), decipher.final()]);
+}
+
+function keyWorks(source, files, key) {
+    var rel = files.filter(function (file) { return file.toLowerCase() === 'data/system.kel'; })[0];
+    if (!rel) return false;
+    try {
+        var data = aesDecryptWith(key, fs.readFileSync(path.join(source, rel)));
+        return data.length > 2 && data.toString('latin1', 0, 1) === '{';
+    } catch (e) {
+        return false;
+    }
+}
+
+function topLevelNames(dir) {
+    try {
+        return fs.readdirSync(dir);
+    } catch (e) {
+        return [];
+    }
+}
+
+function findKey(source, outDir, files, validate) {
+    var parent = path.dirname(source);
+    var candidates = [];
+    var seen = {};
+    function add(value, label) {
+        var key = null;
+        if (Buffer.isBuffer(value)) {
+            key = scanKey(value);
+        } else if (typeof value === 'string') {
+            key = scanKey(Buffer.from(value, 'latin1')) || stripKey(value);
+        }
+        if (!key || seen[key]) return;
+        seen[key] = true;
+        candidates.push({ key: key, label: label });
+    }
+
+    for (var i = 4; i < process.argv.length; i++) {
+        if (process.argv[i] === '--key' && process.argv[i + 1]) add(process.argv[i + 1], '--key');
+    }
+    add(process.env.OMORI_KEY, 'OMORI_KEY');
+    add(process.env.OMORI_AES_KEY, 'OMORI_AES_KEY');
+
+    [source, parent].forEach(function (dir) {
+        topLevelNames(dir).forEach(function (name) {
+            if (!/\.(bat|cmd|sh)$/i.test(name)) return;
+            try {
+                add(fs.readFileSync(path.join(dir, name), 'latin1'), path.join(dir, name));
+            } catch (e) {
+                // unreadable launch script; try the next source
+            }
+        });
+    });
+
+    var appinfo = [
+        path.join(source, 'appinfo.vdf'),
+        path.join(parent, 'appinfo.vdf'),
+        path.join(outDir, '..', 'appinfo.vdf'),
+        path.join(process.env.HOME || '', '.steam/steam/appcache/appinfo.vdf'),
+        path.join(process.env.HOME || '', '.local/share/Steam/appcache/appinfo.vdf')
+    ];
+    if (process.platform === 'win32') {
+        appinfo.push(path.join(process.env['ProgramFiles(x86)'] || 'C:\\Program Files (x86)',
+            'Steam/appcache/appinfo.vdf'));
+        appinfo.push(path.join(process.env.ProgramFiles || 'C:\\Program Files',
+            'Steam/appcache/appinfo.vdf'));
+    }
+    appinfo.forEach(function (file) {
+        add(scanKeyFile(file), file);
+    });
+
+    ['omori-key.txt', 'key.txt'].forEach(function (name) {
+        [source, parent, path.dirname(outDir)].forEach(function (dir) {
+            try {
+                add(fs.readFileSync(path.join(dir, name), 'latin1'), path.join(dir, name));
+            } catch (e) {
+                // no key file here
+            }
+        });
+    });
+
+    if (!validate) return candidates[0] || null;
+    for (var j = 0; j < candidates.length; j++) {
+        if (keyWorks(source, files, candidates[j].key)) return candidates[j];
+    }
+    return null;
+}
+
+function aesDecrypt(buffer) {
+    if (!AES_KEY) throw new Error('missing OMORI AES key');
+    return aesDecryptWith(AES_KEY, buffer);
 }
 
 function rpgDecrypt(buffer, key) {
@@ -150,12 +293,28 @@ function main() {
 
     var manifest = readManifest();
     var sourceFiles = listFiles(source);
-
-    // The image/audio key lives in System.json, which may itself be encrypted.
-    var systemFile = path.join(source, 'data', 'System.KEL');
-    var system = fs.existsSync(systemFile)
-        ? JSON.parse(aesDecrypt(fs.readFileSync(systemFile)).toString('utf8').replace(/^﻿/, ''))
-        : JSON.parse(fs.readFileSync(path.join(source, 'data', 'System.json'), 'utf8').replace(/^﻿/, ''));
+    var systemRel = sourceFiles.filter(function (file) { return file.toLowerCase() === 'data/system.kel'; })[0] || null;
+    var systemJsonRel = sourceFiles.filter(function (file) { return file.toLowerCase() === 'data/system.json'; })[0] || null;
+    var aesFiles = sourceFiles.filter(function (file) { return AES_EXT[path.extname(file)]; });
+    if (systemRel || aesFiles.length) {
+        var found = findKey(source, outDir, sourceFiles, !!systemRel);
+        if (!found) {
+            console.error('ERROR: this OMORI install is encrypted and no decryption key was found.');
+            console.error('Put the key in key.txt next to the game folder, copy Steam\'s appcache/appinfo.vdf next to it, or pass --key.');
+            return 2;
+        }
+        AES_KEY = found.key;
+        console.log('key: found in ' + found.label);
+    }
+    var system;
+    if (systemRel) {
+        system = JSON.parse(aesDecrypt(fs.readFileSync(path.join(source, systemRel))).toString('utf8').replace(/^﻿/, ''));
+    } else if (systemJsonRel) {
+        system = JSON.parse(fs.readFileSync(path.join(source, systemJsonRel), 'utf8').replace(/^﻿/, ''));
+    } else {
+        console.error('ERROR: no data/System.json or data/System.KEL in ' + source);
+        return 2;
+    }
     var rpgKey = Buffer.from(system.encryptionKey || '', 'hex');
 
     var counts = { aes: 0, rpg: 0, copied: 0 }, skipped = [];
