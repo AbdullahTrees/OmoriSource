@@ -25,6 +25,9 @@
 #   --profile              V8 CPU profile of each measurement (<logs>/<variant>-profiles/*.cpuprofile;
 #                          read with cpuprofile-tree.js). Sampling costs some fps: not for fps tables
 #   --census               log a scene-tree census (nodes walked per frame, off-screen, by class)
+#   --breakdown            per-frame logic/build/render/native bucket split (small overhead)
+#   --inventory            log the scene inventory and plain-sprite conditions per class
+#   --disable LIST         OMORI_PERF_DISABLE items for every variant (comma-separated)
 #   --no-pause             leave the muOS menu running (not representative of a menu launch)
 #   --timeout S            per run (default 300)
 #
@@ -39,7 +42,7 @@ DRIVER=$HERE/omori-test.js
 
 MODE=${1:-}; [ $# -gt 0 ] && shift
 case "$MODE" in startup|perf|room|verify) ;; *) sed -n '2,24p' "$0"; exit 2;; esac
-MAPS= ROOM= WALK= SWEEP= SETTLE= MEASURE= PATCH= SHOTS= PROFILE= CENSUS= PAUSE=1 TIMEOUT=300 VARIANTS=
+MAPS= ROOM= WALK= SWEEP= SETTLE= MEASURE= PATCH= SHOTS= PROFILE= CENSUS= PAUSE=1 TIMEOUT=300 VARIANTS= BREAKDOWN= DISABLE= INVENTORY=
 while [ $# -gt 0 ]; do
   case "$1" in
     --maps) MAPS=$2; shift;;
@@ -53,6 +56,9 @@ while [ $# -gt 0 ]; do
     --shots) SHOTS=1;;
     --profile) PROFILE=1;;
     --census) CENSUS=1;;
+    --breakdown) BREAKDOWN=1;;
+    --inventory) INVENTORY=1;;
+    --disable) DISABLE=$2; shift;;
     --no-pause) PAUSE=;;
     --timeout) TIMEOUT=$2; shift;;
     *) echo "unknown option $1"; exit 2;;
@@ -74,10 +80,12 @@ for variant in $VARIANTS; do
   name=${variant%%:*}
   extra=; case "$variant" in *:*) extra=$(echo "${variant#*:}" | tr ',' ' ');; esac
   log=$OUT/$name.log
-  env $extra SDL_BLITTER_DISABLED=1 PMJS_TIMEOUT=$TIMEOUT PMJS_WATCHDOG_MB=${PMJS_WATCHDOG_MB:-100} \
+  # --disable first, then the variant env, so a variant may override OMORI_PERF_DISABLE.
+  env OMORI_PERF_DISABLE=$DISABLE $extra SDL_BLITTER_DISABLED=1 PMJS_TIMEOUT=$TIMEOUT PMJS_WATCHDOG_MB=${PMJS_WATCHDOG_MB:-100} \
     OMORI_TEST_MODE=$MODE OMORI_TEST_MAPS=$MAPS OMORI_TEST_ROOM=$ROOM OMORI_TEST_WALK=$WALK OMORI_TEST_SWEEP=$SWEEP \
     OMORI_TEST_SETTLE=$SETTLE OMORI_TEST_MEASURE=$MEASURE OMORI_TEST_PATCH=$PATCH \
     OMORI_TEST_SHOTS=${SHOTS:+$OUT/$name-shots} OMORI_TEST_PROFILE=${PROFILE:+$OUT/$name-profiles} OMORI_TEST_CENSUS=$CENSUS \
+    OMORI_TEST_BREAKDOWN=$BREAKDOWN OMORI_TEST_INVENTORY=$INVENTORY \
     PMJS_EXTRA_PATCH="$DRIVER" \
     bash "$LAUNCHER" >/dev/null 2>&1
   # Blank both framebuffer pages: with the menu paused nothing else redraws, and the game's last

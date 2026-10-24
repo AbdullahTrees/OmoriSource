@@ -12,6 +12,8 @@ function analyze(file) {
   const label = node => (node.callFrame.functionName || '(anonymous)')+' '+
     decodeURI(node.callFrame.url || '(native)').split('/').slice(-2).join('/')+':'+(node.callFrame.lineNumber+1);
   const self = new Map(), inclusive = new Map();
+  const selfByFile = new Map(), inclusiveByFile = new Map();
+  const fileOf = node => decodeURI(node.callFrame.url || '').split('/').slice(-2).join('/') || '(native)';
   const buckets = { gameUpdate: 0, sceneEncoding: 0, nativeRenderSwap: 0, gc: 0, other: 0 };
   const targetNames = ['updateScene', 'Game_Map.update', 'Game_Map.updateEvents',
     'Game_Event.update', 'Game_Event.updateParallel', 'Game_Interpreter.update',
@@ -29,6 +31,11 @@ function analyze(file) {
     const labels = new Set(stack.map(label));
     self.set(label(leaf), (self.get(label(leaf)) || 0)+ms);
     for (const key of labels) inclusive.set(key, (inclusive.get(key) || 0)+ms);
+    const leafFile = fileOf(leaf);
+    selfByFile.set(leafFile, (selfByFile.get(leafFile) || 0)+ms);
+    for (const file of new Set(stack.map(fileOf))) {
+      inclusiveByFile.set(file, (inclusiveByFile.get(file) || 0)+ms);
+    }
     for (const name of targetNames) {
       const matches = name === 'weatherUpdateUnion'
         ? stack.some(node => /weather|rain/i.test(node.callFrame.functionName))
@@ -47,7 +54,8 @@ function analyze(file) {
   return { file, samples: profile.samples.length, profileWallMs: (profile.endTime-profile.startTime)/1000,
     firstSampleGapMs: profile.timeDeltas[0]/1000, firstSample: label(nodes.get(profile.samples[0])),
     analyzedMs: +total.toFixed(2), buckets: rows(new Map(Object.entries(buckets)), 5),
-    topSelf: rows(self, 35), topInclusive: rows(inclusive, 35), targets: rows(targets, targetNames.length) };
+    topSelf: rows(self, 35), topInclusive: rows(inclusive, 35), targets: rows(targets, targetNames.length),
+    selfByFile: rows(selfByFile, 40), inclusiveByFile: rows(inclusiveByFile, 40) };
 }
 if (require.main === module) for (const file of process.argv.slice(2)) console.log(JSON.stringify(analyze(file), null, 2));
 module.exports = { analyze };

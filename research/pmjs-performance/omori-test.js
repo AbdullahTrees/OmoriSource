@@ -51,6 +51,11 @@
   var SETTLE_MS = (Number(env('OMORI_TEST_SETTLE')) || 18) * 1000;
   var MEASURE_MS = (Number(env('OMORI_TEST_MEASURE')) || 8) * 1000;
   var SHOTS = env('OMORI_TEST_SHOTS');
+  var BREAKDOWN = env('OMORI_TEST_BREAKDOWN') === '1';
+  var INVENTORY = env('OMORI_TEST_INVENTORY') === '1';
+  var SERIES = Number(env('OMORI_TEST_SERIES')) || 0;
+  var SCROLL = env('OMORI_TEST_SCROLL') === '1';
+  var CPU = env('OMORI_TEST_CPU') === '1';
 
   // Seeded PRNG for trace mode (mulberry32), installed at script load before any game code runs,
   // so the new game and every scripted session replay identically. Game code draws randomness
@@ -278,6 +283,81 @@
       byClass: top.map(function (name) { var r = classes[name]; return [name, r.n, r.off, r.offWithKids, r.kids]; }) };
   }
 
+  // Frame-phase breakdown (OMORI_TEST_BREAKDOWN=1): inclusive wall-time buckets inside the host
+  // tick. `logic` is SceneManager.updateScene (all n logic steps of the frame), `build` is
+  // renderScene (PMJS scene encoding), `tick` is the whole host tick. The wrappers add a few
+  // performance.now() calls per step: use the breakdown for attribution, and a run without it for
+  // fps comparisons. Everything is averaged over rendered frames; perStep divides by updateMain
+  // calls, which is the figure that matters for a 60 fps target (at 30 fps GTP runs 2 steps/frame).
+  var BP = { acc: null };
+  function blankBreakdown() {
+    return { tick: 0, logic: 0, build: 0, render: 0, main: 0, managers: 0, sceneMap: 0,
+      spriteset: 0, gameMap: 0, overlay: 0, input: 0, audio: 0, video: 0, steps: 0 };
+  }
+  // Numeric counters exposed by the fast-path patches (OmoriPerformance, OmoriPerf.*), sampled
+  // once per measurement window and divided by rendered frames.
+  function counterSnapshot() {
+    var out = {};
+    function walk(value, prefix, depth) {
+      if (!value || typeof value !== 'object' || depth > 3) return;
+      Object.keys(value).forEach(function (key) {
+        var child = value[key];
+        if (typeof child === 'number') out[prefix + '.' + key] = child;
+        else if (child && typeof child === 'object') walk(child, prefix + '.' + key, depth + 1);
+      });
+    }
+    if (root.OmoriPerformance) walk(root.OmoriPerformance, 'OmoriPerformance', 0);
+    if (root.OmoriPerf) walk(root.OmoriPerf, 'OmoriPerf', 0);
+    if (typeof root.nativeTileRebuilds === 'number') {
+      out['pmjs.nativeTileRebuilds'] = root.nativeTileRebuilds;
+    }
+    if (typeof root.nativeTileRects === 'number') {
+      out['pmjs.nativeTileRects'] = root.nativeTileRects;
+    }
+    return out;
+  }
+  function counterDeltas(before, after, frames) {
+    var out = null;
+    Object.keys(after).forEach(function (key) {
+      var delta = after[key] - (before[key] || 0);
+      if (!delta) return;
+      out = out || {};
+      out[key] = round(delta / Math.max(1, frames));
+    });
+    return out;
+  }
+  function probe(owner, name, key) {
+    var original = owner && owner[name];
+    if (typeof original !== 'function') return;
+    owner[name] = function () {
+      var t = performance.now();
+      try { return original.apply(this, arguments); }
+      finally { if (BP.acc) BP.acc[key] += performance.now() - t; }
+    };
+  }
+  function installBreakdown() {
+    if (!BREAKDOWN || BP.acc) return;
+    BP.acc = blankBreakdown();
+    probe(SceneManager, 'updateScene', 'logic');
+    probe(SceneManager, 'renderScene', 'build');
+    probe(SceneManager, 'updateMain', 'main');
+    probe(SceneManager, 'updateManagers', 'managers');
+    probe(SceneManager, 'updateOverlayFix', 'overlay');
+    probe(SceneManager, 'updateInputData', 'input');
+    probe(SceneManager, 'updateWebAudio', 'audio');
+    probe(SceneManager, 'updateVideos', 'video');
+    probe(Scene_Map.prototype, 'update', 'sceneMap');
+    probe(Spriteset_Map.prototype, 'update', 'spriteset');
+    probe(Game_Map.prototype, 'update', 'gameMap');
+    if (typeof globalThis.__pmjsTick === 'function') probe(globalThis, '__pmjsTick', 'tick');
+    if (typeof globalThis.__pmjsRender === 'function') probe(globalThis, '__pmjsRender', 'render');
+    var updateMain = SceneManager.updateMain;
+    SceneManager.updateMain = function () {
+      if (BP.acc) BP.acc.steps++;
+      return updateMain.apply(this, arguments);
+    };
+  }
+
   // sceneMs and presentMs exist only in instrumented test builds (split of drawMs).
   var NATIVE_COSTS = ['uploadMs', 'drawMs', 'memoryMs', 'sceneMs', 'presentMs'];
   function renderStats() {
@@ -286,8 +366,86 @@
     return costs ? NATIVE_COSTS.map(function (key) { return Number(costs[key]) || 0; }) : null;
   }
 
+  // Scene inventory: what the encoder sees, by class, and which plain-sprite conditions the live
+  // nodes satisfy. Diagnostic only (OMORI_TEST_INVENTORY=1).
+  function inventory() {
+    var rows = {}, total = 0;
+    function visit(node) {
+      if (!node || !node.visible) return;
+      total++;
+      var name = node.constructor && node.constructor.name || '?';
+      var row = rows[name] || (rows[name] = { nodes: 0, textures: 0, noFilters: 0,
+        emptyFilters: 0, filters: 0, tone: 0, blend: 0, tintTexture: 0, mask: 0,
+        withChildren: 0, cacheAsBitmap: 0, rotated: 0, noImage: 0 });
+      row.nodes++;
+      if (node.texture) {
+        row.textures++;
+        var filters = node._filters;
+        if (!filters) row.noFilters++;
+        else if (!filters.length) row.emptyFilters++;
+        else row.filters++;
+        var tone = node._colorTone;
+        if (tone && (tone[0] || tone[1] || tone[2] || tone[3])) row.tone++;
+        var blend = node._blendColor;
+        if (blend && blend[3] > 0) row.blend++;
+        if (node._tintTexture) row.tintTexture++;
+        if (node.mask) row.mask++;
+        if (node.children && node.children.length) row.withChildren++;
+        if (node._cacheAsBitmap) row.cacheAsBitmap++;
+        var rotation = ((Number(node.texture.rotate) || 0) % 16 + 16) % 16;
+        if (rotation % 2) row.rotated++;
+        var base = node.texture.baseTexture;
+        if (!base || !base.source) row.noImage++;
+      }
+      var children = node.children || [];
+      for (var index = 0; index < children.length; index++) visit(children[index]);
+    }
+    visit(SceneManager._scene);
+    var top = Object.keys(rows).sort(function (a, b) { return rows[b].nodes - rows[a].nodes; });
+    return { nodes: total, byClass: top.map(function (name) {
+      var row = rows[name];
+      return [name, row.nodes, row.textures, row.noFilters, row.emptyFilters, row.filters,
+        row.tone, row.blend, row.tintTexture, row.mask, row.withChildren,
+        row.cacheAsBitmap, row.rotated, row.noImage];
+    }), columns: ['class', 'nodes', 'textures', 'noFilters', 'emptyFilters', 'filters',
+      'tone', 'blend', 'tintTexture', 'mask', 'withChildren', 'cacheAsBitmap',
+      'rotated', 'noImage'] };
+  }
+
+  // Per-thread CPU of the Node worker (OMORI_TEST_CPU=1): utime+stime from
+  // /proc/self/task/<tid>/stat at the edges of the measurement window. Linux USER_HZ is 100 on
+  // this device, so one tick is 10 ms; a thread at 100% of one core reports 100.
+  function threadCpu() {
+    if (!CPU) return null;
+    var fs = require('fs'), out = {};
+    fs.readdirSync('/proc/self/task').forEach(function (tid) {
+      try {
+        var stat = fs.readFileSync('/proc/self/task/' + tid + '/stat', 'utf8');
+        var name = fs.readFileSync('/proc/self/task/' + tid + '/comm', 'utf8').trim();
+        var fields = stat.slice(stat.lastIndexOf(')') + 2).split(' ');
+        out[tid] = { name: name, ticks: Number(fields[11]) + Number(fields[12]) };
+      } catch (error) { /* thread exited */ }
+    });
+    return out;
+  }
+  function threadCpuDeltas(before, after, ms) {
+    if (!before || !after) return null;
+    var out = {};
+    Object.keys(after).forEach(function (tid) {
+      var old = before[tid];
+      if (!old) return;
+      var ticks = after[tid].ticks - old.ticks;
+      if (ticks <= 0) return;
+      out[after[tid].name + ':' + tid] = round(ticks * 10 * 100 / Math.max(1, ms));
+    });
+    return out;
+  }
+
   // fps and frame-time percentiles over one window, sampled per rendered frame.
   function measure(ms) {
+    if (BREAKDOWN) { installBreakdown(); BP.acc = blankBreakdown(); }
+    var counters0 = counterSnapshot();
+    var cpu0 = threadCpu();
     return new Promise(function (resolve) {
       var times = [], draws = [], last = 0, started = performance.now(), f0 = Graphics.frameCount;
       (function frame(now) {
@@ -298,13 +456,39 @@
         if (now - started < ms) return requestAnimationFrame(frame);
         times.sort(function (a, b) { return a - b; });
         var pick = function (q) { return round(times[Math.min(times.length - 1, Math.floor(q * times.length))] || 0); };
-        resolve({ fps: round((Graphics.frameCount - f0) * 1000 / (now - started)),
+        var frames = Graphics.frameCount - f0, elapsed = now - started;
+        var drawAvg = draws.length ? draws.reduce(function (a, d) { return a + (d[1] || 0); }, 0) / draws.length : 0;
+        var b = BREAKDOWN ? BP.acc : null;
+        var avg = function (v) { return round(v / Math.max(1, frames)); };
+        var per = function (v) { return round(v / Math.max(1, b ? b.steps : 0)); };
+        var counters = counterDeltas(counters0, counterSnapshot(), frames);
+        resolve({ fps: round(frames * 1000 / elapsed),
           ft: [pick(0.5), pick(0.95), round(times[times.length - 1] || 0)],
           // Native renderFrame costs per frame: canvas uploads, GL submission, memory accounting.
           native: draws.length ? NATIVE_COSTS.reduce(function (out, key, k) {
             out[key] = round(draws.reduce(function (a, d) { return a + d[k]; }, 0) / draws.length);
             return out;
-          }, {}) : null });
+          }, {}) : null,
+          breakdown: b ? {
+            frames: frames,
+            steps: b.steps,
+            stepsPerFrame: round(b.steps / Math.max(1, frames)),
+            avgFrame: round(elapsed / Math.max(1, frames)),
+            ms: {
+              tick: avg(b.tick), logic: avg(b.logic), build: avg(b.build), render: avg(b.render),
+              draw: round(drawAvg), main: avg(b.main), managers: avg(b.managers),
+              sceneMap: avg(b.sceneMap), spriteset: avg(b.spriteset), gameMap: avg(b.gameMap),
+              overlay: avg(b.overlay), input: avg(b.input), audio: avg(b.audio), video: avg(b.video),
+              // Frame time not inside the measured sync buckets: ticker/scheduler plumbing, swap,
+              // input polling and any idle wait.
+              other: round(elapsed / Math.max(1, frames) - avg(b.logic) - avg(b.build) - avg(b.render) - drawAvg)
+            },
+            perStep: {
+              logic: per(b.logic), main: per(b.main), sceneMap: per(b.sceneMap),
+              spriteset: per(b.spriteset), gameMap: per(b.gameMap)
+            }
+          } : null,
+          counters: counters, cpu: threadCpuDeltas(cpu0, threadCpu(), elapsed) });
       })(performance.now());
     });
   }
@@ -331,6 +515,7 @@
         log({ census: label, scene: census() });
         log({ calls: label, perFrame: await callCounts(60) });
       }
+      if (INVENTORY) log({ inventory: label, scene: inventory() });
       await profileStart();
       var result = await measure(MEASURE_MS);
       result.patch = patch;
@@ -579,6 +764,35 @@
       log({ mode: 'startup', titleMs: Math.round(performance.now()), heapMB: m.heapMB, rssMB: m.rssMB });
       return;
     }
+    if (env('OMORI_TEST_DIGESTS') === '1') {      var crypto = require('crypto');
+      function digestOf(fn) {
+        return typeof fn === 'function' ? crypto.createHash('sha256')
+          .update(Function.prototype.toString.call(fn).replace(/\r\n/g, '\n')).digest('hex') : '';
+      }
+      function getterOf(object, name) {
+        var descriptor = Object.getOwnPropertyDescriptor(object, name);
+        return descriptor && descriptor.get;
+      }
+      log({ digests: {
+        isSlippery: digestOf(Game_Map.prototype.isSlippery),
+        regionId: digestOf(Game_Map.prototype.regionId),
+        width: digestOf(Game_Map.prototype.width),
+        height: digestOf(Game_Map.prototype.height),
+        isValid: digestOf(Game_Map.prototype.isValid),
+        terrainTag: digestOf(Game_Map.prototype.terrainTag),
+        tileset: digestOf(Game_Map.prototype.tileset),
+        tiledDataGet: digestOf(getterOf(Game_Map.prototype, 'tiledData')),
+        currentMapLevelGet: digestOf(getterOf(Game_Map.prototype, 'currentMapLevel')),
+        isHalfTile: digestOf(Game_Map.prototype.isHalfTile),
+        setupMiniLabel: digestOf(Sprite_Character.prototype.setupMiniLabel),
+        spriteUpdate: digestOf(Sprite.prototype.update),
+        spriteBaseUpdate: digestOf(Sprite_Base.prototype.update)
+      } });
+    }
+    if (root.OmoriPerformance) {
+      log({ perfState: { installed: !!root.OmoriPerformance.installed,
+        enabled: !!root.OmoriPerformance.enabled } });
+    }
     installAutoConfirm();
     if (MODE === 'trace') resetSeed();
     DataManager.setupNewGame();
@@ -595,6 +809,31 @@
         return;
       }
       if (env('OMORI_TEST_WALK') === '1') walkLoop();
+      // Camera-only pan: scroll the display without moving the player, so tilemap/camera work
+      // is separated from player/follower/visibility work. Alternates direction at map edges.
+      if (SCROLL) {
+        var scrollDirection = 1;
+        setInterval(function () {
+          if (typeof $gameMap === 'undefined' || !$gameMap ||
+              typeof $gameMap.startScroll !== 'function') return;
+          if (typeof $gameMap.isScrolling === 'function' && $gameMap.isScrolling()) return;
+          $gameMap.startScroll(scrollDirection * 2, 0, 120);
+          scrollDirection = -scrollDirection;
+        }, 250);
+      }
+      // Time series: consecutive 2 s windows from arrival, for entry/stagger/pan curves.
+      // Use --settle 0; each window reports fps, frame times, the phase breakdown and counters.
+      if (SERIES > 0) {
+        var windows = [];
+        for (var windowIndex = 0; windowIndex < SERIES; windowIndex++) {
+          var window = await measure(2000);
+          window.t = windowIndex * 2;
+          windows.push(window);
+        }
+        log({ mode: 'series', map: room[0], walk: env('OMORI_TEST_WALK') === '1',
+          windows: windows, mem: memory() });
+        return;
+      }
       log({ mode: 'room', map: room[0], arrived: arrived, walk: env('OMORI_TEST_WALK') === '1',
         phases: await measured('room' + room[0]), mem: memory() });
       if (env('OMORI_TEST_SPRITES') === '1') {
