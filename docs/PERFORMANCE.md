@@ -1,0 +1,170 @@
+# Runtime performance notes and optimization rationale
+
+This file records **why** each runtime optimization exists, why it is behaviour-preserving, and
+the measurement that justified it. The fast-path modules carry the same argument in their header
+comments; this is the index and the numbers.
+
+Measurements are on the Anbernic RG40XX-H (4x Cortex-A53, 640x480, muOS 2502.0), map 92
+(Forest Playground), room mode unless stated. `--breakdown` adds wrappers around the frame
+phases and costs ~2 ms standing / ~5 ms walking; **clean fps is the no-breakdown run**. Counters
+(`OmoriPerformance.*`, `OmoriPerf.*`) are exposed by the patches and printed by
+`research/pmjs-performance/omori-test.js`.
+
+## 1. Off-screen sprite update culling (`launcher/omori-performance.js`)
+
+**Mechanism.** During `Spriteset_Map.update`, a `Sprite_Character` for a map event is fully
+updated only when it can be seen. The wrapper skips the update when all of these hold: the map is
+drawn unscaled/unshaken, the sprite has had one full update, the character is a `Game_Event`, no
+animation/balloon/event-icon is playing, its mini-label is absent, and its character is outside
+a margin of 96 px plus twice its frame size. A skipped sprite still runs `updateAnimation` so
+animation/balloon/icon "playing" flags clear exactly as vanilla; YED reflection sprites with no
+reflections are skipped the same way. A sprite that comes back into view is updated fully on that
+step, before the frame is drawn (`_omoriUpdated` + the margin).
+
+**Why it is faster.** On map 92 this removes ~65-90 character updates and ~120-200 reflection
+updates per rendered frame. `Spriteset_Map.update` falls from ~12.3 ms to ~4.3-4.8 ms
+(instrumented), and map 92 standing goes from ~31 fps to ~45-49 fps instrumented / **54 fps
+clean**.
+
+**Why it is correct.** Only the routine presentation update is skipped; game logic
+(`Game_Event`, interpreters, movement) is untouched. The character's animation/balloon/icon
+flags are cleared by `updateAnimation`; the mini-label stagger countdown continues; direct
+`sprite.update()` callers (morpher/spawner) are not intercepted. The only visible state a
+skipped off-screen sprite would have advanced is presentation-side (pattern/bobble), which is
+recomputed on re-entry before the frame is drawn.
+
+**Lazy-label interaction (fixed 2026-10-25).** `label-fastpaths.js` sets
+`_omoriMiniLabelAbsent` on pages that can never show a label; `labelAllowsSkip` originally only
+knew `_miniLabel`/`_labelDelay`, so with lazy labels on it returned **false for every sprite**
+and culling silently stopped. Diagnostic: 476 character calls, 408 blocked by the label gate,
+238/238 reflection skips blocked, spriteset 12.3 ms, 31 fps. `labelAllowsSkip` now returns true
+for `_omoriMiniLabelAbsent`: that flag is exactly vanilla's empty unparented window state, which
+the culling patch already treats as skippable.
+
+**Install retry.** The patch originally returned silently if `Game_Event`/`Spriteset_Map` were
+not defined at the `afterPlugins` moment, leaving every sprite on the full path with no log. It
+now logs `sprite culling installed` and retries (100 ms, up to 10 s) instead.
+
+**Control.** `OMORI_PERF_SPRITES=0` disables the patch; `OmoriPerformance.enabled=false` at
+runtime; counters `full`, `offscreen`, `reflections`.
+
+## 2. Lazy mini-label construction (`launcher/perf/label-fastpaths.js`)
+
+**Mechanism.** YEP_EventMiniLabel + GTP's stagger build a `Window_EventMiniLabel` for every
+character sprite, then discard it when the page has no non-empty `<Mini Label: ...>` comment.
+The fast path reproduces GTP's countdown exactly and, when the delay expires with no label,
+records `_omoriMiniLabelAbsent` instead of constructing an empty, never-parented window. Once a
+window exists, every call delegates.
+
+**Why it is correct.** An empty unparented window is never updated (only windows in the
+spriteset get `update()`), so it can never turn into a label later. Page changes during the
+stagger are checked at the same step; a page that gains a label after an empty window stays
+invisible in both paths. Pins are SHA-256 of the composed methods; a different composition
+refuses the item.
+
+**Measurement.** The intended saving is the first ~17 s of map entry (hundreds of window
+objects/text metrics), visible on large maps; it was not the cause of the map-92 steady-state
+cost once culling recognises the flag (see §1). Standing map 92 with lazy labels on now matches
+lazy-off once culling works.
+
+**Control.** `OMORI_PERF_DISABLE=miniLabelLazy`.
+
+## 3. Character frame composition (`launcher/pmjs/character-frames.js`)
+
+**Mechanism.** Replaces the composed `Sprite_Character.updateCharacterFrame` for the common
+state (loaded bitmap, no single frame, no EMF, no custom rectangle) with the same rectangle
+math inline; every other state calls the captured composed method. Eleven methods are pinned.
+
+**Measurement.** Disabling it on map 92: 39.0 fps / spriteset 6.2 ms vs 43.0 / 5.4 ms
+(instrumented, culling active); ~0.8 ms/frame and a real user-visible difference.
+
+**Control.** `PMJS_DISABLE_OPT=plugins.tds.character-frames`.
+
+## 4. Sprite update fast paths (`launcher/perf/sprite-fastpaths.js`)
+
+- **hiddenLeafSkip.** YED allocates 256 priority-tile sprites and hides nearly all; the vanilla
+  chain on a hidden leaf only writes `visible = !_hiding`. The fast path reproduces that write
+  and skips the rest. Counters on map 92: ~300-400 skips/frame.
+- **horrorFastPath.** Olivia wraps `Sprite.prototype.update` on every sprite and every container
+  level; with no horror source/filters the chain is a no-op. The fast path re-issues GTP's live
+  children loop and calls the effects dispatcher only if a child activated a filter/replaced a
+  delegate.
+Both pin the composed methods and fall back on any mismatch.
+
+## 5. Event/window fast paths (`launcher/perf/logic-fastpaths.js`, `scene-fastpaths.js`)
+
+- **slipperyCache.** `Game_Map.isSlippery` (YEP region mode) is a pure function of live map/
+  tileset/region state; a per-cell byte cache answers first visits through vanilla and later
+  visits from the cache. YED's `tiledData`/`currentMapLevel` getters are **not defined at
+  afterPlugins on classic maps**, so the original pin refused the whole item; the getter pins
+  are now optional and verified lazily on key rebuild (a getter that appears with another
+  source refuses the cache). Measured: 370-380 cache hits/frame; logic 6.0-6.2 ms/step vs
+  6.4-6.5 without; `Game_Map.update` 1.2-1.4 vs 1.6-2.0 ms.
+- **autorunCandidates** caches the 17 trigger-1 common events (order preserved);
+  **saveLocationAlloc** removes per-event array/property-key allocations; **eventsStartingNoAlloc**
+  removes the filtered-array allocation in `isAnyEventStarting`.
+- **idleWindows / parkedVehicles / destinationEarlyOut / overlayFixClear / masterVolumeIdle**
+  skip six closed map windows, three off-map vehicles, the no-touch/no-destination branch, a
+  never-drawn canvas clear, and an idempotent volume write. Each guard is the exact vanilla
+  no-op condition, with an instance-level fallback.
+
+## 6. YED classic-map fast paths (`launcher/perf/yed-fastpaths.js`)
+
+**Mechanism.** `Game_CharacterBase.updateReflection` calls `$gameMap.isOnReflection` (position
+math, then tiled/reflection checks) and assigns `reflections = []` when off a reflection. When
+`$gameMap._reflection` is empty, the only result is that empty list; the fast path sets it
+without the position math or a fresh array when already empty. `_updateHideOnLevel` evaluates
+`currentMapLevel` (a getter that may parse a plugin parameter and read a game variable) then
+loops `_tilemap._layers`; with no layers the loop body never runs, so the fast path returns
+before the getter. Non-empty state delegates.
+
+**Measurement.** `reflectionIdle` 137-199 skips/frame on map 92; small (~0.1 ms) but free.
+The hide path does not fire on map 92 (layers exist), which is why it is guarded rather than
+assumed.
+
+**Control.** `OMORI_PERF_DISABLE=yedFastPaths`.
+
+## 7. Measurement harness notes
+
+- `--breakdown` wraps ~12 functions with `performance.now()`; it is for attribution, not fps
+  tables. Clean vs instrumented on map 92: 54.2 vs 47-49 fps standing, 33.8 vs 29.1 walking.
+- The runner used to export `OMORI_PERF_DISABLE=$DISABLE` **after** the variant environment,
+  silently overwriting `--variant name:OMORI_PERF_DISABLE=...`. Fixed by exporting it first.
+  Any old A/B that relied on a variant-level disable must be re-run.
+- Run order matters: the first run in a batch is often 5-10% slower (page cache/thermal). Use
+  balanced alternating orders and compare adjacent pairs.
+- Per-thread CPU (`OMORI_TEST_CPU=1`): standing main thread 98.2% of one core, Mali backend
+  7.2%, audio ~2.5%; walking main 97.4%, V8 workers 8-15% (GC/compilation), Mali 5.5%. The game
+  is one sequential JS stream with idle cores; parallelism helps presentation (render thread)
+  or boot preparation, not game logic.
+
+## 8. Open candidates (rationale before implementation)
+
+- **Stock ShaderTilemap pan spikes.** Map 92 has no YED Tiled data; `_paintAllTiles` clears and
+  re-adds the 15x11 window at every tile boundary (`rpg_core.js:5547-5658`, mirrored by
+  `pmjs/js/pmjs-mv/render-prepare.js:33-45`). Walking build is 11.2 ms vs 8.4 standing and p95
+  hits 55 ms (max 137). An absolute-coordinate/persistent layer (as YED maps have) would remove
+  the repeated work; pixel parity over a scroll sweep is required.
+- **Retained/delta scene encoding.** The encoder re-walks and re-serializes every node each
+  frame; per-node classification memoization (~0.4 ms) and retained records (~1 ms) are the
+  candidates. The culling experiment (integration-2 feature restored) was neutral on map 92
+  (44.0 vs 45.3 fps warm) and was not kept.
+- **Native render thread.** All GL is currently on the JS worker (`renderFrame` uploads
+  canvases, renders, and `platform.swap()` is SDL_GL_SwapWindow). A shared EGL context plus a
+  double-buffered command queue would let a render thread draw frame N while JS encodes N+1,
+  overlapping 2.5-3.6 ms; one frame of latency is accepted. Requires moving/guarding all GL
+  call sites (`renderer_core`, `node_addon_graphics`) and a semaphore for outstanding frames.
+- **Plugin long tail.** `evidence/logic-20261025/plugin-census-map92.txt` ranks per-frame self
+  time by file: YED_Tiled 1.67, GTP_CoreUpdates 0.76, YEP_SlipperyTiles 0.59 (now cached),
+  GTP_OmoriFixes 0.50, Omori BASE 0.45, then sub-0.2 layers. Next: GTP window/tilemap loops and
+  the YEP chase/move-route/movement-graphics chains.
+
+## 9. Reproduce
+
+```
+tools/omori-test.sh room --room 92:21:11 --settle 18 --measure 8 --breakdown --variant base
+tools/omori-test.sh room --room 92:21:11 --settle 18 --measure 10 --variant cpu:OMORI_TEST_CPU=1
+```
+The device runner uploads the current harness/runner/culling patch; perf modules in the port's
+`perf/` directory are uploaded separately. A full run leaves logs under
+`/mnt/mmc/ports/omori-pmjs2/tests/<time>-room/`.

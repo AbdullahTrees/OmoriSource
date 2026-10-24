@@ -50,6 +50,10 @@
   // out, and is attached to the spriteset while its text is not empty. After a sprite's first full
   // update it either has its label, a pending countdown, or no label plugin is installed.
   function labelAllowsSkip(sprite) {
+    // The lazy-label patch records a page that can never show a label by setting this flag
+    // (no window is constructed). That is exactly the state in which vanilla would have an
+    // empty unparented window, so the sprite is safe to skip.
+    if (sprite._omoriMiniLabelAbsent) return true;
     var label = sprite._miniLabel;
     if (label) return !label.parent && label._text === '';
     if (sprite._labelDelay === undefined) return typeof sprite.setupMiniLabel !== 'function';
@@ -68,11 +72,30 @@
     return x < -m || y < -m || x > Graphics.width + m || y > Graphics.height + m;
   }
 
+  var installTimer = null, installWaits = 0;
+
   function install() {
-    if (stats.installed) return;
+    if (stats.installed) {
+      if (installTimer) { clearInterval(installTimer); installTimer = null; }
+      return;
+    }
     if (typeof Sprite_Character !== 'function' || typeof Spriteset_Map !== 'function' ||
-        typeof Game_Event !== 'function') return;
+        typeof Game_Event !== 'function') {
+      // The afterPlugins phase has fired before the core classes in some bootstraps. Retry
+      // instead of silently leaving every sprite on the full update path.
+      if (!installTimer) {
+        console.log('[omori-perf] sprite culling waiting for core classes');
+        installTimer = setInterval(install, 100);
+      }
+      if (++installWaits > 100) {
+        clearInterval(installTimer); installTimer = null;
+        console.log('[omori-perf] sprite culling unavailable: core classes missing');
+      }
+      return;
+    }
+    if (installTimer) { clearInterval(installTimer); installTimer = null; }
     stats.installed = true;
+    console.log('[omori-perf] sprite culling installed');
 
     var spritesetUpdate = Spriteset_Map.prototype.update;
     Spriteset_Map.prototype.update = function () {
