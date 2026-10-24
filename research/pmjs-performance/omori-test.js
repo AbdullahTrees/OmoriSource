@@ -55,6 +55,8 @@
   var INVENTORY = env('OMORI_TEST_INVENTORY') === '1';
   var SERIES = Number(env('OMORI_TEST_SERIES')) || 0;
   var SCROLL = env('OMORI_TEST_SCROLL') === '1';
+  // Transfer -> scene started: map data and tilemap setup, which is what map preparation changes.
+  var lastLoadMs = null;
   var CPU = env('OMORI_TEST_CPU') === '1';
 
   // Seeded PRNG for trace mode (mulberry32), installed at script load before any game code runs,
@@ -316,6 +318,15 @@
     }
     return out;
   }
+  // Logic steps per rendered frame, counted with a bare increment: the step count decides
+  // whether the game is in its 2-step catch-up loop, which is the fps cliff, not logic cost.
+  var logicSteps = 0, stepCounterInstalled = false;
+  function installStepCounter() {
+    if (stepCounterInstalled || !root.SceneManager || typeof SceneManager.updateScene !== 'function') return;
+    stepCounterInstalled = true;
+    var updateScene = SceneManager.updateScene;
+    SceneManager.updateScene = function () { ++logicSteps; return updateScene.apply(this, arguments); };
+  }
   function counterDeltas(before, after, frames) {
     var out = null;
     Object.keys(after).forEach(function (key) {
@@ -444,7 +455,9 @@
   // fps and frame-time percentiles over one window, sampled per rendered frame.
   function measure(ms) {
     if (BREAKDOWN) { installBreakdown(); BP.acc = blankBreakdown(); }
+    installStepCounter();
     var counters0 = counterSnapshot();
+    var steps0 = logicSteps;
     var cpu0 = threadCpu();
     return new Promise(function (resolve) {
       var times = [], draws = [], last = 0, started = performance.now(), f0 = Graphics.frameCount;
@@ -457,6 +470,7 @@
         times.sort(function (a, b) { return a - b; });
         var pick = function (q) { return round(times[Math.min(times.length - 1, Math.floor(q * times.length))] || 0); };
         var frames = Graphics.frameCount - f0, elapsed = now - started;
+        var steps = logicSteps - steps0;
         var drawAvg = draws.length ? draws.reduce(function (a, d) { return a + (d[1] || 0); }, 0) / draws.length : 0;
         var b = BREAKDOWN ? BP.acc : null;
         var avg = function (v) { return round(v / Math.max(1, frames)); };
@@ -464,6 +478,7 @@
         var counters = counterDeltas(counters0, counterSnapshot(), frames);
         resolve({ fps: round(frames * 1000 / elapsed),
           ft: [pick(0.5), pick(0.95), round(times[times.length - 1] || 0)],
+          steps: steps, stepsPerFrame: round(steps / Math.max(1, frames)),
           // Native renderFrame costs per frame: canvas uploads, GL submission, memory accounting.
           native: draws.length ? NATIVE_COSTS.reduce(function (out, key, k) {
             out[key] = round(draws.reduce(function (a, d) { return a + d[k]; }, 0) / draws.length);
@@ -494,12 +509,13 @@
   }
 
   async function goTo(place) {
-    var id = place[0];
+    var id = place[0], loadStarted = performance.now();
     $gamePlayer.reserveTransfer(id, place[1] || 0, place[2] || 0, 2, 0);
     if (!(SceneManager._scene instanceof Scene_Map)) SceneManager.goto(Scene_Map);
     var arrived = await until(function () {
       return SceneManager._scene instanceof Scene_Map && $gameMap.mapId() === id && !SceneManager.isSceneChanging();
     }, 60000);
+    lastLoadMs = Math.round(performance.now() - loadStarted);
     // In trace mode, skip wall-clock settle: TRACE_START logic-step offset absorbs variable load timing.
     // Wall-clock wait lets a variable number of logic steps run, diverging PRNG state before recording.
     if (MODE !== 'trace') await wait(SETTLE_MS);
@@ -830,11 +846,11 @@
           window.t = windowIndex * 2;
           windows.push(window);
         }
-        log({ mode: 'series', map: room[0], walk: env('OMORI_TEST_WALK') === '1',
+        log({ mode: 'series', map: room[0], loadMs: lastLoadMs, walk: env('OMORI_TEST_WALK') === '1',
           windows: windows, mem: memory() });
         return;
       }
-      log({ mode: 'room', map: room[0], arrived: arrived, walk: env('OMORI_TEST_WALK') === '1',
+      log({ mode: 'room', map: room[0], loadMs: lastLoadMs, arrived: arrived, walk: env('OMORI_TEST_WALK') === '1',
         phases: await measured('room' + room[0]), mem: memory() });
       if (env('OMORI_TEST_SPRITES') === '1') {
         var sp = SceneManager._scene._spriteset, ps = sp && sp._characterSprites[0];
@@ -862,7 +878,7 @@
     for (var place of MAPS) {
       var ok = await goTo(place);
       if (MODE === 'verify') log({ mode: 'verify', map: place[0], arrived: ok, result: await verify(place) });
-      else log({ mode: 'perf', map: place[0], arrived: ok, phases: await measured('map' + place[0]), mem: memory() });
+      else log({ mode: 'perf', map: place[0], loadMs: lastLoadMs, arrived: ok, phases: await measured('map' + place[0]), mem: memory() });
     }
   }
 
