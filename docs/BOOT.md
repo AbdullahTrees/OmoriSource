@@ -29,53 +29,106 @@ A PMJS runner branch (`perf/trust-prepared` in `~/omori-test/pmjs-trust`) added
    fallback disappeared; hashed files 0.
 2. **Install-payload skip.** Persisted 12.1 MB of image/map install entries to
    `.cache/prepared-install.json`, then installed them directly on the next boot to skip the
-   remaining loops. Result: the second boot took **183 s** because the payload did not install
-   cleanly and the run fell back to a full preparation after the previous trust run had churned
-   the cache state; it re-decoded fallbacks and regenerated a map. The 12 MB payload itself was
-   not shown to cause a crash. Separately, one run hit the 100 MB watchdog because a background
-   room test and the startup test overlapped two PMJS instances; that OOM was a test collision,
-   not the skip. Attribution corrected 2026-10-25.
+   remaining loops. The second boot took 183 s. The payload was never shown to cause a crash;
+   one run hit the 100 MB watchdog because a background room test and the startup test overlapped
+   two PMJS instances.
 
-The branch was not deployed in the release; the test runtime's runner files were restored from
-`.orig-trust-20261025` backups and a normal startup verified (53.4 s). The worktree remains
-local for reference.
+### Corrected root cause (2026-10-25, later)
 
-## Direct mode: measured 2026-10-25
+The 183 s boot was a full cache re-hash, and the cause was found independently of the payload: a
+preparation session that runs only the port phase (direct mode still runs it, ~8.3 s per boot)
+builds an empty file-receipt map, and `session.finish()` pruned every receipt absent from the
+session. Each direct boot therefore deleted all image and map receipts; the next prepared boot
+re-hashed 2,470 sources and 2,460 outputs (1.3 GB): images 105 s validate, maps 26-55 s compile.
+An images-only session likewise deleted map receipts. Fixed in pmjs `205e5bf` by pruning only
+when both the image and map phases completed (the rule the results/failures pruning already
+uses), with regression tests for the port-only and images-only cases. A prepared boot after a
+direct boot now hashes 8 files and reuses 4,977 image and 12,947 map files (15-18 s stages).
 
-The test game tree (`/mnt/mmc/ports/omori-test/www`) is already decrypted. Setting the port
-config to `{"assetPreparation":{"enabled":false}}` makes PMJS load the plain PNG/OGG/JSON/map
-files directly: no image atlas preparation, no map tile packing, no per-boot manifest validation.
+The trust branch was not deployed; the test runtime's runner files were restored from
+`.orig-trust-20261025` backups. The worktree remains local for reference.
 
-| metric | prepared cache | direct |
-|---|---:|---:|
-| startup | 53.4 s | **18.5-22.2 s** |
-| map 92 standing (clean, no breakdown) | 55-58 fps | **56.6 fps** |
-| map 92 walking (clean) | 33.8 fps | **38.4 fps** |
-| map 203 standing (clean) | 30.3 fps, 4.2 ms draw | **32.2 fps, 3.2 ms draw** |
-| native draw map 92 standing/walking | 2.6 / 3.5 ms | **2.1 / 2.4 ms** |
-| RSS map 92 / 203 | ~693 / 711 MB | ~706-723 / 745 MB |
+## Asset-cache components: measured 2026-10-25
 
-The prepared atlases and packed maps were costing boot time and did not improve runtime on
-either test map; direct PNG loading was faster and only 13-34 MB higher in RSS. Caveats: a Steam
-install must be decrypted once into the game tree first (the key-free `tools/extract.js` path),
-and maps with extraordinary image counts may still benefit from atlases for memory, so keep
-preparation as an opt-in. The intended fork shape is: one-time decrypted install, direct
-loading by default, preparation opt-in for encrypted installs or memory-constrained cases, and
-`asset-recheck.json` on a missing/broken asset to force a repair on the next boot.
+The test game tree is already decrypted. Three configs were measured with a warm cache built
+first, in alternating order (run order and thermal state move fps by 5-10% on this device):
 
-## Direction (user decision)
+- **none** (`assetPreparation.enabled=false`): plain PNG/OGG/JSON/map files, no cache work.
+- **images** (`enabled=true, maps=false`): prepared image pages, original maps.
+- **both** (`enabled=true, maps=true`): prepared image pages and prepared map tile pages.
 
-Do not iterate thousands of manifests on every boot. Preferred design:
+### Boot (startup to title)
 
-- **Skip validation by default** once a preparation has completed.
-- If an asset is missing/rejected at install, or the game exits abnormally, write
-  `asset-recheck.json`; the next boot runs a full check/rebuild and clears it on success.
-- **Replace-originals mode** is the clean long-term version: a one-time, reversible preparation
-  writes the prepared files into the game tree (with a manifest/backup) so the runtime loads
-  them directly and there is nothing to validate. Keep it opt-in, never silent; Steam updates
-  invalidate it.
-- Any install-payload cache must be compact/streamed. A 12 MB JSON is not acceptable on a 1 GB
-  device while the game is also resident.
+| config | startup_ms |
+|---|---:|
+| none | 18.6-27.1 s (most runs 19-23) |
+| images | 35.0-39.8 s |
+| both | 53.4-79.1 s (typically 55-66) |
 
-The recheck-flag path is not implemented yet; the trust branch's validation-skip pieces are the
-starting point, but the default skip must not read per-asset manifests.
+Warm stage costs: images 14.4-18.0 s (validate 10-15, install 3.6-6.1, cleanup 0-4); maps
+15.5-16.7 s (validate 3.2-3.8, compile 6.2-7.4, install 2.3-2.4, cleanup 2.9-3.4); the port
+adapter phase 8.3 s and host initialization 6.2-8.2 s run in **every** mode, including direct.
+
+### Runtime: map 92, `--breakdown`, two alternating rounds
+
+| config | per-step logic | native draw | fps (rounds) |
+|---|---:|---:|---:|
+| none | 5.9-6.2 ms | 2.1-2.2 ms | 48.9, 53.8 |
+| images | 5.8-6.0 ms | 2.3 ms | 51.9, 52.7 |
+| both | 6.0 ms | 2.6-2.7 ms | 46.9, 47.5 |
+
+Per-step logic is identical across configs. The fps spread is the game's 1-vs-2-step catch-up
+loop: `both` sat at 1.2 steps/frame in both rounds, the others at 1.0-1.2; a ~0.4 ms higher draw
+cost is enough to shift the mix, which then doubles logic work per frame.
+
+### Runtime: other maps (no breakdown unless noted)
+
+| map | config | fps | steps/frame | draw | RSS | map load |
+|---|---|---:|---:|---:|---:|---:|
+| 203 | none | 31.1 | 2.0 | 3.1 ms | 716 MB | 3301 ms |
+| 203 | images | 31.9 | 2.0 | 3.2 ms | 649 MB | 1983 ms |
+| 203 | both (breakdown) | 28.5 | 2.0 | 4.2 ms | 678 MB | 2740 ms |
+| 111 | images | 34.3 | 2.0 | 2.5 ms | 673 MB | 1063 ms |
+| 111 | both | 34.4 | 2.0 | 2.8 ms | 659 MB | 1493 ms |
+| 92 walking | none | 40.9 | 1.4 | 2.4 ms | 724 MB | 2209 ms |
+| 92 walking | images | 36.2 | 1.5 | 2.8 ms | 680 MB | 1350 ms |
+| 92 walking | both | 35.7 | 1.5 | 3.3 ms | 665 MB | 1457 ms |
+
+The walking runs executed the same number of logic steps in all three configs (~561 in 10 s);
+the fps difference is fewer rendered frames (the step mix), not slower logic.
+
+### Memory headroom
+
+Direct mode is at the edge of the 1 GB device on map 203: one breakdown run was killed by the
+100 MB watchdog with 94 MB available, and with the watchdog lowered to 70 MB it completed at
+716 MB RSS. The image cache brings that to 649 MB (-67 MB) and images+maps to 678 MB. This is
+the one measured benefit large enough to justify a cache on 1 GB hardware.
+
+### Conclusion
+
+- **Image preparation**: no per-step logic cost, +0.1-0.4 ms draw, saves 40-80 MB on heavy
+  maps, and map entry is 0.5-1.3 s faster. Costs ~20 s on every warm boot.
+- **Map preparation**: no fps, logic or load benefit on maps 92, 111 or 203; +0.3-0.8 ms draw;
+  memory is mixed (adds ~44 MB on 203 versus images-only, saves ~14-16 MB on 111/92); costs
+  ~16 s on every boot. Drop it.
+- **Direct mode**: fastest boot (19 s) and lowest draw, but no memory headroom on map 203. Keep
+  it as an opt-in for 2 GB devices, not the 1 GB default.
+
+The earlier direct-versus-prepared fps gap (58.4 vs 36.9) was a thermal/measurement artifact:
+those runs were in different catch-up regimes. Atlases do not slow game logic; they add draw
+time and boot time, and they buy texture memory by uploading only used crops.
+
+## Direction
+
+Keep the image cache by default and disable map preparation. The remaining boot cost is the
+image stage's per-boot scan and install (~14-18 s). Next steps:
+
+- Skip the image validation/install loops on a boot whose cache was already verified, with a
+  single `asset-recheck.json` flag (written on a missing/broken asset or fatal asset error) that
+  forces a full check on the next boot and is cleared on success. The fixed receipt handling
+  (`205e5bf`) makes a flag-based skip safe; it must not reintroduce per-asset manifest reads.
+- The port adapter phase runs for 8.3 s on every boot in every mode and needs the same
+  treatment or a warm-skip.
+- Any install-payload cache must be compact/streamed; a 12 MB JSON is not acceptable on a 1 GB
+  device while the game is resident.
+
