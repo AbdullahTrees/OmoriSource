@@ -17,6 +17,10 @@
     .map(function (entry) { return entry.split(':').map(Number); });
   var SETTLE_MS = (Number(env('PERF_CHECK_SETTLE')) || 8) * 1000;
   var MEASURE_MS = (Number(env('PERF_CHECK_MEASURE')) || 10) * 1000;
+  // PERF_CHECK_PHASES: sprite patch state per phase (default on,off,on); PERF_CHECK_EXTRAS=0 skips the
+  // cutscene and camera-jump checks.
+  var PHASES = String(env('PERF_CHECK_PHASES') || 'on,off,on').split(',').map(function (p) { return p.trim() !== 'off'; });
+  var EXTRAS = env('PERF_CHECK_EXTRAS') !== '0';
   function log(value) { console.log('[perf-check] ' + JSON.stringify(value)); }
   function wait(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
   async function until(test, ms) {
@@ -146,12 +150,14 @@
       }, 60000);
       await wait(SETTLE_MS);
       var record = { map: id, phases: [] };
-      for (var enabled of [true, false, true]) {
+      for (var enabled of PHASES) {
         record.phases.push(await measure(enabled));
         record.phases[record.phases.length - 1].shot = capture('map' + id + '-' + (enabled ? 'on' : 'off') + '-' + record.phases.length);
       }
-      if (i === 0) record.cutscene = await cutsceneCheck();
-      record.jump = await jumpCheck(id);
+      if (EXTRAS) {
+        if (i === 0) record.cutscene = await cutsceneCheck();
+        record.jump = await jumpCheck(id);
+      }
       log(record);
     }
     log({ done: true });

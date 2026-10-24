@@ -47,6 +47,27 @@
         (0, eval)(fs.readFileSync(path.join(nw.__dirname, 'launcher', 'omori-performance.js'), 'utf8'));
     }
 
+    // OMORI_FPS_DIR=<dir> writes a per-phase frame-rate log there (launcher/omori-fps-log.js).
+    if (process.env.OMORI_FPS_DIR) {
+        (0, eval)(fs.readFileSync(path.join(nw.__dirname, 'launcher', 'omori-fps-log.js'), 'utf8'));
+    }
+
+    // OMORI_TEST_MODE=<startup|perf|room|verify> also loads the in-game test driver
+    // (research/pmjs-performance/omori-test.js), the same file PMJS runs with --patch. It waits
+    // for the title screen, plays a new game into the requested maps, logs "[omori-test] {json}"
+    // result lines and quits. Nothing loads when the variable is unset.
+    if (process.env.OMORI_TEST_MODE) {
+        (0, eval)(fs.readFileSync(
+            path.join(nw.__dirname, 'research', 'pmjs-performance', 'omori-test.js'), 'utf8'));
+    }
+
+    // OMORI_PERF_EXTRA=1 loads the fast-path modules (launcher/perf/*.js) for trace A/B comparison.
+    if (process.env.OMORI_PERF_EXTRA === '1') {
+        (0, eval)(fs.readFileSync(path.join(nw.__dirname, 'launcher', 'perf', 'sprite-fastpaths.js'), 'utf8'));
+        (0, eval)(fs.readFileSync(path.join(nw.__dirname, 'launcher', 'perf', 'scene-fastpaths.js'), 'utf8'));
+        (0, eval)(fs.readFileSync(path.join(nw.__dirname, 'launcher', 'perf', 'logic-fastpaths.js'), 'utf8'));
+    }
+
     if (process.platform !== 'linux') return;
 
     // Permanent_Manager (GTP_OmoriFixes.js) keeps CUTSCENE.json in %LOCALAPPDATA%,
