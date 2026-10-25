@@ -789,10 +789,16 @@
     out.options = await uiMeasure('ui-options', MEASURE_MS);
     if (INVENTORY) log({ inventory: 'ui-options', scene: inventory() });
     if (env('OMORI_TEST_CENSUS') === '1') log({ census: 'ui-options', scene: census() });
-    // Switching categories shows/hides whole option windows, the heaviest menu animation. Only
-    // up/down: left/right edits a value and writes the player's configuration.
-    dance(['down', 'down', 'up', 'up'], 10, 24);
+    // The category row is horizontal (GENERAL/AUDIO/CONTROLS/SYSTEM): left/right moves the
+    // category cursor and toggles which full option window is visible, the heaviest options
+    // animation. Up/down would move inside the visible category and only changes a value when a
+    // left/right edit follows, which is never scripted.
+    dance(['right', 'right', 'left', 'left'], 10, 24);
     out.optionsMove = await uiMeasure('ui-options-move', MEASURE_MS);
+    danceStop();
+    // Cursor through the visible category's items: help text, cursor rect and item redraw.
+    dance(['down', 'down', 'up', 'up'], 10, 24);
+    out.optionsList = await uiMeasure('ui-options-list', MEASURE_MS);
     danceStop();
 
     // Back to the menu, then to the map. pop() reconstructs the scene: the map's return cost is

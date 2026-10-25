@@ -6,9 +6,9 @@
 #   perf      fixed set of heavy maps, fps and frame times per map (~1.5-2 min)
 #   room      one map, optionally walking a loop while measuring (~50 s)
 #   verify    sprite patch on vs off: cutscene wait steps and camera-jump captures (~1.5 min)
-#   menus     pause menu -> cursor movement -> options -> category switching -> back to map ->
-#             reopen -> textbox, one measurement per phase, including the open/close tick
-#             (slowest-tick breakdown) (~2.5 min)
+#   menus     pause menu -> cursor movement -> options -> category and item cursor movement ->
+#             back to map -> reopen -> textbox, one measurement per phase, including the
+#             open/close tick (slowest-tick breakdown) (~3 min)
 #
 # Options:
 #   --maps LIST            perf/verify maps, "id" or "id:x:y", comma-separated
