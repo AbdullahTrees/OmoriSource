@@ -324,7 +324,7 @@
   // performance.now() calls per step: use the breakdown for attribution, and a run without it for
   // fps comparisons. Everything is averaged over rendered frames; perStep divides by updateMain
   // calls, which is the figure that matters for a 60 fps target (at 30 fps GTP runs 2 steps/frame).
-  var BP = { acc: null };
+  var BP = { acc: null, worst: null };
   function blankBreakdown() {
     return { tick: 0, logic: 0, build: 0, render: 0, main: 0, managers: 0, sceneMap: 0,
       spriteset: 0, gameMap: 0, overlay: 0, input: 0, audio: 0, video: 0, steps: 0 };
@@ -393,8 +393,35 @@
     probe(Scene_Map.prototype, 'update', 'sceneMap');
     probe(Spriteset_Map.prototype, 'update', 'spriteset');
     probe(Game_Map.prototype, 'update', 'gameMap');
-    if (typeof globalThis.__pmjsTick === 'function') probe(globalThis, '__pmjsTick', 'tick');
     if (typeof globalThis.__pmjsRender === 'function') probe(globalThis, '__pmjsRender', 'render');
+    // The tick is wrapped separately: the window average hides a single 300-650 ms menu-open
+    // frame, so keep the bucket split of the slowest tick in the window. A scene open runs its
+    // constructor in SceneManager.push and its create() inside a later tick, which is exactly the
+    // frame this captures.
+    if (typeof globalThis.__pmjsTick === 'function') {
+      var hostTick = globalThis.__pmjsTick;
+      globalThis.__pmjsTick = function () {
+        var before = null;
+        if (BP.acc) {
+          before = {};
+          Object.keys(BP.acc).forEach(function (key) { before[key] = BP.acc[key]; });
+        }
+        var started = performance.now();
+        try {
+          return hostTick.apply(this, arguments);
+        } finally {
+          var elapsed = performance.now() - started;
+          if (BP.acc) {
+            var frame = { tick: elapsed };
+            Object.keys(BP.acc).forEach(function (key) {
+              if (key !== 'tick') frame[key] = BP.acc[key] - (before[key] || 0);
+            });
+            BP.acc.tick += elapsed;
+            if (!BP.worst || elapsed > BP.worst.tick) BP.worst = frame;
+          }
+        }
+      };
+    }
     var updateMain = SceneManager.updateMain;
     SceneManager.updateMain = function () {
       if (BP.acc) BP.acc.steps++;
@@ -487,7 +514,7 @@
 
   // fps and frame-time percentiles over one window, sampled per rendered frame.
   function measure(ms) {
-    if (BREAKDOWN) { installBreakdown(); BP.acc = blankBreakdown(); }
+    if (BREAKDOWN) { installBreakdown(); BP.acc = blankBreakdown(); BP.worst = null; }
     installStepCounter();
     var counters0 = counterSnapshot();
     var steps0 = logicSteps;
@@ -521,6 +548,18 @@
             frames: frames,
             steps: b.steps,
             stepsPerFrame: round(b.steps / Math.max(1, frames)),
+            // Slowest tick in the window, with the same buckets, so one open hitch can be
+            // attributed even inside a multi-second window.
+            worst: BP.worst ? {
+              tick: round(BP.worst.tick), logic: round(BP.worst.logic),
+              build: round(BP.worst.build), render: round(BP.worst.render),
+              main: round(BP.worst.main), managers: round(BP.worst.managers),
+              sceneMap: round(BP.worst.sceneMap), spriteset: round(BP.worst.spriteset),
+              gameMap: round(BP.worst.gameMap), overlay: round(BP.worst.overlay),
+              input: round(BP.worst.input), audio: round(BP.worst.audio),
+              video: round(BP.worst.video), steps: BP.worst.steps,
+              other: round(BP.worst.tick - BP.worst.logic - BP.worst.build - BP.worst.render)
+            } : null,
             avgFrame: round(elapsed / Math.max(1, frames)),
             ms: {
               tick: avg(b.tick), logic: avg(b.logic), build: avg(b.build), render: avg(b.render),
@@ -573,6 +612,128 @@
       phases.push(result);
     }
     return phases;
+  }
+
+  // ---------------------------------------------------------------------- menus mode
+  // UI cost is dominated by two things a steady room measurement cannot show: the scene
+  // construction on open (one tick of hundreds of ms) and the update path while windows/text are
+  // live. This mode drives the real game entry points -- Scene_Map.callMenu(), the menu's own
+  // commandOptions() (which transfers command/status windows into the options scene) and
+  // $gameMessage.add() -- from inside a logic step, so the work lands in the tick like a player
+  // keypress, and measures each phase with the same breakdown/profile machinery as room mode.
+  function sceneName() {
+    return SceneManager._scene && SceneManager._scene.constructor && SceneManager._scene.constructor.name;
+  }
+
+  // Run fn at the end of the next SceneManager.updateScene, inside the host tick. Scene changes
+  // caused by a keypress happen inside a step; calling push() from between frames would move the
+  // scene constructor outside the measured tick and hide the very hitch we are chasing.
+  function runNextStep(fn, label) {
+    var original = SceneManager.updateScene, fired = false;
+    SceneManager.updateScene = function () {
+      var result = original.apply(this, arguments);
+      if (!fired) {
+        fired = true;
+        SceneManager.updateScene = original;
+        try { fn(); } catch (error) {
+          log({ uiError: label, error: String(error && error.stack || error).slice(0, 400) });
+        }
+      }
+      return result;
+    };
+  }
+
+  async function waitScene(name, ms) {
+    return until(function () {
+      return sceneName() === name && !SceneManager.isSceneChanging() && SceneManager.isCurrentSceneStarted();
+    }, ms);
+  }
+
+  async function uiMeasure(label, ms, trigger, triggerLabel) {
+    var before = sceneName();
+    await profileStart();
+    var pending = measure(ms);
+    if (trigger) runNextStep(trigger, triggerLabel || label);
+    var result = await pending;
+    result.scenes = [before, sceneName()];
+    result.profile = await profileStop(label);
+    result.shot = capture(label);
+    return result;
+  }
+
+  function openMenu() {
+    var scene = SceneManager._scene;
+    if (scene && typeof scene.callMenu === 'function') return scene.callMenu();
+    SceneManager.push(Scene_Menu);
+  }
+
+  function openOptions() {
+    var scene = SceneManager._scene;
+    if (scene && typeof scene.commandOptions === 'function') return scene.commandOptions();
+    throw new Error('commandOptions missing on ' + sceneName());
+  }
+
+  async function uiSequence(room) {
+    var out = { loadMs: null };
+    out.arrived = await goTo(room);
+    out.loadMs = lastLoadMs;
+    out.mapBefore = await uiMeasure('ui-map-before', MEASURE_MS);
+
+    // Cold open (the first menu in a session pays atlas/window construction).
+    out.menuOpen = await uiMeasure('ui-menu-open', 3000, openMenu, 'callMenu');
+    out.menuStarted = await waitScene('Scene_Menu', 8000);
+    await wait(800);
+    out.menu = await uiMeasure('ui-menu', MEASURE_MS);
+    if (INVENTORY) log({ inventory: 'ui-menu', scene: inventory() });
+    if (env('OMORI_TEST_CENSUS') === '1') log({ census: 'ui-menu', scene: census() });
+
+    // Options is entered through the menu command: it transfers the menu's command/status
+    // windows, so pushing the scene directly would not be the real construction path.
+    out.optionsOpen = await uiMeasure('ui-options-open', 2500, openOptions, 'commandOptions');
+    out.optionsStarted = await waitScene('Scene_OmoMenuOptions', 8000);
+    await wait(800);
+    out.options = await uiMeasure('ui-options', MEASURE_MS);
+    if (INVENTORY) log({ inventory: 'ui-options', scene: inventory() });
+    if (env('OMORI_TEST_CENSUS') === '1') log({ census: 'ui-options', scene: census() });
+
+    // Back to the menu, then to the map. pop() reconstructs the scene: the map's return cost is
+    // the menu-close cost plus Scene_Map.create, which is what the player sees after closing.
+    SceneManager.pop();
+    out.backToMenu = await waitScene('Scene_Menu', 8000);
+    await wait(400);
+    out.menuBack = await uiMeasure('ui-menu-back', 1200);
+    SceneManager.pop();
+    out.backToMap = await waitScene('Scene_Map', 8000);
+    await wait(400);
+    out.mapAfter = await uiMeasure('ui-map-after', MEASURE_MS);
+
+    // Warm open: same scene after the first one, to separate one-time atlas/window costs from
+    // the recurring construction cost.
+    out.menuOpenWarm = await uiMeasure('ui-menu-open-warm', 3000, openMenu, 'callMenu');
+    out.menuWarmStarted = await waitScene('Scene_Menu', 8000);
+    await wait(800);
+    out.menuWarm = await uiMeasure('ui-menu-warm', MEASURE_MS);
+    SceneManager.pop();
+    out.backToMapWarm = await waitScene('Scene_Map', 8000);
+    await wait(400);
+
+    // Message window on the same map: the map's own cost is already in mapAfter/mapBefore, so
+    // message-specific work is the delta. Auto-confirm is off in this mode, so the text shows at
+    // the normal speed and then waits, exactly as for a player who does not press anything.
+    var text = env('OMORI_TEST_MESSAGE') ||
+      'The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. ';
+    out.messageOpen = await uiMeasure('ui-message-open', 3000, function () {
+      $gameMessage.add(text + text + text + text);
+    }, 'message-add');
+    out.messageBusy = await until(function () { return $gameMessage.isBusy(); }, 5000);
+    await wait(300);
+    out.message = await uiMeasure('ui-message', MEASURE_MS);
+    if (INVENTORY) log({ inventory: 'ui-message', scene: inventory() });
+    if (env('OMORI_TEST_CENSUS') === '1') log({ census: 'ui-message', scene: census() });
+    out.messageClose = await uiMeasure('ui-message-close', 1500, function () {
+      $gameMessage.clear();
+    }, 'message-clear');
+    return out;
   }
 
   // Room mode with OMORI_TEST_SWEEP=<step>: the player (and so the camera) is placed on a grid of
@@ -845,7 +1006,9 @@
       log({ perfState: { installed: !!root.OmoriPerformance.installed,
         enabled: !!root.OmoriPerformance.enabled } });
     }
-    installAutoConfirm();
+    // Menus mode leaves input alone: an auto-confirmed message would close before the text
+    // animation could be measured.
+    if (MODE !== 'menus') installAutoConfirm();
     if (MODE === 'trace') resetSeed();
     DataManager.setupNewGame();
     if (MODE === 'trace') {
@@ -909,6 +1072,12 @@
             return b && b.isError && b.isError(); }).length,
           tilemapChildren: sp._tilemap && sp._tilemap.children.length } });
       }
+      return;
+    }
+    if (MODE === 'menus') {
+      var uiRoom = places(env('OMORI_TEST_ROOM') || '92:17:23')[0];
+      log({ mode: 'menus', map: uiRoom[0], result: await uiSequence(uiRoom),
+        mem: memory(), imageStats: imageStats() });
       return;
     }
     for (var place of MAPS) {
