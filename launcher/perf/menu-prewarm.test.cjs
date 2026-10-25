@@ -73,11 +73,29 @@ function load(options) {
     globalThis.ImageManager = ImageManager;
     globalThis.calls = calls;
   `, context);
-  if (options.disableItem) context.process = { env: { OMORI_PERF_DISABLE: options.disableItem } };
+  context.process = { env: {} };
+  // Existing behavior checks explicitly opt into this experimental module.
+  if (options.optIn !== null) context.process.env.OMORI_PERF_MENU_PREWARM = options.optIn || '1';
+  if (options.disableItem) context.process.env.OMORI_PERF_DISABLE = options.disableItem;
   if (options.noMenu) vm.runInContext('globalThis.Scene_Menu = undefined;', context);
   if (options.backgroundNull) vm.runInContext('SceneManager._backgroundBitmap = null;', context);
   vm.runInContext(MODULE, context);
   return context;
+}
+
+// A glob-loaded release must not activate an experiment without an explicit opt-in.
+for (const optIn of [null, '0']) {
+  const context = load({ optIn });
+  const start = context.Scene_Map.prototype.start;
+  const update = context.Scene_Map.prototype.update;
+  context.OmoriPerfMenuPrewarm.installForTest();
+  eq(context.OmoriPerf.menuPrewarm.installed, false, 'prewarm is not installed without opt-in');
+  ok(context.Scene_Map.prototype.start === start && context.Scene_Map.prototype.update === update,
+    'default loading leaves map lifecycle methods untouched');
+  context.Scene_Map.prototype.start.call({});
+  context.Scene_Map.prototype.update.call({});
+  eq(context.calls.menuCreate, undefined, 'default loading allocates no throwaway menu');
+  eq(context.calls.renders, [], 'default loading performs no offscreen render');
 }
 
 // --- enabled, immediate readiness ------------------------------------------------------------

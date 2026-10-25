@@ -85,6 +85,14 @@ for variant in $VARIANTS; do
   name=${variant%%:*}
   extra=; case "$variant" in *:*) extra=$(echo "${variant#*:}" | tr ',' ' ');; esac
   log=$OUT/$name.log
+  # Keep host memory pressure beside each result. /tmp is RAM on muOS: leftover release
+  # staging once consumed 187 MB and made both the old and new patch sets hit the watchdog.
+  # Do not clean it here; preserve the evidence and let the operator identify the files.
+  {
+    date
+    awk '/^(MemTotal|MemAvailable|Shmem|SwapTotal):/ { print }' /proc/meminfo
+    df -k /tmp
+  } > "$OUT/$name-memory-before.txt"
   # --disable first, then the variant env, so a variant may override OMORI_PERF_DISABLE.
   env OMORI_PERF_DISABLE=$DISABLE $extra SDL_BLITTER_DISABLED=1 PMJS_TIMEOUT=$TIMEOUT PMJS_WATCHDOG_MB=${PMJS_WATCHDOG_MB:-100} \
     OMORI_TEST_MODE=$MODE OMORI_TEST_MAPS=$MAPS OMORI_TEST_ROOM=$ROOM OMORI_TEST_WALK=$WALK OMORI_TEST_SWEEP=$SWEEP \

@@ -1,8 +1,10 @@
 // Menu prewarm for OMORI on slow hardware. Game files stay byte-identical.
 //
-// Loaded like the other launcher/perf modules (PMJS: one --patch, installed on afterPlugins;
-// NW.js: evaluated before main.js, installed on load). `OMORI_PERF_DISABLE=menuPrewarm` turns it
-// off; `OmoriPerf.menuPrewarm.enabled = false` does it at runtime.
+// Experimental: opt in with OMORI_PERF_MENU_PREWARM=1. Loading this file alone is inert.
+// Device testing found a 20.6-second first-map stall and extra memory use. Keep it out of
+// normal play until that cost is resolved; packaging perf/*.js must not enable it by accident.
+// PMJS installs on afterPlugins; NW.js installs on load. OMORI_PERF_DISABLE=menuPrewarm
+// overrides the opt-in; OmoriPerf.menuPrewarm.enabled = false disables it at runtime.
 //
 // The first menu open in a session costs ~0.65-0.78 s because the scene transition, window
 // construction and first render share one tick and pay the one-time GLSL compile/link for the
@@ -160,7 +162,7 @@
 
   function install() {
     if (installed) return;
-    if (wasDisabled('menuPrewarm')) {
+    if (env('OMORI_PERF_MENU_PREWARM') !== '1' || wasDisabled('menuPrewarm')) {
       stats.menuPrewarm.disabled = true;
       console.log('[omori-perf] menu prewarm disabled');
       return;
