@@ -118,17 +118,78 @@ The earlier direct-versus-prepared fps gap (58.4 vs 36.9) was a thermal/measurem
 those runs were in different catch-up regimes. Atlases do not slow game logic; they add draw
 time and boot time, and they buy texture memory by uploading only used crops.
 
+## Fast boot: implemented and measured 2026-10-25
+
+The image cache now has a verified fast path, so keeping it no longer costs boot time.
+
+**Mechanism.** After a completed image phase, `runner/prepared-catalog.cjs` writes
+`<prep-root>/prepared-catalog.json` (1.16 MB for OMORI): per prepared image, the cache directory,
+the VFS source identity and the captured page identities, plus a fingerprint of the image
+results and failures, the image source inventory, the effective policy (recipes, ASTC, lossless
+prefixes, workspace budget, asset-index file) and the processor identity. The next boot reads
+the catalog and calls `native.assets.installPreparedCatalog`, which installs the entries
+**without opening source or page files**. Any of these refuses the catalog and runs the full
+phase, which rewrites it: a changed processor, policy, source inventory, result set, failure
+set, invalidated image or install rejection, or `verifyHashes: true`. A rejected individual
+image simply keeps ordinary loading; a `failed` result refuses the whole catalog so the full
+phase can repair it.
+
+| boot | startup_ms |
+|---|---:|
+| images+maps, full validation | 53.4-79.1 s |
+| images only, full validation | 32.8-46.7 s (32.8 with no repair) |
+| **images only, fast catalog** | **19.1-20.5 s** |
+| direct (no cache) | 18.6-19.4 s |
+
+The fast boot installs 2,460/2,460 prepared images. On map 203 it kept the cache's benefit:
+prepared hits 156/159 live images, only `non-sprite` fallbacks (677-697, normal) and
+`gpuBytes` **21.7 MB vs 116.9 MB direct** (cropped uploads instead of full source textures),
+CPU-side page data 104 MB vs 73 MB, RSS 674 vs 711 MB, draw 3.3 vs 3.1 ms, fps 31.8 vs 31.9.
+Map 92 on a fast boot: 56.1 fps, draw 2.3 ms, 1 step/frame. The port adapter phase still runs
+(~4-8 s) and is the largest remaining boot cost.
+
+**Recheck flag, exercised end to end.** Deleting a prepared page (`img/system/IconSet.png`) and
+booting fast: the game reached the title with the image falling back to the original, and the
+runner wrote `<cache-root>/asset-recheck.json` with `reason: prepared asset invalidated`. The
+next boot logged `fast_boot=off`, ran the full image phase, regenerated the image, cleared the
+flag and rewrote the catalog (46.7 s including the repair). The following boot was fast again
+(20.5 s). A fatal error during a fast-boot session also writes the flag; any successful full
+preparation clears it.
+
+**Tests.** `test/prepared-catalog.test.cjs` covers fingerprints (results, image failures, map
+failures excluded), source-set hashes, policy identity (recipes/ASTC/lossless/workspace/index
+file), roundtrip, stale/processor/policy/source mismatch, failed and invalidated images,
+directory containment and zero-page uniform images; the receipt fix has its own regression
+tests. Full preparation, catalog, asset-preparation and build/runtime suites pass under WSL
+Node: 150 passed, 1 skipped.
+
+**Policy and inventory gates exercised on device.** Changing `losslessPrefixes` forced one full
+validation and a catalog rewrite, then the next boot was fast again (19.9 s). Adding a new
+`img/` file made the next boot full (2,471 discovered, 2,461 prepared), and the following boot
+was fast with 2,461 (19.0 s). `verifyHashes: true` forced the documented full re-hash
+(`fast:false`, images 100.8 s, startup 120.4 s); removing it restored the fast boot (21.2 s).
+
+**Known remaining cost: catalog identities carry inodes.** The catalog stores the VFS identity
+captured during the writing boot, and that identity includes `st_ino`. On this firmware's
+exFAT/FUSE storage the inode changes in every process, so `capturePrepared` sees an identity
+that differs only in the inode and, because the source has a content hash, re-verifies the
+source bytes at first load; pages likewise get `verifyHash`. The cache and memory benefit are
+kept, but first loads pay SHA-256 work that the old full validation paid at boot. The fix is a
+native trust flag for catalog-installed backings: when the identity differs only in the inode,
+skip the content verification (the same decision the preparation receipts make) and let a
+content change (size/mtime/ctime/path) or a failed load write the recheck flag. Needs a runtime
+build; not in the JS-only test runtime.
+
 ## Direction
 
-Keep the image cache by default and disable map preparation. The remaining boot cost is the
-image stage's per-boot scan and install (~14-18 s). Next steps:
+Done: image cache by default, map preparation off, and the image stage's per-boot scan removed.
+Remaining boot work:
 
-- Skip the image validation/install loops on a boot whose cache was already verified, with a
-  single `asset-recheck.json` flag (written on a missing/broken asset or fatal asset error) that
-  forces a full check on the next boot and is cleared on success. The fixed receipt handling
-  (`205e5bf`) makes a flag-based skip safe; it must not reintroduce per-asset manifest reads.
-- The port adapter phase runs for 8.3 s on every boot in every mode and needs the same
-  treatment or a warm-skip.
-- Any install-payload cache must be compact/streamed; a 12 MB JSON is not acceptable on a 1 GB
-  device while the game is resident.
+- The port adapter phase still runs for 4-8 s on every boot; give it a warm-skip or remove it
+  from the critical path.
+- Keep `asset-recheck.json` as the only repair trigger; do not add per-asset reads to the fast
+  path. The catalog must always be tied to a result-set fingerprint and the processor identity.
+- The release config should ship `{"assetPreparation":{"enabled":true,"maps":false}}`; the
+  catalog is written automatically on the first full boot.
+
 
