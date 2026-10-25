@@ -80,8 +80,8 @@ function load(disableItem) {
 
   const window = new context.Window_Message();
   window.adjustWindowSettings();
-  eq([window.widthSets, window.heightSets, window.contentsCreated], [0, 0, 0],
-    'unchanged width, height and contents size are not recreated');
+  eq([window.widthSets, window.heightSets, window.contentsCreated], [0, 0, 1],
+    'unchanged size skips only the width/height rebuilds, not the contents/font reset');
   eq([window.width, window.height, window.x], [608, 112, 16], 'geometry matches YEP');
   eq(state.skipped, 1, 'the no-op call is counted');
   eq(state.resized, 0, 'no resize is counted');

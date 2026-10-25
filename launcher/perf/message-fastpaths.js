@@ -12,11 +12,12 @@
 // createContents for a fresh contents bitmap. A two-page named message pays that at least twice
 // per page although the size and contents size never changed.
 //
-// This wrapper reproduces the same final width, height, x and contents size, but assigns only
-// when the value differs and recreates contents only when its bitmap really has the wrong size.
-// It runs on the message start/page-setup frame, before the page is cleared and drawn, so the
-// visible text is unchanged; when a face, name box or line count really changes the size, the
-// original assignments and createContents still happen.
+// This wrapper reproduces the same final width, height and x, but assigns width/height only when
+// the value differs, so the full back/frame/cursor rebuild is skipped on a page whose size did
+// not change. createContents() is still called every time: besides allocating the bitmap it
+// resets the font face/size and text colour, and skipping it left the next page drawn with a
+// stale (fully transparent) colour state while the typewriter advanced normally. When a face,
+// name box or line count really changes the size, the original assignments still happen.
 (function () {
   'use strict';
   var root = typeof globalThis !== 'undefined' ? globalThis : window;
@@ -105,12 +106,11 @@
       var resized = this.width !== width || this.height !== height;
       if (this.width !== width) this.width = width;
       if (this.height !== height) this.height = height;
-      var contents = this.contents;
-      if (!contents || contents.width !== this.contentsWidth() ||
-          contents.height !== this.contentsHeight()) {
-        this.createContents();
-        item.contentsRecreated++;
-      }
+      // Always recreate. Stock createContents also resets the font face/size and text colour;
+      // skipping it left a page drawn with the previous page's font/colour state, which showed
+      // as fully transparent text while the typewriter advanced normally.
+      this.createContents();
+      item.contentsRecreated++;
       this.x = (Graphics.boxWidth - this.width) / 2;
       if (resized) item.resized++;
       else item.skipped++;
