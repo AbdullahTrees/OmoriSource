@@ -1194,7 +1194,7 @@
     if (MODE === 'menus') {
       var uiRoom = places(env('OMORI_TEST_ROOM') || '92:17:23')[0];
       log({ mode: 'menus', map: uiRoom[0], result: await uiSequence(uiRoom),
-        mem: memory(), imageStats: imageStats() });
+        perf: counterSnapshot(), mem: memory(), imageStats: imageStats() });
       return;
     }
     for (var place of MAPS) {
