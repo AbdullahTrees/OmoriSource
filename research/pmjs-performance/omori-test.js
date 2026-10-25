@@ -105,6 +105,20 @@
     var v8 = require('v8'), usage = require('process').memoryUsage();
     return { heapMB: mb(v8.getHeapStatistics().used_heap_size), rssMB: mb(usage.rss) };
   }
+  // Prepared-image use: hits without a full decode prove the cache is active, and the fallback
+  // reasons show why an image used the original instead.
+  function imageStats() {
+    var host = root.NativeHost;
+    if (!host || !host.images || typeof host.images.memory !== 'function') return null;
+    try {
+      var m = host.images.memory();
+      return { liveCount: m.liveCount, gpuBytes: m.gpuBytes, cpuBytes: m.cpuBytes,
+        preparedHits: m.preparedHits, preparedRegions: m.preparedRegions,
+        preparedMaterializations: m.preparedMaterializations,
+        preparedPageDecodes: m.preparedPageDecodes, preparedSharedPageHits: m.preparedSharedPageHits,
+        preparedFallbacks: m.preparedFallbacks };
+    } catch (_) { return null; }
+  }
   function setPatch(state) {
     if (state && root.OmoriPerformance) root.OmoriPerformance.enabled = state !== 'off';
     return root.OmoriPerformance ? (root.OmoriPerformance.enabled ? 'on' : 'off') : 'absent';
@@ -851,7 +865,7 @@
         return;
       }
       log({ mode: 'room', map: room[0], loadMs: lastLoadMs, arrived: arrived, walk: env('OMORI_TEST_WALK') === '1',
-        phases: await measured('room' + room[0]), mem: memory() });
+        phases: await measured('room' + room[0]), mem: memory(), imageStats: imageStats() });
       if (env('OMORI_TEST_SPRITES') === '1') {
         var sp = SceneManager._scene._spriteset, ps = sp && sp._characterSprites[0];
         var pSprite = sp ? sp._characterSprites.filter(function (s) { return s._character === $gamePlayer; })[0] : null;
@@ -878,7 +892,7 @@
     for (var place of MAPS) {
       var ok = await goTo(place);
       if (MODE === 'verify') log({ mode: 'verify', map: place[0], arrived: ok, result: await verify(place) });
-      else log({ mode: 'perf', map: place[0], loadMs: lastLoadMs, arrived: ok, phases: await measured('map' + place[0]), mem: memory() });
+      else log({ mode: 'perf', map: place[0], loadMs: lastLoadMs, arrived: ok, phases: await measured('map' + place[0]), mem: memory(), imageStats: imageStats() });
     }
   }
 
