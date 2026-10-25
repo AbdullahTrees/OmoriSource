@@ -173,11 +173,17 @@ assumed.
   frame; per-node classification memoization (~0.4 ms) and retained records (~1 ms) are the
   candidates. The culling experiment (integration-2 feature restored) was neutral on map 92
   (44.0 vs 45.3 fps warm) and was not kept.
-- **Native render thread.** All GL is currently on the JS worker (`renderFrame` uploads
-  canvases, renders, and `platform.swap()` is SDL_GL_SwapWindow). A shared EGL context plus a
-  double-buffered command queue would let a render thread draw frame N while JS encodes N+1,
-  overlapping 2.5-3.6 ms; one frame of latency is accepted. Requires moving/guarding all GL
-  call sites (`renderer_core`, `node_addon_graphics`) and a semaphore for outstanding frames.
+- **Native render thread (measured 2026-10-25, not shipped).** A probe proved SDL allows
+  `SDL_GL_MakeCurrent`/`SDL_GL_SwapWindow` from a worker thread on this Mali/KMSDRM device
+  (`worker_make_current=ok`, `swap=ok`, main context restored). A swap-only worker prototype
+  (context alternation, deferred `beginFrame` GPU reset, guards on the GL bindings, no added
+  frame latency) moved 1.2-2.0 ms (standing) and 4.0-4.5 ms (walking) of present off the main
+  thread with main-thread waits of 0.005-0.065 ms, i.e. fully overlapped. A/B map 92: standing
+  56.8-57.0 off vs 56.0-56.4 on; walking 35.8-36.6 off vs 36.9-37.3 on. **The present is not the
+  limiter**: fps is set by the frame work and the 60 Hz pacing, not by the swap; the worker adds
+  context-switch/driver contention. Do not ship it. The frame budget at standing is build 8.3 ms
+  + logic 6.1 ms + renderFrame 0.6 ms; those are the next targets, along with the runner's
+  per-frame overhead/pacing.
 - **Plugin long tail.** `evidence/logic-20261025/plugin-census-map92.txt` ranks per-frame self
   time by file: YED_Tiled 1.67, GTP_CoreUpdates 0.76, YEP_SlipperyTiles 0.59 (now cached),
   GTP_OmoriFixes 0.50, Omori BASE 0.45, then sub-0.2 layers. Next: GTP window/tilemap loops and
