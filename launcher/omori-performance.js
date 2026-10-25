@@ -65,6 +65,17 @@
     sprite.updateAnimation();
   }
 
+  // A skipped map-event sprite must still follow its character's screen position. An event that
+  // is teleported (or crosses the skip margin in one step, as hide-and-seek scripts do) would
+  // otherwise freeze at its last on-screen x/y and stay visible as a ghost while the camera
+  // moves. Position and visibility are cheap property writes; the presentation work (bitmap,
+  // frame, pattern, balloon/other) stays skipped and is redone in full on the first visible step.
+  function skipEvent(sprite) {
+    skip(sprite);
+    if (typeof sprite.updatePosition === 'function') sprite.updatePosition();
+    if (typeof sprite.updateVisibility === 'function') sprite.updateVisibility();
+  }
+
   function offscreen(sprite, character) {
     var frame = sprite._frame, scale = Math.max(Math.abs(sprite.scale.x), Math.abs(sprite.scale.y), 1);
     var m = MARGIN + 2 * Math.max(frame.width, frame.height) * scale;
@@ -112,7 +123,7 @@
       var character = this._character;
       if (stats.enabled && inSpriteset && plainView && this._omoriUpdated && character instanceof Game_Event &&
           !busy(this, character) && labelAllowsSkip(this) && offscreen(this, character)) {
-        skip(this);
+        skipEvent(this);
         stats.offscreen++;
         return;
       }

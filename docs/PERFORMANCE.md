@@ -33,6 +33,16 @@ flags are cleared by `updateAnimation`; the mini-label stagger countdown continu
 skipped off-screen sprite would have advanced is presentation-side (pattern/bobble), which is
 recomputed on re-entry before the frame is drawn.
 
+**Skipped sprites still track position (fixed 2026-10-25).** `skip()` originally ran only
+`updateAnimation`, so a map event teleported off-screen by a script (the Berly hide-and-seek in
+Forest Playground) kept the sprite at its last on-screen x/y; as the camera moved, the frozen
+sprite stayed at the same screen position as a visible ghost that could not be interacted with.
+The skip path now also runs `updatePosition()` and `updateVisibility()` — cheap property writes
+that move/hide the sprite with its character — while bitmap/frame/pattern/balloon work stays
+skipped and is redone in full on the first visible step. The regression case in
+`research/pmjs-performance/sprite-culling-check.cjs` teleports a skipped event and asserts the
+sprite position follows it.
+
 **Lazy-label interaction (fixed 2026-10-25).** `label-fastpaths.js` sets
 `_omoriMiniLabelAbsent` on pages that can never show a label; `labelAllowsSkip` originally only
 knew `_miniLabel`/`_labelDelay`, so with lazy labels on it returned **false for every sprite**

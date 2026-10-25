@@ -24,8 +24,11 @@ vm.runInContext(`
   Game_Event.prototype.animationId = function () { return this._animationId; };
   Game_Event.prototype.balloonId = function () { return this._balloonId; };
   function Sprite_Character(character) { this._character = character; this._frame = { width: 32, height: 32 };
-    this.scale = { x: 1, y: 1 }; this.visible = true; this.full = 0; this.animationUpdates = 0; this._animating = false; }
-  Sprite_Character.prototype.update = function () { this.full++; this.updateAnimation(); };
+    this.scale = { x: 1, y: 1 }; this.visible = true; this.full = 0; this.animationUpdates = 0; this._animating = false;
+    this.x = 0; this.y = 0; this.positionUpdates = 0; }
+  Sprite_Character.prototype.update = function () { this.full++; this.updateAnimation(); this.updatePosition(); };
+  Sprite_Character.prototype.updatePosition = function () { this.positionUpdates++; this.x = this._character.screenX(); this.y = this._character.screenY(); };
+  Sprite_Character.prototype.updateVisibility = function () { this.visible = true; };
   Sprite_Character.prototype.updateAnimation = function () { this.animationUpdates++; if (!this._animating) this._character.endCalls++; };
   Sprite_Character.prototype.isAnimationPlaying = function () { return this._animating; };
   Sprite_Character.prototype.isBalloonPlaying = function () { return false; };
@@ -58,6 +61,9 @@ assert.equal(far.full, 1, 'idle off-screen sprite is skipped');
 assert.equal(far.animationUpdates, 3, 'skipped sprite still runs updateAnimation');
 assert.equal(far._character.endCalls, 3, 'animation/balloon playing flags are still cleared');
 assert.equal(near.full, 3, 'on-screen sprite always updates');
+far._character.x = 3000; far._character.y = 3000; step();
+assert.equal(far.full, 1, 'a teleported off-screen sprite is still skipped');
+assert.deepEqual([far.x, far.y], [3000, 3000], 'a skipped sprite still tracks the character position');
 assert.equal(reflection.full, 1, 'invisible reflection without reflections is skipped');
 
 far._character._animationId = 5; step();
