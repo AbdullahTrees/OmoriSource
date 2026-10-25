@@ -29,7 +29,8 @@
   }
 
   var stats = { menuParts: { installed: false, enabled: true, disabled: false,
-    skipped: 0, full: 0, refreshed: 0, refused: null } };
+    skipped: 0, full: 0, refreshed: 0, contentsDeferred: 0, contentsRefreshed: 0,
+    refused: null } };
   var installed = false;
 
   function wasDisabled(id) {
@@ -99,6 +100,22 @@
         stats.menuParts.full++;
         return original.apply(this, arguments);
       };
+      // The option list's text, key prompts and volume bars are drawn by refresh() in the
+      // constructor although only one of the four windows is visible. Drawing a hidden window's
+      // contents is invisible work; defer it until callUpdateHelp makes that window visible.
+      var refresh = proto.refresh;
+      if (typeof refresh === 'function') {
+        proto.refresh = function () {
+          if (stats.menuParts.enabled && !stats.menuParts.disabled &&
+              (!this.visible || !this.parent)) {
+            this._omoriMenuContentDirty = true;
+            stats.menuParts.contentsDeferred++;
+            return;
+          }
+          this._omoriMenuContentDirty = false;
+          return refresh.apply(this, arguments);
+        };
+      }
     });
 
     var callUpdateHelp = Window_OmoMenuOptionsCategory.prototype.callUpdateHelp;
@@ -107,10 +124,16 @@
       var windows = this._optionWindows || [];
       for (var i = 0; i < windows.length; i++) {
         var win = windows[i];
-        if (win && win.visible && win.parent && win._omoriMenuPartsDirty) {
+        if (!win || !win.visible || !win.parent) continue;
+        if (win._omoriMenuPartsDirty) {
           win._omoriMenuPartsDirty = false;
           stats.menuParts.refreshed++;
           win._refreshAllParts();
+        }
+        if (win._omoriMenuContentDirty) {
+          win._omoriMenuContentDirty = false;
+          stats.menuParts.contentsRefreshed++;
+          win.refresh();
         }
       }
       return result;

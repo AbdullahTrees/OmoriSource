@@ -32,9 +32,11 @@ function load(disableItem) {
         this.visible = true;
         this.parent = null;
         this.refreshes = 0;
+        this.contentDraws = 0;
         this.contents = { clear: function () {} };
       }
       _refreshAllParts() { this.refreshes++; }
+      refresh() { this.contentDraws++; }
     }
     class General extends WindowBase {}
     class Audio extends WindowBase {}
@@ -87,6 +89,11 @@ function attach(context, window) {
   eq(hidden.refreshes, 0, 'a hidden window defers _refreshAllParts');
   eq(hidden._omoriMenuPartsDirty, true, 'the hidden window records stale parts');
   ok(state.skipped >= 1, 'the skip is counted');
+  hidden.refresh();
+  eq(hidden.contentDraws, 0, 'a hidden window defers its contents drawing');
+  eq(hidden._omoriMenuContentDirty, true, 'the hidden window records stale contents');
+  visible.refresh();
+  eq(visible.contentDraws, 1, 'a visible window draws its contents normally');
 
   const orphan = new Controls();
   orphan._refreshAllParts();
@@ -100,6 +107,8 @@ function attach(context, window) {
   cat.callUpdateHelp();
   eq(hidden.refreshes, 1, 'becoming visible refreshes the stale window once');
   eq(hidden._omoriMenuPartsDirty, false, 'the refresh clears the stale flag');
+  eq(hidden.contentDraws, 1, 'becoming visible draws the deferred contents once');
+  eq(hidden._omoriMenuContentDirty, false, 'the contents refresh clears the stale flag');
   eq(visible.visible, false, 'the previously visible window is hidden');
   eq(wins[3].refreshes, 0, 'the still-hidden window stays deferred');
 }
@@ -113,6 +122,8 @@ function attach(context, window) {
   context.OmoriPerf.menuParts.enabled = false;
   hidden._refreshAllParts();
   eq(hidden.refreshes, 1, 'OmoriPerf.menuParts.enabled=false restores the original refresh');
+  hidden.refresh();
+  eq(hidden.contentDraws, 1, 'the runtime switch also restores the contents drawing');
 }
 
 // --- disabled at install ---------------------------------------------------------------------
@@ -123,6 +134,8 @@ function attach(context, window) {
   hidden.visible = false;
   hidden._refreshAllParts();
   eq(hidden.refreshes, 1, 'OMORI_PERF_DISABLE=menuParts leaves the window unwrapped');
+  hidden.refresh();
+  eq(hidden.contentDraws, 1, 'the environment switch leaves the contents drawing unwrapped');
   eq(context.OmoriPerfMenuFastpaths.stats.menuParts.disabled, true, 'the disabled state is recorded');
 }
 
