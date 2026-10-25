@@ -124,7 +124,38 @@ assumed.
 
 **Control.** `OMORI_PERF_DISABLE=yedFastPaths`.
 
-## 7. Measurement harness notes
+## 7. V8 polymorphic map limit (`runner/index.cjs`)
+
+**Mechanism.** The runner's `run()` wrapper raises V8's polymorphic-map limit before the game
+bootstrap compiles:
+
+```js
+const v8 = require('node:v8');
+v8.setFlagsFromString('--max-valid-polymorphic-map-count=128');
+```
+
+OMORI's scene walk and its plugin wrappers touch many display-object subclasses (sprites,
+windows, tilemaps, containers, particles) through the same hot update functions. Under V8's
+default limit those call sites go polymorphic-megamorphic and the optimizing compiler gives up,
+so the hot sprite/event update code runs deoptimized.
+
+**Why it is safe.** A JIT configuration only; no game state, order or drawing changes.
+
+**Measurement (map 92, standing, no breakdown, same build/counters).** Without the flag the
+per-step logic is **9.4 ms** (`Game_Map` 2.4, `Spriteset` 5.1), which pushes the one-step frame
+over the game's catch-up threshold, so `determineRepeatNumber` runs two steps per frame and the
+game locks at **29-30 fps**. With the flag the per-step logic is **5.9-6.0 ms** (`Game_Map` 1.2,
+`Spriteset` 3.7), the game stays at one step and runs **56.9 fps** standing; walking 40.2 fps in
+the confirming run. The per-step counters (`OmoriPerformance.full`, offscreen, reflections) are
+identical, so the difference is compiled code, not scene load.
+
+**History.** The flag existed only in the device test build. A runner sync replaced the
+integration-3 runner with the integration-2 copy and silently dropped it; the resulting 29-30 fps
+was first misread as thermal/scene work (per-step logic had grown uniformly, `game_map` and
+`spriteset` included). Keep the flag in the canonical runner; a build without it looks like a
+50% slower game rather than a configuration change.
+
+## 8. Measurement harness notes
 
 - `--breakdown` wraps ~12 functions with `performance.now()`; it is for attribution, not fps
   tables. Clean vs instrumented on map 92: 54.2 vs 47-49 fps standing, 33.8 vs 29.1 walking.
@@ -147,7 +178,7 @@ assumed.
   MoveRouteCore 0.22, Slippery 0.21 (cache), Olivia 0.20. YED's `_sortChildren` is
   **1.10 ms/frame** inclusive (comparator 0.99), the largest single plugin pass while walking.
 
-## 8. Open candidates (rationale before implementation)
+## 9. Open candidates (rationale before implementation)
 
 - **YED child sort (walking and standing).** `_sortChildren` costs 1.10-1.21 ms/frame
   inclusive in the walking and standing profiles, 0.99-1.03 of it in `_compareChildOrder`'s
@@ -189,7 +220,7 @@ assumed.
   GTP_OmoriFixes 0.50, Omori BASE 0.45, then sub-0.2 layers. Next: GTP window/tilemap loops and
   the YEP chase/move-route/movement-graphics chains.
 
-## 9. Reproduce
+## 10. Reproduce
 
 ```
 tools/omori-test.sh room --room 92:21:11 --settle 18 --measure 8 --breakdown --variant base
