@@ -65,7 +65,10 @@
 
   function disposeScene(scene) {
     if (!scene) return;
-    try { scene.destroy({ children: true, texture: true, baseTexture: false }); }
+    // No texture/baseTexture flags: these window sprites reference shared windowskin and font
+    // textures, and destroying them would affect the live menu. The throwaway scene's own
+    // canvases are reclaimed by the engine's finalization path.
+    try { scene.destroy({ children: true }); }
     catch (error) { stats.menuPrewarm.errors.push('dispose:' + String(error && error.message || error)); }
   }
 
