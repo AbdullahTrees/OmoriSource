@@ -768,6 +768,18 @@
     out.loadMs = lastLoadMs;
     out.mapBefore = await uiMeasure('ui-map-before', MEASURE_MS);
 
+    // Diagnostic only (OMORI_TEST_PREWARM=1): open and close the menu once before the measured
+    // first open, so menuOpen measures a warmed session. The difference against a run without
+    // this phase bounds what a boot-time prewarm can remove from the first real open.
+    if (env('OMORI_TEST_PREWARM') === '1') {
+      out.prewarmOpen = await uiMeasure('ui-prewarm-open', 2500, openMenu, 'callMenu');
+      out.prewarmStarted = await waitScene('Scene_Menu', 8000);
+      await wait(600);
+      SceneManager.pop();
+      out.prewarmBack = await waitScene('Scene_Map', 8000);
+      await wait(400);
+    }
+
     // Cold open (the first menu in a session pays atlas/window construction).
     out.menuOpen = await uiMeasure('ui-menu-open', 3000, openMenu, 'callMenu');
     out.menuStarted = await waitScene('Scene_Menu', 8000);
