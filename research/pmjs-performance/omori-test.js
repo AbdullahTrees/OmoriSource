@@ -119,6 +119,25 @@
         preparedFallbacks: m.preparedFallbacks };
     } catch (_) { return null; }
   }
+  function digestFunction(fn) {
+    if (typeof fn !== 'function') return '';
+    var crypto = require('crypto');
+    return crypto.createHash('sha256')
+      .update(Function.prototype.toString.call(fn).replace(/\r\n/g, '\n')).digest('hex');
+  }
+  // The live tilemap class and its child-sort composition; YED's _sortChildren cost depends on it.
+  function tilemapInfo() {
+    var sp = SceneManager._scene && SceneManager._scene._spriteset;
+    var tm = sp && sp._tilemap;
+    if (!tm) return null;
+    var proto = Object.getPrototypeOf(tm);
+    try {
+      return { constructor: tm.constructor && tm.constructor.name,
+        children: tm.children ? tm.children.length : 0,
+        sortChildren: digestFunction(proto._sortChildren),
+        compareChildOrder: digestFunction(proto._compareChildOrder) };
+    } catch (_) { return null; }
+  }
   function setPatch(state) {
     if (state && root.OmoriPerformance) root.OmoriPerformance.enabled = state !== 'off';
     return root.OmoriPerformance ? (root.OmoriPerformance.enabled ? 'on' : 'off') : 'absent';
@@ -814,6 +833,9 @@
         tiledDataGet: digestOf(getterOf(Game_Map.prototype, 'tiledData')),
         currentMapLevelGet: digestOf(getterOf(Game_Map.prototype, 'currentMapLevel')),
         isHalfTile: digestOf(Game_Map.prototype.isHalfTile),
+        sortChildren: typeof root.Tilemap === 'function' ? digestOf(root.Tilemap.prototype._sortChildren) : '',
+        compareChildOrder: root.TiledTilemap && root.TiledTilemap.prototype
+          ? digestOf(root.TiledTilemap.prototype._compareChildOrder) : '',
         setupMiniLabel: digestOf(Sprite_Character.prototype.setupMiniLabel),
         spriteUpdate: digestOf(Sprite.prototype.update),
         spriteBaseUpdate: digestOf(Sprite_Base.prototype.update)
@@ -865,7 +887,7 @@
         return;
       }
       log({ mode: 'room', map: room[0], loadMs: lastLoadMs, arrived: arrived, walk: env('OMORI_TEST_WALK') === '1',
-        phases: await measured('room' + room[0]), mem: memory(), imageStats: imageStats() });
+        phases: await measured('room' + room[0]), mem: memory(), imageStats: imageStats(), tilemap: tilemapInfo() });
       if (env('OMORI_TEST_SPRITES') === '1') {
         var sp = SceneManager._scene._spriteset, ps = sp && sp._characterSprites[0];
         var pSprite = sp ? sp._characterSprites.filter(function (s) { return s._character === $gamePlayer; })[0] : null;
@@ -892,7 +914,7 @@
     for (var place of MAPS) {
       var ok = await goTo(place);
       if (MODE === 'verify') log({ mode: 'verify', map: place[0], arrived: ok, result: await verify(place) });
-      else log({ mode: 'perf', map: place[0], loadMs: lastLoadMs, arrived: ok, phases: await measured('map' + place[0]), mem: memory(), imageStats: imageStats() });
+      else log({ mode: 'perf', map: place[0], loadMs: lastLoadMs, arrived: ok, phases: await measured('map' + place[0]), mem: memory(), imageStats: imageStats(), tilemap: tilemapInfo() });
     }
   }
 
