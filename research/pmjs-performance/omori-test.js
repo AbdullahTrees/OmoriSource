@@ -5,7 +5,7 @@
 // "[omori-test] {json}" line per result, then quits. The game code it drives is the same in
 // both runtimes; runtime differences are contained in env(), require(), quitGame() and capture().
 // Env variables (set by drivers):
-//   OMORI_TEST_MODE     startup | perf | room | verify
+//   OMORI_TEST_MODE     startup | perf | room | verify | menus | soak
 //   OMORI_TEST_MAPS     perf/verify maps, "id" or "id:x:y" comma-separated
 //                       (default 14:45:44,111:15:25,87:27:27: Player's house, Rain Town, White Space)
 //   OMORI_TEST_ROOM     room mode map, "id:x:y"
@@ -853,6 +853,153 @@
     return out;
   }
 
+  // ---------------------------------------------------------------------- soak mode
+  // Repeated menu open/close with memory samples at three points per cycle: the map before the
+  // open, the open menu steady, and the map after the close. The port watchdog kills PMJS when
+  // MemAvailable drops below 100 MB, so what each cycle leaves behind matters as much as the
+  // peak. A sample records the V8 heap, RSS, system MemAvailable, PMJS native canvas bytes (the
+  // snapshot and window bitmaps) and image bytes (textures). OmoriPerf.menuBackground is toggled
+  // between cycles (OMORI_TEST_SOAK_TOGGLE=0 keeps the launched state) so the new background
+  // blur can be compared with the menu path that already existed. Each sample is taken before
+  // and, when available, after forcing a GC, which separates live retention from garbage V8 has
+  // not collected yet.
+  //   OMORI_TEST_SOAK_CYCLES   open/close cycles (default 12)
+  //   OMORI_TEST_SOAK_OPTIONS  1: also open and close the options scene in every cycle
+  //   OMORI_TEST_SOAK_GC       0: do not force a collection per sample (the crash path)
+  //   OMORI_TEST_SOAK_TRIM_TOGGLE 1: toggle OmoriPerf.memoryTrim between cycles
+  function meminfo() {
+    try {
+      var text = require('fs').readFileSync('/proc/meminfo', 'utf8');
+      var out = {};
+      text.split('\n').forEach(function (line) {
+        var match = /^(MemFree|MemAvailable|Cached|Buffers):\s+(\d+) kB/.exec(line);
+        if (match) out[match[1]] = Math.round(Number(match[2]) / 1024);
+      });
+      return out;
+    } catch (_) { return null; }
+  }
+  function canvasMemory() {
+    try {
+      var host = root.NativeHost;
+      if (!host || !host.canvas || typeof host.canvas.memory !== 'function') return null;
+      var m = host.canvas.memory();
+      var releases = null;
+      try {
+        if (typeof root.__pmjsCanvasReleaseStats === 'function') {
+          releases = root.__pmjsCanvasReleaseStats();
+        }
+      } catch (_) { releases = null; }
+      return { live: m.liveCount, liveMB: mb(m.liveBytes), capacityMB: mb(m.capacityBytes),
+        peakMB: mb(m.peakLiveBytes), deferred: m.deferredCanvasCount,
+        realized: m.realizedCanvasCount, textMB: mb(m.textCacheBytes || 0),
+        glyphMB: mb(m.glyphBytes || 0), releases: releases };
+    } catch (_) { return null; }
+  }
+  function moduleMemoryState() {
+    try {
+      var module = root.OmoriPerf && OmoriPerf.menuBackground;
+      var trim = root.OmoriPerf && OmoriPerf.memoryTrim;
+      return {
+        background: module ? { installed: !!module.installed, enabled: !!module.enabled,
+          disabled: !!module.disabled, blurred: module.blurred, removed: module.filtersRemoved,
+          kept: module.kept, blurMs: Math.round(module.blurMs),
+          errors: (module.errors || []).length } : null,
+        memoryTrim: trim ? { installed: !!trim.installed, enabled: !!trim.enabled,
+          disabled: !!trim.disabled, gcCalls: trim.gcCalls,
+          gcMs: Math.round(trim.gcMs * 10) / 10, gcMaxMs: Math.round(trim.gcMaxMs * 10) / 10,
+          lastAvailableMB: trim.lastAvailableMB, skippedNoPressure: trim.skippedNoPressure,
+          skippedDebounce: trim.skippedDebounce, errors: (trim.errors || []).length } : null
+      };
+    } catch (_) { return null; }
+  }
+  var gcFunction = null, gcTried = false;
+  function forceGc() {
+    if (!gcTried) {
+      gcTried = true;
+      try {
+        require('v8').setFlagsFromString('--expose_gc');
+        var candidate = require('vm').runInNewContext('gc');
+        if (typeof candidate === 'function') gcFunction = candidate;
+      } catch (_) { gcFunction = null; }
+    }
+    if (!gcFunction) return false;
+    try {
+      gcFunction();
+      gcFunction();
+      return true;
+    } catch (_) {
+      gcFunction = null;
+      return false;
+    }
+  }
+  function rawMemory() {
+    var usage = require('process').memoryUsage();
+    var heap = require('v8').getHeapStatistics();
+    var info = meminfo() || {};
+    return { heapMB: mb(heap.used_heap_size), heapTotalMB: mb(heap.total_heap_size),
+      heapExternalMB: mb(heap.external_memory || 0),
+      rssMB: mb(usage.rss), externalMB: mb(usage.external || 0),
+      arrayBuffersMB: mb(usage.arrayBuffers || 0),
+      memAvailableMB: info.MemAvailable === undefined ? null : info.MemAvailable,
+      memFreeMB: info.MemFree === undefined ? null : info.MemFree,
+      canvas: canvasMemory(), images: imageStats() };
+  }
+  function memorySample(cycle, phase) {
+    var before = rawMemory();
+    // OMORI_TEST_SOAK_GC=0 leaves V8 alone, to reproduce the crash path where the game never
+    // forces a collection and the watchdog can fire before the finalizers run.
+    var gcMs = null, collected = false;
+    if (env('OMORI_TEST_SOAK_GC') !== '0') {
+      var gcStarted = performance.now();
+      collected = forceGc();
+      gcMs = Math.round((performance.now() - gcStarted) * 10) / 10;
+    }
+    var sample = { cycle: cycle, phase: phase, scene: sceneName(), module: moduleMemoryState(),
+      gc: collected, gcMs: gcMs, before: before, afterGc: collected ? rawMemory() : null };
+    // Log every sample as it is taken: the workload under test can exhaust memory and be killed
+    // by the port watchdog before the mode returns.
+    log({ soak: sample });
+    return sample;
+  }
+  async function soak(room, cycles) {
+    var out = { loadMs: null, cycles: cycles, toggle: env('OMORI_TEST_SOAK_TOGGLE') !== '0',
+      options: env('OMORI_TEST_SOAK_OPTIONS') === '1', samples: [] };
+    out.arrived = await goTo(room);
+    out.loadMs = lastLoadMs;
+    await wait(1200);
+    var module = root.OmoriPerf && OmoriPerf.menuBackground;
+    var trim = root.OmoriPerf && OmoriPerf.memoryTrim;
+    var trimToggle = env('OMORI_TEST_SOAK_TRIM_TOGGLE') === '1';
+    for (var i = 0; i < cycles; i++) {
+      if (module && out.toggle) module.enabled = i % 2 === 0;
+      if (trim && trimToggle) trim.enabled = i % 2 === 0;
+      out.samples.push(memorySample(i, 'map-before'));
+      runNextStep(openMenu, 'soak-open-' + i);
+      var opened = await waitScene('Scene_Menu', 8000);
+      await wait(600);
+      out.samples.push(memorySample(i, 'menu'));
+      if (out.options) {
+        runNextStep(openOptions, 'soak-options-' + i);
+        var optionsOpened = await waitScene('Scene_OmoMenuOptions', 8000);
+        await wait(600);
+        var optionsSample = memorySample(i, 'options');
+        optionsSample.opened = optionsOpened;
+        out.samples.push(optionsSample);
+        SceneManager.pop();
+        await waitScene('Scene_Menu', 8000);
+        await wait(300);
+      }
+      SceneManager.pop();
+      var closed = await waitScene('Scene_Map', 8000);
+      await wait(600);
+      var sample = memorySample(i, 'map-after');
+      sample.opened = opened;
+      sample.closed = closed;
+      out.samples.push(sample);
+    }
+    return out;
+  }
+
   // Room mode with OMORI_TEST_SWEEP=<step>: the player (and so the camera) is placed on a grid of
   // tiles `step` apart across the map; at each point, after 1.5 s, fps and native costs over 2 s,
   // with the visible character sprites that have a graphic and whether a map event is running.
@@ -1194,6 +1341,13 @@
     if (MODE === 'menus') {
       var uiRoom = places(env('OMORI_TEST_ROOM') || '92:17:23')[0];
       log({ mode: 'menus', map: uiRoom[0], result: await uiSequence(uiRoom),
+        perf: counterSnapshot(), mem: memory(), imageStats: imageStats() });
+      return;
+    }
+    if (MODE === 'soak') {
+      var soakRoom = places(env('OMORI_TEST_ROOM') || '92:17:23')[0];
+      var soakCycles = Number(env('OMORI_TEST_SOAK_CYCLES')) || 12;
+      log({ mode: 'soak', map: soakRoom[0], result: await soak(soakRoom, soakCycles),
         perf: counterSnapshot(), mem: memory(), imageStats: imageStats() });
       return;
     }
