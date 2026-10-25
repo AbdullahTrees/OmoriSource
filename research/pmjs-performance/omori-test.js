@@ -324,10 +324,12 @@
   // performance.now() calls per step: use the breakdown for attribution, and a run without it for
   // fps comparisons. Everything is averaged over rendered frames; perStep divides by updateMain
   // calls, which is the figure that matters for a 60 fps target (at 30 fps GTP runs 2 steps/frame).
-  var BP = { acc: null, worst: null };
+  var BP = { acc: null, worst: null, max: null };
   function blankBreakdown() {
     return { tick: 0, logic: 0, build: 0, render: 0, main: 0, managers: 0, sceneMap: 0,
-      spriteset: 0, gameMap: 0, overlay: 0, input: 0, audio: 0, video: 0, steps: 0 };
+      spriteset: 0, gameMap: 0, overlay: 0, input: 0, audio: 0, video: 0, steps: 0,
+      snap: 0, snapBg: 0, mapTerminate: 0, mapCreate: 0, menuCreate: 0, menuStart: 0,
+      optionsCreate: 0 };
   }
   // Numeric counters exposed by the fast-path patches (OmoriPerformance, OmoriPerf.*), sampled
   // once per measurement window and divided by rendered frames.
@@ -376,7 +378,16 @@
     owner[name] = function () {
       var t = performance.now();
       try { return original.apply(this, arguments); }
-      finally { if (BP.acc) BP.acc[key] += performance.now() - t; }
+      finally {
+        if (BP.acc) {
+          var elapsed = performance.now() - t;
+          BP.acc[key] += elapsed;
+          if (!BP.max || elapsed > (BP.max[key] || 0)) {
+            BP.max = BP.max || {};
+            BP.max[key] = elapsed;
+          }
+        }
+      }
     };
   }
   function installBreakdown() {
@@ -393,6 +404,20 @@
     probe(Scene_Map.prototype, 'update', 'sceneMap');
     probe(Spriteset_Map.prototype, 'update', 'spriteset');
     probe(Game_Map.prototype, 'update', 'gameMap');
+    // Scene transitions: the menu background snapshot renders the whole map a second time
+    // (Scene_Map.terminate -> snapForBackground -> SceneManager.snap), and a scene create runs
+    // inside one tick. The max is what attributes a single open hitch.
+    probe(SceneManager, 'snapForBackground', 'snapBg');
+    probe(SceneManager, 'snap', 'snap');
+    probe(Scene_Map.prototype, 'terminate', 'mapTerminate');
+    probe(Scene_Map.prototype, 'create', 'mapCreate');
+    if (typeof Scene_Menu === 'function') {
+      probe(Scene_Menu.prototype, 'create', 'menuCreate');
+      probe(Scene_Menu.prototype, 'start', 'menuStart');
+    }
+    if (typeof Scene_OmoMenuOptions === 'function') {
+      probe(Scene_OmoMenuOptions.prototype, 'create', 'optionsCreate');
+    }
     if (typeof globalThis.__pmjsRender === 'function') probe(globalThis, '__pmjsRender', 'render');
     // The tick is wrapped separately: the window average hides a single 300-650 ms menu-open
     // frame, so keep the bucket split of the slowest tick in the window. A scene open runs its
@@ -514,7 +539,7 @@
 
   // fps and frame-time percentiles over one window, sampled per rendered frame.
   function measure(ms) {
-    if (BREAKDOWN) { installBreakdown(); BP.acc = blankBreakdown(); BP.worst = null; }
+    if (BREAKDOWN) { installBreakdown(); BP.acc = blankBreakdown(); BP.worst = null; BP.max = null; }
     installStepCounter();
     var counters0 = counterSnapshot();
     var steps0 = logicSteps;
@@ -544,6 +569,12 @@
             out[key] = round(draws.reduce(function (a, d) { return a + d[k]; }, 0) / draws.length);
             return out;
           }, {}) : null,
+          // Worst single frame per native cost, so a first-open upload/present stall is not
+          // averaged into the window.
+          nativeMax: draws.length ? NATIVE_COSTS.reduce(function (out, key, k) {
+            out[key] = round(draws.reduce(function (a, d) { return Math.max(a, Number(d[k]) || 0); }, 0));
+            return out;
+          }, {}) : null,
           breakdown: b ? {
             frames: frames,
             steps: b.steps,
@@ -558,14 +589,27 @@
               gameMap: round(BP.worst.gameMap), overlay: round(BP.worst.overlay),
               input: round(BP.worst.input), audio: round(BP.worst.audio),
               video: round(BP.worst.video), steps: BP.worst.steps,
-              other: round(BP.worst.tick - BP.worst.logic - BP.worst.build - BP.worst.render)
+              other: round(BP.worst.tick - BP.worst.logic - BP.worst.build - BP.worst.render),
+              snap: round(BP.worst.snap || 0), snapBg: round(BP.worst.snapBg || 0),
+              mapTerminate: round(BP.worst.mapTerminate || 0), mapCreate: round(BP.worst.mapCreate || 0),
+              menuCreate: round(BP.worst.menuCreate || 0), menuStart: round(BP.worst.menuStart || 0),
+              optionsCreate: round(BP.worst.optionsCreate || 0)
             } : null,
+            // Worst single call of each bucket in the window; unlike the average, this names the
+            // one 300-1500 ms open/close cost.
+            max: BP.max ? Object.keys(BP.max).reduce(function (out, key) {
+              out[key] = round(BP.max[key]);
+              return out;
+            }, {}) : null,
             avgFrame: round(elapsed / Math.max(1, frames)),
             ms: {
               tick: avg(b.tick), logic: avg(b.logic), build: avg(b.build), render: avg(b.render),
               draw: round(drawAvg), main: avg(b.main), managers: avg(b.managers),
               sceneMap: avg(b.sceneMap), spriteset: avg(b.spriteset), gameMap: avg(b.gameMap),
               overlay: avg(b.overlay), input: avg(b.input), audio: avg(b.audio), video: avg(b.video),
+              snap: avg(b.snap), snapBg: avg(b.snapBg), mapTerminate: avg(b.mapTerminate),
+              mapCreate: avg(b.mapCreate), menuCreate: avg(b.menuCreate), menuStart: avg(b.menuStart),
+              optionsCreate: avg(b.optionsCreate),
               // Frame time not inside the measured sync buckets: ticker/scheduler plumbing, swap,
               // input polling and any idle wait.
               other: round(elapsed / Math.max(1, frames) - avg(b.logic) - avg(b.build) - avg(b.render) - drawAvg)
