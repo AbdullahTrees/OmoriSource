@@ -673,6 +673,51 @@
     throw new Error('commandOptions missing on ' + sceneName());
   }
 
+  // Scripted directional input for the move phases. A real player holding a direction makes
+  // Window_Selectable move the cursor through Input.isRepeated; pulses are counted in logic
+  // steps, not frames, so the same script covers a 1-step and a 2-step frame. Only directions
+  // are scripted: changing an option value would write the player's configuration.
+  var UI = { installed: false, step: 0, down: {}, danceKeys: null, interval: 10, max: 0, count: 0, index: 0, nextStep: 0 };
+  function installUiInput() {
+    if (UI.installed) return;
+    UI.installed = true;
+    var updateScene = SceneManager.updateScene;
+    SceneManager.updateScene = function () {
+      UI.step++;
+      if (UI.danceKeys && UI.count < UI.max && UI.step >= UI.nextStep) {
+        var key = UI.danceKeys[UI.index % UI.danceKeys.length];
+        UI.down[key] = { start: UI.step, end: UI.step + 1 };
+        UI.index++;
+        UI.count++;
+        UI.nextStep = UI.step + UI.interval;
+      }
+      return updateScene.apply(this, arguments);
+    };
+    function virtual(key, kind) {
+      var down = UI.down[key];
+      if (!down) return false;
+      if (kind === 'triggered') return UI.step === down.start;
+      return UI.step >= down.start && UI.step < down.end;
+    }
+    var pressed = Input.isPressed, triggered = Input.isTriggered, repeated = Input.isRepeated;
+    Input.isPressed = function (key) { return virtual(key, 'pressed') || pressed.apply(this, arguments); };
+    Input.isTriggered = function (key) { return virtual(key, 'triggered') || triggered.apply(this, arguments); };
+    Input.isRepeated = function (key) { return virtual(key, 'pressed') || repeated.apply(this, arguments); };
+  }
+  function dance(keys, interval, max) {
+    installUiInput();
+    UI.danceKeys = keys;
+    UI.interval = interval;
+    UI.max = max;
+    UI.count = 0;
+    UI.index = 0;
+    UI.nextStep = UI.step + interval;
+  }
+  function danceStop() {
+    UI.danceKeys = null;
+    UI.down = {};
+  }
+
   async function uiSequence(room) {
     var out = { loadMs: null };
     out.arrived = await goTo(room);
@@ -686,6 +731,11 @@
     out.menu = await uiMeasure('ui-menu', MEASURE_MS);
     if (INVENTORY) log({ inventory: 'ui-menu', scene: inventory() });
     if (env('OMORI_TEST_CENSUS') === '1') log({ census: 'ui-menu', scene: census() });
+    // Cursor across the command row: the cursor-rect sprite and the command window redraw were
+    // measurable only while a key moves; a still menu does not pay them.
+    dance(['right', 'right', 'left', 'left'], 10, 24);
+    out.menuMove = await uiMeasure('ui-menu-move', MEASURE_MS);
+    danceStop();
 
     // Options is entered through the menu command: it transfers the menu's command/status
     // windows, so pushing the scene directly would not be the real construction path.
@@ -695,6 +745,11 @@
     out.options = await uiMeasure('ui-options', MEASURE_MS);
     if (INVENTORY) log({ inventory: 'ui-options', scene: inventory() });
     if (env('OMORI_TEST_CENSUS') === '1') log({ census: 'ui-options', scene: census() });
+    // Switching categories shows/hides whole option windows, the heaviest menu animation. Only
+    // up/down: left/right edits a value and writes the player's configuration.
+    dance(['down', 'down', 'up', 'up'], 10, 24);
+    out.optionsMove = await uiMeasure('ui-options-move', MEASURE_MS);
+    danceStop();
 
     // Back to the menu, then to the map. pop() reconstructs the scene: the map's return cost is
     // the menu-close cost plus Scene_Map.create, which is what the player sees after closing.
