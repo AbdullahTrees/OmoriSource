@@ -149,12 +149,23 @@ assumed.
 
 ## 8. Open candidates (rationale before implementation)
 
-- **YED child sort (walking).** `_sortChildren` costs 1.10 ms/frame walking, 0.99 of it in
-  `_compareChildOrder`'s `z`/`y`/`priority` reads. V8 already sorts with TimSort, so another
-  algorithm will not help; a precheck using adjacent comparator calls costs the same as TimSort's
-  sorted-run scan. The viable change is to extract each child's sort keys once per frame, sort
-  indices by those numbers (stable), and reorder `children`, avoiding repeated getter reads; it
-  must reproduce the exact comparator/stability and pin the YED comparator. Not implemented.
+- **YED child sort (walking and standing).** `_sortChildren` costs 1.10-1.21 ms/frame
+  inclusive in the walking and standing profiles, 0.99-1.03 of it in `_compareChildOrder`'s
+  `z`/`y`/`priority` reads over 506 children. Extracting each child's four keys once and
+  sorting index records with the exact comparator (including the original-index tiebreak, so
+  stability is reproduced) was **neutral** in two device A/Bs, in both an object-record and an
+  allocation-free typed-array version: standing build 8.4 vs 8.7 ms and walking build 10.8 vs
+  10.9 ms, with fps inside noise. The reason is arithmetic: TimSort over a nearly sorted 506
+  array makes about one comparison per child, so the stock comparator's getter reads are the
+  same order as reading all four keys once; the profile's accessor cost is inflated by
+  sampling. Do not retry key extraction without a mechanism that avoids reading unchanged keys
+  (for example knowing which sprites moved).
+- **Standing frame composition (map 92, fast boot, standing profile, ~527 frames/10 s):**
+  tick 14.44 ms (renderScene/build **8.32**, updateMain/logic **6.07**), renderFrame 0.57
+  (native 0.50), swapFrame **2.54** (native, `SDL_GL_SwapWindow`), program 0.26. The swap is
+  the largest single optimizable item after build; uncapping the swap interval (0) changed
+  standing 55.4 -> 56.9 fps, so the wait is not the frame limiter but hiding it on a render
+  thread would still overlap ~2.5 ms.
 - **Stock ShaderTilemap pan spikes (earlier hypothesis, disproved).** The walking profile shows
   `_paintAllTiles`/`_paintTiles` at 0.00 ms: map 92 uses YED's retained `TiledTilemap` (its
   `_compareChildOrder` is in the profile), so the stock window repaint is not the pan cost.
