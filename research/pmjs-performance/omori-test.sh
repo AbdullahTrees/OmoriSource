@@ -1,6 +1,6 @@
 #!/bin/sh
 # OMORI on PMJS: test runner for a muOS handheld. Runs on the device:
-#   sh omori-test.sh <startup|perf|room|verify|menus> [options]
+#   sh omori-test.sh <startup|perf|room|verify|menus|soak> [options]
 #
 #   startup   launch to the title screen and quit: startup time, catalog hit/miss, heap/RSS (~25 s)
 #   perf      fixed set of heavy maps, fps and frame times per map (~1.5-2 min)
@@ -9,6 +9,8 @@
 #   menus     pause menu -> cursor movement -> options -> category and item cursor movement ->
 #             back to map -> reopen -> textbox, one measurement per phase, including the
 #             open/close tick (slowest-tick breakdown) (~3 min)
+#   soak      repeated menu open/close with JS/native/system memory samples per cycle,
+#             toggling OmoriPerf.menuBackground between cycles (~1 min)
 #
 # Options:
 #   --maps LIST            perf/verify maps, "id" or "id:x:y", comma-separated
@@ -44,7 +46,7 @@ GAMEDIR=${OMORI_TEST_GAMEDIR:-/mnt/mmc/ports/omori-pmjs2}
 DRIVER=$HERE/omori-test.js
 
 MODE=${1:-}; [ $# -gt 0 ] && shift
-case "$MODE" in startup|perf|room|verify|menus) ;; *) sed -n '2,27p' "$0"; exit 2;; esac
+case "$MODE" in startup|perf|room|verify|menus|soak) ;; *) sed -n '2,27p' "$0"; exit 2;; esac
 MAPS= ROOM= WALK= SWEEP= SETTLE= MEASURE= PATCH= SHOTS= PROFILE= CENSUS= PAUSE=1 TIMEOUT=300 VARIANTS= BREAKDOWN= DISABLE= INVENTORY=
 while [ $# -gt 0 ]; do
   case "$1" in

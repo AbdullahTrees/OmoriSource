@@ -899,6 +899,7 @@
     try {
       var module = root.OmoriPerf && OmoriPerf.menuBackground;
       var trim = root.OmoriPerf && OmoriPerf.memoryTrim;
+      var unload = root.OmoriPerf && OmoriPerf.menuUnload;
       return {
         background: module ? { installed: !!module.installed, enabled: !!module.enabled,
           disabled: !!module.disabled, blurred: module.blurred, removed: module.filtersRemoved,
@@ -908,7 +909,12 @@
           disabled: !!trim.disabled, gcCalls: trim.gcCalls,
           gcMs: Math.round(trim.gcMs * 10) / 10, gcMaxMs: Math.round(trim.gcMaxMs * 10) / 10,
           lastAvailableMB: trim.lastAvailableMB, skippedNoPressure: trim.skippedNoPressure,
-          skippedDebounce: trim.skippedDebounce, errors: (trim.errors || []).length } : null
+          skippedDebounce: trim.skippedDebounce, errors: (trim.errors || []).length } : null,
+        menuUnload: unload ? { installed: !!unload.installed, enabled: !!unload.enabled,
+          disabled: !!unload.disabled, windows: unload.windows, bitmaps: unload.bitmaps,
+          bytes: unload.bytes, releaseMs: Math.round(unload.releaseMs * 10) / 10,
+          releaseMaxMs: Math.round(unload.releaseMaxMs * 10) / 10,
+          errors: (unload.errors || []).length } : null
       };
     } catch (_) { return null; }
   }
