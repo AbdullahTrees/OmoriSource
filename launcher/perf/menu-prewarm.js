@@ -4,18 +4,20 @@
 // NW.js: evaluated before main.js, installed on load). `OMORI_PERF_DISABLE=menuPrewarm` turns it
 // off; `OmoriPerf.menuPrewarm.enabled = false` does it at runtime.
 //
-// The first menu open in a session costs ~0.65-0.75 s because the entire scene transition,
-// window construction and first render happen in one tick, and that first tick also pays the
-// one-time GLSL compile/link for the menu background blur and window programs, V8 compilation
-// of the menu path and the first freetype glyph layouts. A measured open/close before the real
-// one cuts the following open from ~780 ms to ~170 ms.
+// The first menu open in a session costs ~0.65-0.78 s because the scene transition, window
+// construction and first render share one tick and pay the one-time GLSL compile/link for the
+// menu blur and window programs, V8 compilation of the menu path and the first glyph layouts.
 //
-// This module builds the same scene graph once at the first map start -- before the player can
-// see or open the menu -- renders it to an offscreen render texture (same native submit, same
-// filters, no screen pixels change), then destroys the throwaway scene. The menu and options
-// images it requests stay in ImageManager; the compressed cache state is what the real open
-// reuses. It runs once per session, synchronously inside Scene_Map.start, so the cost lands on
-// the map's loading/black frame instead of on the first menu open.
+// This builds the menu and options scene graphs once at the first map start, before the player
+// can open the menu, then renders them to an offscreen render texture (same native submit and
+// filters; no screen pixels change) and destroys the throwaway scenes.
+//
+// The earlier version called start()/update() on the throwaway menu. That let the player's live
+// input run menu commands at map load and corrupt events/config, so this version is deliberately
+// inert: no start(), no update(), every created window is deactivated immediately, and the
+// render is deferred until ImageManager.isReady() (or a bounded frame cap) so the menu atlases,
+// not just the code paths, are warm. SceneManager._nextScene and the scene stack are never
+// touched; the throwaway scenes never enter the live scene tree.
 (function () {
   'use strict';
   var root = typeof globalThis !== 'undefined' ? globalThis : window;
@@ -27,12 +29,20 @@
     return typeof process !== 'undefined' && process.env ? process.env[name] : undefined;
   }
 
-  var stats = { menuPrewarm: { installed: false, enabled: true, disabled: false,
-    prewarmed: false, menuMs: 0, optionsMs: 0, totalMs: 0, errors: [], refused: null } };
+  var stats = { menuPrewarm: {
+    installed: false, enabled: true, disabled: false,
+    attempted: false, completed: false, ready: false, usedPlaceholder: false,
+    renderMenu: false, renderOptions: false, framesWaited: 0,
+    menuMs: 0, optionsMs: 0, renderMs: 0, totalMs: 0,
+    errors: [], refused: null
+  } };
   root.OmoriPerf = root.OmoriPerf || {};
   root.OmoriPerf.menuPrewarm = stats.menuPrewarm;
 
-  var installed = false, fired = false;
+  // At most two seconds of map frames (60 Hz) before rendering regardless of image readiness.
+  var MAX_WAIT_FRAMES = 120;
+  var installed = false, fired = false, pending = false;
+  var menu = null, options = null, savedBackground = null, startedAt = 0;
 
   function wasDisabled(id) {
     var list = String(env('OMORI_PERF_DISABLE') || '').split(',');
@@ -51,67 +61,101 @@
     return stats.menuPrewarm.enabled && !stats.menuPrewarm.disabled;
   }
 
+  function deactivate(win) {
+    try { if (win && typeof win.deactivate === 'function') win.deactivate(); }
+    catch (error) { /* a throwaway window with no handlers */ }
+  }
+
   function renderOffscreen(scene) {
-    if (!root.PIXI || !PIXI.RenderTexture || !Graphics._renderer ||
+    if (!scene || !root.PIXI || !PIXI.RenderTexture || !Graphics._renderer ||
         typeof Graphics._renderer.render !== 'function') return false;
-    var texture = PIXI.RenderTexture.create(Graphics.width, Graphics.height);
+    var texture = null;
     try {
+      texture = PIXI.RenderTexture.create(Graphics.width, Graphics.height);
       Graphics._renderer.render(scene, texture);
       return true;
+    } catch (error) {
+      stats.menuPrewarm.errors.push('render:' + String(error && error.message || error));
+      return false;
     } finally {
-      try { texture.destroy(true); } catch (error) { /* renderer owns it */ }
+      if (texture) try { texture.destroy(true); } catch (error) { /* renderer owns it */ }
     }
   }
 
   function disposeScene(scene) {
     if (!scene) return;
-    // No texture/baseTexture flags: these window sprites reference shared windowskin and font
-    // textures, and destroying them would affect the live menu. The throwaway scene's own
-    // canvases are reclaimed by the engine's finalization path.
+    // No texture flags: these window sprites reference shared windowskin/font textures.
     try { scene.destroy({ children: true }); }
     catch (error) { stats.menuPrewarm.errors.push('dispose:' + String(error && error.message || error)); }
   }
 
-  function prewarm() {
-    var started = performance.now();
-    var savedBackground = SceneManager._backgroundBitmap;
-    var menu = null, options = null;
-    try {
-      if (!savedBackground) SceneManager._backgroundBitmap = new Bitmap(1, 1);
-      menu = new Scene_Menu();
-      var menuStarted = performance.now();
-      menu.create();
-      try { menu.start(); } catch (error) { stats.menuPrewarm.errors.push('menuStart:' + String(error && error.message || error)); }
-      try { menu.update(); } catch (error) { /* the render warms the rest */ }
-      renderOffscreen(menu);
-      stats.menuPrewarm.menuMs = Math.round(performance.now() - menuStarted);
+  function finish() {
+    pending = false;
+    disposeScene(options);
+    disposeScene(menu);
+    options = null;
+    menu = null;
+    SceneManager._backgroundBitmap = savedBackground;
+    savedBackground = null;
+    stats.menuPrewarm.completed = true;
+    stats.menuPrewarm.totalMs = Math.round(performance.now() - startedAt);
+    console.log('[omori-perf] menu prewarm ' + stats.menuPrewarm.totalMs + ' ms' +
+      ' ready=' + stats.menuPrewarm.ready + ' frames=' + stats.menuPrewarm.framesWaited +
+      ' render=' + stats.menuPrewarm.renderMenu + '/' + stats.menuPrewarm.renderOptions +
+      (stats.menuPrewarm.errors.length ? ' errors=' + stats.menuPrewarm.errors.join(';') : ''));
+  }
 
-      if (typeof Scene_OmoMenuOptions === 'function' && menu._commandWindow) {
-        var optionsStarted = performance.now();
-        try {
-          options = new Scene_OmoMenuOptions();
-          options.setCommandWindow(menu._commandWindow);
-          options.setStatusWindow(menu._statusWindow);
-          options.create();
-          try { options.start(); } catch (error) { stats.menuPrewarm.errors.push('optionsStart:' + String(error && error.message || error)); }
-          try { options.update(); } catch (error) { /* render warms the rest */ }
-          renderOffscreen(options);
-        } catch (error) {
-          stats.menuPrewarm.errors.push('options:' + String(error && error.message || error));
-        }
-        stats.menuPrewarm.optionsMs = Math.round(performance.now() - optionsStarted);
-      }
+  function tryFinish() {
+    if (!pending) return;
+    stats.menuPrewarm.framesWaited++;
+    var ready = true;
+    try { if (root.ImageManager && typeof ImageManager.isReady === 'function') ready = !!ImageManager.isReady(); }
+    catch (error) { ready = true; }
+    if (!ready && stats.menuPrewarm.framesWaited < MAX_WAIT_FRAMES) return;
+    stats.menuPrewarm.ready = ready;
+    var renderStarted = performance.now();
+    stats.menuPrewarm.renderMenu = renderOffscreen(menu);
+    if (options) stats.menuPrewarm.renderOptions = renderOffscreen(options);
+    stats.menuPrewarm.renderMs = Math.round(performance.now() - renderStarted);
+    finish();
+  }
+
+  function startPrewarm() {
+    stats.menuPrewarm.attempted = true;
+    startedAt = performance.now();
+    savedBackground = SceneManager._backgroundBitmap;
+    if (!savedBackground) {
+      SceneManager._backgroundBitmap = new Bitmap(Graphics.width, Graphics.height);
+      stats.menuPrewarm.usedPlaceholder = true;
+    }
+    try {
+      var menuStarted = performance.now();
+      menu = new Scene_Menu();
+      menu.create();
+      deactivate(menu._commandWindow);
+      deactivate(menu._statusWindow);
+      stats.menuPrewarm.menuMs = Math.round(performance.now() - menuStarted);
     } catch (error) {
       stats.menuPrewarm.errors.push('menu:' + String(error && error.message || error));
-    } finally {
-      disposeScene(options);
-      disposeScene(menu);
-      SceneManager._backgroundBitmap = savedBackground;
-      stats.menuPrewarm.totalMs = Math.round(performance.now() - started);
-      stats.menuPrewarm.prewarmed = true;
-      console.log('[omori-perf] menu prewarm ' + stats.menuPrewarm.totalMs + ' ms' +
-        (stats.menuPrewarm.errors.length ? ' errors=' + stats.menuPrewarm.errors.join(';') : ''));
     }
+    if (typeof Scene_OmoMenuOptions === 'function' && menu) {
+      try {
+        var optionsStarted = performance.now();
+        options = new Scene_OmoMenuOptions();
+        options.setCommandWindow(menu._commandWindow);
+        options.setStatusWindow(menu._statusWindow);
+        options.create();
+        var windows = options.optionWindows ? options.optionWindows() : [];
+        for (var i = 0; i < windows.length; i++) deactivate(windows[i]);
+        deactivate(options._optionCategoriesWindow);
+        deactivate(options._commandWindow);
+        stats.menuPrewarm.optionsMs = Math.round(performance.now() - optionsStarted);
+      } catch (error) {
+        stats.menuPrewarm.errors.push('options:' + String(error && error.message || error));
+        options = null;
+      }
+    }
+    pending = true;
   }
 
   function install() {
@@ -128,16 +172,28 @@
     }
     installed = true;
     var start = Scene_Map.prototype.start;
-    if (typeof start !== 'function') {
-      refuse('Scene_Map.start missing');
+    var update = Scene_Map.prototype.update;
+    if (typeof start !== 'function' || typeof update !== 'function') {
+      refuse('Scene_Map lifecycle methods missing');
       return;
     }
     Scene_Map.prototype.start = function () {
       var result = start.apply(this, arguments);
       if (!fired && active()) {
         fired = true;
-        try { prewarm(); } catch (error) {
-          stats.menuPrewarm.errors.push('outer:' + String(error && error.message || error));
+        try { startPrewarm(); } catch (error) {
+          stats.menuPrewarm.errors.push('start:' + String(error && error.message || error));
+          pending = false;
+        }
+      }
+      return result;
+    };
+    Scene_Map.prototype.update = function () {
+      var result = update.apply(this, arguments);
+      if (pending) {
+        try { tryFinish(); } catch (error) {
+          stats.menuPrewarm.errors.push('update:' + String(error && error.message || error));
+          finish();
         }
       }
       return result;
@@ -146,7 +202,7 @@
     console.log('[omori-perf] menu prewarm installed');
   }
 
-  root.OmoriPerfMenuPrewarm = { stats: stats, installForTest: install, prewarmForTest: prewarm };
+  root.OmoriPerfMenuPrewarm = { stats: stats, installForTest: install };
   if (root.PMJS && PMJS.phases && typeof PMJS.phases.on === 'function') {
     root.PMJS.phases.on('afterPlugins', 'omori.menu-prewarm', install);
   } else if (typeof window !== 'undefined') {
