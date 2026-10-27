@@ -5,7 +5,7 @@
 // "[omori-test] {json}" line per result, then quits. The game code it drives is the same in
 // both runtimes; runtime differences are contained in env(), require(), quitGame() and capture().
 // Env variables (set by drivers):
-//   OMORI_TEST_MODE     startup | perf | room | verify | menus | soak
+//   OMORI_TEST_MODE     startup | perf | room | verify | menus | soak | text
 //   OMORI_TEST_MAPS     perf/verify maps, "id" or "id:x:y" comma-separated
 //                       (default 14:45:44,111:15:25,87:27:27: Player's house, Rain Town, White Space)
 //   OMORI_TEST_ROOM     room mode map, "id:x:y"
@@ -104,6 +104,70 @@
   function memory() {
     var v8 = require('v8'), usage = require('process').memoryUsage();
     return { heapMB: mb(v8.getHeapStatistics().used_heap_size), rssMB: mb(usage.rss) };
+  }
+  // RSS composition (kernel 4.9 has no smaps_rollup): anonymous vs file-backed, heap/stack, and the
+  // largest library mappings. Answers "where does the memory go" without a native allocator hook.
+  function smapsSummary() {
+    try {
+      var text = require('fs').readFileSync('/proc/self/smaps', 'utf8');
+      var lines = text.split('\n');
+      var anon = 0, file = 0, heap = 0, stack = 0, byName = {};
+      var current = null, currentRss = 0;
+      function flush() {
+        if (current === null) return;
+        if (current === '[heap]') heap += currentRss;
+        else if (current === '[stack]') stack += currentRss;
+        else if (!current || current.charAt(0) === '[') anon += currentRss;
+        else { file += currentRss; byName[current] = (byName[current] || 0) + currentRss; }
+        current = null; currentRss = 0;
+      }
+      for (var i = 0; i < lines.length; i++) {
+        if (/^[0-9a-f]+-[0-9a-f]+ /.test(lines[i])) {
+          flush();
+          var parts = lines[i].split(/\s+/);
+          current = parts.length > 5 ? parts.slice(5).join(' ') : '';
+        } else {
+          var m = /^Rss:\s+(\d+) kB/.exec(lines[i]);
+          if (m) currentRss = Number(m[1]) * 1024;
+        }
+      }
+      flush();
+      var top = Object.keys(byName).map(function (k) { return [k, mb(byName[k])]; })
+        .sort(function (a, b) { return b[1] - a[1]; }).slice(0, 6);
+      return { anonMB: mb(anon), fileMB: mb(file), heapMB: mb(heap), stackMB: mb(stack), topFiles: top };
+    } catch (_) { return null; }
+  }
+  // PMJS runs a supervisor plus the game worker, both Node: total device cost is the sum.
+  function nodeProcesses() {
+    try {
+      var fs = require('fs');
+      var out = [];
+      var pids = fs.readdirSync('/proc').filter(function (n) { return /^\d+$/.test(n); });
+      for (var i = 0; i < pids.length; i++) {
+        try {
+          var cmd = fs.readFileSync('/proc/' + pids[i] + '/cmdline', 'utf8').replace(/\0/g, ' ').trim();
+          if (!/node|pmjs/.test(cmd)) continue;
+          var st = fs.readFileSync('/proc/' + pids[i] + '/status', 'utf8');
+          var m = /^VmRSS:\s+(\d+) kB/m.exec(st);
+          out.push({ pid: Number(pids[i]), rssMB: m ? Math.round(Number(m[1]) / 1024) : 0,
+            cmd: cmd.slice(0, 120) });
+        } catch (_) {}
+      }
+      return out;
+    } catch (_) { return null; }
+  }
+  function memoryDetailed() {
+    var out = memory();
+    try {
+      var usage = require('process').memoryUsage();
+      out.v8 = { heapTotalMB: mb(usage.heapTotal), externalMB: mb(usage.external),
+        arrayBuffersMB: mb(usage.arrayBuffers || 0), rssMB: mb(usage.rss) };
+    } catch (_) {}
+    out.smaps = smapsSummary();
+    out.processes = nodeProcesses();
+    out.canvas = typeof canvasMemory === 'function' ? canvasMemory() : null;
+    out.images = imageStats();
+    return out;
   }
   // Prepared-image use: hits without a full decode prove the cache is active, and the fallback
   // reasons show why an image used the original instead.
@@ -853,6 +917,261 @@
     return out;
   }
 
+  // ---------------------------------------------------------------------- load mode
+  // Measure a real save file exactly as the player left it (OMORI_TEST_LOAD_SAVE, comma-separated
+  // ids matching fileN.rpgsave). Per save: the saved position first, then each --maps spot (goTo),
+  // then a new game at the same spots, so map state is separated from position and machine drift in
+  // one run. Run with PMJS_SAVE_ROOT pointed at a COPY of the saves directory: the game may write
+  // (config, cutscene flags) and the live saves are never the ones being pointed at.
+  function mapSnapshot() {
+    var sp = SceneManager._scene && SceneManager._scene._spriteset;
+    var running = 0, movers = 0, visible = 0, commonActive = 0, pictures = 0;
+    try {
+      running = $gameMap._events.filter(function (e) {
+        return e && e._interpreter && e._interpreter.isRunning();
+      }).length;
+    } catch (_) {}
+    // The census above counts objects, which is identical across save states on map 92; these
+    // count what they DO per frame (page-selected move routes, parallel common events, pictures),
+    // which is where save-gated state shows up.
+    try {
+      $gameMap.events().forEach(function (e) {
+        if (e._characterName) visible++;
+        if (e._moveType) movers++;
+      });
+    } catch (_) {}
+    try {
+      commonActive = ($gameMap._commonEvents || []).filter(function (c) {
+        return c && c.isActive && c.isActive();
+      }).length;
+    } catch (_) {}
+    try {
+      pictures = $gameScreen.pictures().filter(Boolean).length;
+    } catch (_) {}
+    return { map: $gameMap.mapId(), x: $gamePlayer.x, y: $gamePlayer.y,
+      events: $gameMap._events.length, runningEvents: running,
+      movingEvents: movers, visibleEvents: visible,
+      commonEventsActive: commonActive, pictures: pictures,
+      characterSprites: sp && sp._characterSprites ? sp._characterSprites.length : 0,
+      tilemapChildren: sp && sp._tilemap ? sp._tilemap.children.length : 0,
+      messageOpen: typeof $gameMessage.isMessage === 'function' ? $gameMessage.isMessage() : null };
+  }
+  // Why the save's per-step update costs 2.6x a new game with identical object counts: time the
+  // SAME micro-work over event populations differing only in how they were built. (a) live events
+  // exactly as restored (120-127 own properties across 7 key orders), (b) clones rebuilt with one
+  // unified key insertion order, (c) object-literal factory output with the same key set (one
+  // fast-mode hidden class), (d) a small literal with just the fields the scan reads. The new-game
+  // phase adds (e) factory-constructed Game_Events at the same map (probe after the teleport).
+  // If (c)/(e) beat (a), the restore leaves objects V8 handles badly and rebuilding at load is the
+  // systemic fix; if all match, the cost is call volume and belongs to the callers. v1 result:
+  // (a)==(b) exactly (19/21 us scan, 92/93 us props) -- key ORDER is not it; (c)/(d) decide map
+  // vs key-count.
+  function shapeProbe(label) {
+    try {
+      var live = ($gameMap._events || []).filter(Boolean);
+      if (live.length < 10) return null;
+      var seen = {}, order = [];
+      live.forEach(function (e) {
+        Object.keys(e).forEach(function (k) { if (!seen[k]) { seen[k] = 1; order.push(k); } });
+      });
+      var clones = live.map(function (e) {
+        var o = Object.create(Object.getPrototypeOf(e));
+        for (var i = 0; i < order.length; i++) o[order[i]] = e[order[i]];
+        return o;
+      });
+      // Literal factory over the union key set: literals always get one fast-mode map, unlike
+      // incremental assignment which can normalize to dictionary mode at ~128 properties.
+      var litParts = [];
+      for (var i = 0; i < order.length; i++) {
+        var v = live[0][order[i]];
+        litParts.push(JSON.stringify(order[i]) + ':' +
+          (typeof v === 'number' ? v : v === true ? 'true' : v === false ? 'false' : '0'));
+      }
+      var makeLit = new Function('return {' + litParts.join(',') + '};');
+      var lits = [], smalls = [];
+      for (var j = 0; j < live.length; j++) {
+        lits.push(makeLit());
+        smalls.push({ _x: 0, _realX: 0, _pattern: 0, _animationCount: 0, _stopCount: 0,
+          _moveSpeed: 0, _direction: 0, _through: false, _walkAnime: false, _stepAnime: false,
+          _starting: false });
+      }
+      function scan(list) {
+        var s = 0;
+        for (var i = 0; i < list.length; i++) {
+          var ev = list[i];
+          if (ev && ev.isStarting()) s++;
+        }
+        return s;
+      }
+      // A property chase approximating what the per-character wrapper chains do each update.
+      function props(list) {
+        var s = 0;
+        for (var i = 0; i < list.length; i++) {
+          var e = list[i];
+          s += e._x + e._realX + e._pattern + e._animationCount + e._stopCount +
+               e._moveSpeed + e._direction + e._through + e._walkAnime + e._stepAnime;
+        }
+        return s;
+      }
+      function usPerCall(fn, list) {
+        for (var w = 0; w < 50; w++) fn(list);
+        var t0 = Date.now(), n = 0;
+        while (Date.now() - t0 < 300) { fn(list); n++; }
+        return Math.round((Date.now() - t0) * 1000 / n);
+      }
+      return { label: label, n: live.length, unionKeys: order.length,
+        liveKeys: Object.keys(live[0]).length,
+        scanLiveUs: usPerCall(scan, live), scanCloneUs: usPerCall(scan, clones),
+        propsLiveUs: usPerCall(props, live), propsCloneUs: usPerCall(props, clones),
+        propsLitUs: usPerCall(props, lits), propsSmallUs: usPerCall(props, smalls) };
+    } catch (e) {
+      return { label: label, error: String(e && e.stack || e).slice(0, 300) };
+    }
+  }
+  // Scene_Load.onLoadSuccess without the file-select scene: load, refresh map data, enter the map.
+  function loadSaveGame(saveId) {
+    try {
+      if (!DataManager.loadGame(saveId)) return false;
+      if (typeof DataManager.reloadMapIfUpdated === 'function') DataManager.reloadMapIfUpdated();
+      SceneManager.goto(Scene_Map);
+      if ($gameSystem && typeof $gameSystem.onAfterLoad === 'function') $gameSystem.onAfterLoad();
+      return true;
+    } catch (e) {
+      log({ loadError: String(e && e.stack || e).slice(0, 300) });
+      return false;
+    }
+  }
+  async function loadMeasure(label) {
+    await profileStart();
+    var w = await measure(MEASURE_MS);
+    w.label = label;
+    w.snapshot = mapSnapshot();
+    w.mem = memoryDetailed();
+    w.profile = await profileStop(label);
+    return w;
+  }
+  async function loadSweep() {
+    var ids = String(env('OMORI_TEST_LOAD_SAVE') || '2').split(',').map(Number).filter(Boolean);
+    var out = { saves: [], newGame: null, titleMem: memoryDetailed() };
+    for (var id of ids) {
+      var entry = { save: id };
+      if (!loadSaveGame(id)) { entry.failed = 'loadGame'; out.saves.push(entry); continue; }
+      await until(function () {
+        return SceneManager._scene instanceof Scene_Map && !SceneManager.isSceneChanging();
+      }, 60000);
+      entry.loaded = mapSnapshot();
+      if (env('OMORI_TEST_SHAPEPROBE') === '1') {
+        entry.shape = shapeProbe('save' + id);
+        log({ shapeProbe: entry.shape });
+      }
+      await wait(SETTLE_MS);
+      entry.windows = [await loadMeasure('save' + id + '-saved-spot')];
+      for (var place of MAPS) {
+        await goTo(place);
+        entry.windows.push(await loadMeasure('save' + id + '-' + place[0] + '-' + place[1] + '-' + place[2]));
+      }
+      out.saves.push(entry);
+    }
+    // Same as Scene_Title.commandNewGame: setupNewGame swaps the game objects under the
+    // running scene, so the scene must be re-entered or the old map's sprites stay standing
+    // over a blank $gameMap and the update loop freezes (fps 0).
+    DataManager.setupNewGame();
+    SceneManager.goto(Scene_Map);
+    await until(function () {
+      return SceneManager._scene instanceof Scene_Map && !SceneManager.isSceneChanging();
+    }, 60000);
+    await wait(SETTLE_MS);
+    out.newGame = { loaded: mapSnapshot(), windows: [] };
+    for (var freshPlace of MAPS) {
+      await goTo(freshPlace);
+      out.newGame.windows.push(await loadMeasure('new-' + freshPlace[0] + '-' + freshPlace[1] + '-' + freshPlace[2]));
+    }
+    // Probe AFTER the teleport: new-game events on map 92 are factory-constructed (the shape a
+    // rebuild-at-load fix would reproduce). Probing at the intro map sees <10 events and bails.
+    if (env('OMORI_TEST_SHAPEPROBE') === '1') {
+      out.newGame.shape = shapeProbe('new@' + $gameMap.mapId());
+      log({ shapeProbe: out.newGame.shape });
+    }
+    return out;
+  }
+
+  // ---------------------------------------------------------------------- text mode
+  // Textbox sweep: message windows carrying the escape-code effects the game's TDS Text
+  // Effects plugin provides (per-letter sine/shake/rainbow sprites) plus standard MV codes,
+  // measured per variant at sprite-heavy spots with a no-message baseline per spot. Two text
+  // lengths: short (typed in seconds, then held: the state a reader waits in) and long (still
+  // typing through the window). Letter effects keep animating while held, so a hold window
+  // measures the per-frame letter-sprite cost with every glyph on screen.
+  //   OMORI_TEST_MAPS   spots to sweep (default 92:21:11,92:27:16)
+  function repeat(text, times) {
+    var out = '';
+    for (var i = 0; i < times; i++) out += text;
+    return out;
+  }
+  var SENTENCE = 'The quick brown fox jumps over the lazy dog. ';
+
+  var TEXT_VARIANTS = [
+    // Short: typed quickly, then the window holds and waits for input.
+    { id: 'hold', len: 'short', text: function () { return repeat(SENTENCE, 2); } },
+    { id: 'name', len: 'short', face: true,
+      text: function () { return '\\n<OMORI> ' + repeat(SENTENCE, 2); } },
+    { id: 'hold-sinh', len: 'short',
+      text: function () { return '\\SINH[1] ' + repeat(SENTENCE, 2); } },
+    // Long: the typewriter is still running through the measurement.
+    { id: 'typing', len: 'long', text: function () { return repeat(SENTENCE, 10); } },
+    { id: 'sinh', len: 'long', text: function () { return '\\SINH[1] ' + repeat(SENTENCE, 10); } },
+    { id: 'sinv', len: 'long', text: function () { return '\\SINV[1] ' + repeat(SENTENCE, 10); } },
+    { id: 'quake', len: 'long', text: function () { return '\\QUAKE[1] ' + repeat(SENTENCE, 10); } },
+    { id: 'rainbow', len: 'long', text: function () { return '\\RAINBOW[1] ' + repeat(SENTENCE, 10); } },
+    { id: 'stack', len: 'long',
+      text: function () { return '\\SINH[1]\\SINV[1]\\RAINBOW[1] ' + repeat(SENTENCE, 10); } },
+    { id: 'color', len: 'long',
+      text: function () { return repeat('\\c[1]red \\c[2]green \\c[3]blue \\c[0]plain ', 10); } },
+    { id: 'icon', len: 'long', text: function () { return repeat('\\i[8]icon \\i[16]icon ', 18); } },
+    { id: 'pages', len: 'long', text: function () { return repeat(SENTENCE, 30); } }
+  ];
+
+  async function textSweep() {
+    var out = { places: [] };
+    for (var place of MAPS) {
+      var spot = { place: place.slice(), windows: [] };
+      spot.arrived = await goTo(place);
+      var where = place[0] + '-' + place[1] + '-' + place[2];
+      // Baseline: the same spot with no message on screen, so every variant's delta is readable.
+      var base = await uiMeasure('text-' + where + '-stand', MEASURE_MS);
+      spot.windows.push({ id: 'stand', fps: base.fps, ft: base.ft,
+        native: base.native, nativeMax: base.nativeMax });
+      for (var variant of TEXT_VARIANTS) {
+        $gameMessage.clear();
+        await wait(400);
+        if (variant.face) $gameMessage.setFaceImage('01_OMORI_BATTLE', 0);
+        var label = 'text-' + where + '-' + variant.id;
+        if (variant.len === 'short') {
+          // Open + typing, then the held state the reader waits in. 3000 ms covers the short
+          // text even at one character per frame at 25 fps (~90 frames).
+          var open = await uiMeasure(label + '-open', 2500, function () {
+            $gameMessage.add(variant.text());
+          }, 'message-add');
+          await wait(3000);
+          var hold = await uiMeasure(label + '-hold', MEASURE_MS);
+          spot.windows.push({ id: variant.id + '-open', fps: open.fps, ft: open.ft });
+          spot.windows.push({ id: variant.id + '-hold', fps: hold.fps, ft: hold.ft,
+            native: hold.native, nativeMax: hold.nativeMax });
+        } else {
+          var typing = await uiMeasure(label + '-typing', MEASURE_MS, function () {
+            $gameMessage.add(variant.text());
+          }, 'message-add');
+          spot.windows.push({ id: variant.id + '-typing', fps: typing.fps, ft: typing.ft,
+            native: typing.native, nativeMax: typing.nativeMax });
+        }
+        $gameMessage.clear();
+        await wait(250);
+      }
+      out.places.push(spot);
+    }
+    return out;
+  }
+
   // ---------------------------------------------------------------------- soak mode
   // Repeated menu open/close with memory samples at three points per cycle: the map before the
   // open, the open menu steady, and the map after the close. The port watchdog kills PMJS when
@@ -1276,10 +1595,15 @@
       log({ perfState: { installed: !!root.OmoriPerformance.installed,
         enabled: !!root.OmoriPerformance.enabled } });
     }
-    // Menus mode leaves input alone: an auto-confirmed message would close before the text
-    // animation could be measured.
-    if (MODE !== 'menus') installAutoConfirm();
+    // Menus, text and load modes leave input alone: an auto-confirmed message would close before
+    // the text animation could be measured, and load mode must not advance the save's own events.
+    if (MODE !== 'menus' && MODE !== 'text' && MODE !== 'load') installAutoConfirm();
     if (MODE === 'trace') resetSeed();
+    if (MODE === 'load') {
+      log({ mode: 'load', result: await loadSweep(),
+        perf: counterSnapshot(), mem: memoryDetailed(), imageStats: imageStats() });
+      return;
+    }
     DataManager.setupNewGame();
     if (MODE === 'trace') {
       var traceRoom = places(env('OMORI_TEST_ROOM') || '87:27:27')[0];
@@ -1347,6 +1671,11 @@
     if (MODE === 'menus') {
       var uiRoom = places(env('OMORI_TEST_ROOM') || '92:17:23')[0];
       log({ mode: 'menus', map: uiRoom[0], result: await uiSequence(uiRoom),
+        perf: counterSnapshot(), mem: memory(), imageStats: imageStats() });
+      return;
+    }
+    if (MODE === 'text') {
+      log({ mode: 'text', result: await textSweep(),
         perf: counterSnapshot(), mem: memory(), imageStats: imageStats() });
       return;
     }
