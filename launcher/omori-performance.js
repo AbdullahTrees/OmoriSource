@@ -34,8 +34,14 @@
   // Counters for measuring the patch: full updates and the two kinds of skipped update.
   // `enabled` can be cleared at runtime to compare against vanilla behaviour in one session.
   var stats = root.OmoriPerformance = { installed: false, enabled: true, full: 0, offscreen: 0, reflections: 0 };
-  // Off-screen margin in pixels, on top of twice the sprite's frame size.
-  var MARGIN = 96;
+  // Per-frame counts of why a sprite update took the full path (gate-fail reasons) — the
+  // offscreen counter alone cannot say which gate keeps a sprite on the expensive path.
+  stats.gate = { noPlain: 0, fresh: 0, kind: 0, busy: 0, label: 0, onscreen: 0 };
+  // Motion lead in pixels past the sprite's true extent. Walking is <= 6 px/frame and the GALV
+  // camera lerps a few px/frame, so a sprite takes several frames to cross the lead: it is on the
+  // full path (frame, bitmap, labels redone) before any of its pixels can appear. Bitmaps need no
+  // load lead — Aetherflow_PreloadEverything keeps the character sheets resident.
+  var LEAD = 32;
   // True while Spriteset_Map.update runs; plainView when the map is drawn unscaled and unshaken.
   var inSpriteset = false, plainView = false;
 
@@ -76,11 +82,14 @@
     if (typeof sprite.updateVisibility === 'function') sprite.updateVisibility();
   }
 
+  // True when no pixel of the sprite can be on screen. The sprite's pixels span
+  // [x-hw, x+hw] x [y-h, y] (Sprite_Character anchors at 0.5, 1); LEAD extends that rect.
   function offscreen(sprite, character) {
     var frame = sprite._frame, scale = Math.max(Math.abs(sprite.scale.x), Math.abs(sprite.scale.y), 1);
-    var m = MARGIN + 2 * Math.max(frame.width, frame.height) * scale;
+    var hw = frame.width * scale * 0.5, h = frame.height * scale;
     var x = character.screenX(), y = character.screenY();
-    return x < -m || y < -m || x > Graphics.width + m || y > Graphics.height + m;
+    return x + hw < -LEAD || x - hw > Graphics.width + LEAD ||
+           y < -LEAD || y - h > Graphics.height + LEAD;
   }
 
   var installTimer = null, installWaits = 0;
@@ -126,6 +135,14 @@
         skipEvent(this);
         stats.offscreen++;
         return;
+      }
+      if (stats.enabled && inSpriteset) {
+        if (!plainView) stats.gate.noPlain++;
+        else if (!this._omoriUpdated) stats.gate.fresh++;
+        else if (!(character instanceof Game_Event)) stats.gate.kind++;
+        else if (busy(this, character)) stats.gate.busy++;
+        else if (!labelAllowsSkip(this)) stats.gate.label++;
+        else stats.gate.onscreen++;                 // passed every gate but on screen
       }
       this._omoriUpdated = true;
       stats.full++;
