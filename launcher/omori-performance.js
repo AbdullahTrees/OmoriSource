@@ -37,11 +37,11 @@
   // Per-frame counts of why a sprite update took the full path (gate-fail reasons) — the
   // offscreen counter alone cannot say which gate keeps a sprite on the expensive path.
   stats.gate = { noPlain: 0, fresh: 0, kind: 0, busy: 0, label: 0, onscreen: 0 };
-  // Motion lead in pixels past the sprite's true extent. Walking is <= 6 px/frame and the GALV
-  // camera lerps a few px/frame, so a sprite takes several frames to cross the lead: it is on the
-  // full path (frame, bitmap, labels redone) before any of its pixels can appear. Bitmaps need no
-  // load lead — Aetherflow_PreloadEverything keeps the character sheets resident.
-  var LEAD = 32;
+  // No apron past the sprite's true extent: a sprite that crosses onto the screen takes the full
+  // update path the same frame (sprite updates run before rendering), so its frame and bitmap are
+  // ready exactly when its pixels can first appear. Bitmaps need no load lead —
+  // Aetherflow_PreloadEverything keeps the character sheets resident — and skipEvent keeps the
+  // position live, so no ghost can linger either.
   // True while Spriteset_Map.update runs; plainView when the map is drawn unscaled and unshaken.
   var inSpriteset = false, plainView = false;
 
@@ -83,13 +83,13 @@
   }
 
   // True when no pixel of the sprite can be on screen. The sprite's pixels span
-  // [x-hw, x+hw] x [y-h, y] (Sprite_Character anchors at 0.5, 1); LEAD extends that rect.
+  // [x-hw, x+hw] x [y-h, y] (Sprite_Character anchors at 0.5, 1).
   function offscreen(sprite, character) {
     var frame = sprite._frame, scale = Math.max(Math.abs(sprite.scale.x), Math.abs(sprite.scale.y), 1);
     var hw = frame.width * scale * 0.5, h = frame.height * scale;
     var x = character.screenX(), y = character.screenY();
-    return x + hw < -LEAD || x - hw > Graphics.width + LEAD ||
-           y < -LEAD || y - h > Graphics.height + LEAD;
+    return x + hw < 0 || x - hw > Graphics.width ||
+           y < 0 || y - h > Graphics.height;
   }
 
   var installTimer = null, installWaits = 0;
