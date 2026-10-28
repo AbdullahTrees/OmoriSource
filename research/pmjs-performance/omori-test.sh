@@ -11,6 +11,12 @@
 #             open/close tick (slowest-tick breakdown) (~3 min)
 #   soak      repeated menu open/close with JS/native/system memory samples per cycle,
 #             toggling OmoriPerf.menuBackground between cycles (~1 min)
+#   text      textbox sweep: message windows with TDS letter effects (SINH/SINV/QUAKE/RAINBOW),
+#             name box + face, colors, icons, multi-page, at --maps spots with a no-message
+#             baseline per spot (use --timeout 900 for two spots; ~6 min)
+#   load      real-save measurement: OMORI_TEST_LOAD_SAVE=ids (fileN.rpgsave) are loaded as the
+#             player left them; saved spot and --maps spots measured, then a new game at the same
+#             spots for a same-run A/B. Pass PMJS_SAVE_ROOT pointing at a COPY of the saves dir.
 #
 # Options:
 #   --maps LIST            perf/verify maps, "id" or "id:x:y", comma-separated
@@ -46,7 +52,7 @@ GAMEDIR=${OMORI_TEST_GAMEDIR:-/mnt/mmc/ports/omori-pmjs2}
 DRIVER=$HERE/omori-test.js
 
 MODE=${1:-}; [ $# -gt 0 ] && shift
-case "$MODE" in startup|perf|room|verify|menus|soak) ;; *) sed -n '2,27p' "$0"; exit 2;; esac
+case "$MODE" in startup|perf|room|verify|menus|soak|text|load) ;; *) sed -n '2,31p' "$0"; exit 2;; esac
 MAPS= ROOM= WALK= SWEEP= SETTLE= MEASURE= PATCH= SHOTS= PROFILE= CENSUS= PAUSE=1 TIMEOUT=300 VARIANTS= BREAKDOWN= DISABLE= INVENTORY=
 while [ $# -gt 0 ]; do
   case "$1" in
