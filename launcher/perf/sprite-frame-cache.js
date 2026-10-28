@@ -16,10 +16,12 @@
 //   half-body sync in updateHalfBodySprites, and setFrame. The body is a pure function of the
 //   sprite's bitmap (identity AND dimensions — a character sheet can finish loading between
 //   frames), the tile id, the character's live characterIndex(), pattern() and direction(), the
-//   bush depth, Omori BASE's single-frame flag, the sprite's blend colour and colour tone, and the
-//   map tile size. None of these are written by the body itself, so when every one of them is
-//   unchanged since the last run, re-running the body writes exactly the same frame it already
-//   set — the skip is value-identical. When anything changed, the body runs exactly as vanilla.
+//   character's Custom_Character_Rectangles custom-frame fields and EMF frame state, the bush
+//   depth, Omori BASE's single-frame flag, the sprite's blend colour, colour tone and blendMode
+//   (YEP_CoreEngine syncs it to the half-body sprites), and the map tile size. None of these are
+//   written by the body itself, so when every one of them is unchanged since the last run,
+//   re-running the body writes exactly the same frame it already set — the skip is
+//   value-identical. When anything changed, the body runs exactly as vanilla.
 //
 //   The check compares LIVE reads (ch.pattern()/direction()/characterIndex()/isSingleFrame() go
 //   through whatever composition the plugins installed) against stamps recorded on the last run —
@@ -37,19 +39,24 @@
 //   update bobble/input-icon/shadow adds, Liquid_EventIcons, YEP_EventMiniLabel) is untouched and
 //   keeps running every frame as in vanilla.
 //
-// Pins (sha256 over the LF-normalized Function.prototype.toString source):
+// Pins (sha256 over the LF-normalized Function.prototype.toString source). These are the
+// COMPOSED runtime tops, not the file chain: YEP_CoreEngine (plugins.js index 7) wraps
+// updateHalfBodySprites; Custom_Character_Rectangles (59) replaces the six pattern/block
+// helpers (its patternWidth capture chains through ExtraMovementFrames (55) to vanilla);
+// Omori BASE (111) wraps updateCharacterFrame. updateHalfBodySprites' digest is device-
+// validated (2026-10-28 refusal line reproduced it exactly).
 //
-//   updateFrame            (rpg_sprites.js)            f9fa3e9e43adcbeea4ed8a637aa167b3d9a6f19eb9b040005345dce9c8619f91
-//   updateTileFrame        (rpg_sprites.js)            37433297b83ed276333dc99a5aec8a20c950ad887a454d018a4cc8ac8140abdc
-//   updateCharacterFrame   (Omori BASE.js:4758 wrap)   61f013f3e685102f24712e68f58e322320f9d8eeff9a2829c9f892eca7385b61
-//   updateHalfBodySprites  (rpg_sprites.js)            47092631641a26aa9d3d7e9f80e1840b8f0fb9e12e6b2a3a454cb3788a16ff78
-//   createHalfBodySprites  (rpg_sprites.js)            3f127fe97cf23fd85ffdb6cc7443ee9273c9b95789c0aea09aee45abc9c6ff71
-//   characterBlockX        (rpg_sprites.js)            76d7c5af3b172bb03cb15aedf693673a32e4760c0c7a95a79bc420a5983317d1
-//   characterBlockY        (rpg_sprites.js)            20953a88f0212e8821f2ed3cc0e3557ecf2988c1082a7c3dbc6444f89cea6de6
-//   characterPatternX      (rpg_sprites.js)            d8367f4faa2dd88f43d512d35c9c2af9873798f219bac91f4589c9d88f1c6b95
-//   characterPatternY      (rpg_sprites.js)            d82f8f1ef9c986740a1d6e0aed4c655f17a2847ddfe3305a5737859694d8c59d
-//   patternWidth           (rpg_sprites.js)            46d44179ca8be450446e5486f0833d96341cccf2818bc772256de52f0ab5e3f6
-//   patternHeight          (rpg_sprites.js)            6bcbe7b8a62bed13e40f7f299222c571593ee561cc9d1b6e484d0a006318d7d3
+//   updateFrame            (rpg_sprites.js)                 f9fa3e9e43adcbeea4ed8a637aa167b3d9a6f19eb9b040005345dce9c8619f91
+//   updateTileFrame        (rpg_sprites.js)                 37433297b83ed276333dc99a5aec8a20c950ad887a454d018a4cc8ac8140abdc
+//   updateCharacterFrame   (Omori BASE.js:4759 wrap)        61f013f3e685102f24712e68f58e322320f9d8eeff9a2829c9f892eca7385b61
+//   updateHalfBodySprites  (YEP_CoreEngine.js:2190 wrap)    dc65b8c8604adc6a5d1af43015c944195f69dfb3e24e39cb19ee2a766a15a9a4
+//   createHalfBodySprites  (rpg_sprites.js)                 3f127fe97cf23fd85ffdb6cc7443ee9273c9b95789c0aea09aee45abc9c6ff71
+//   characterBlockX        (Custom_Character_Rectangles.js) 46a829c6b4265898fc47a2077aa9ef5b91640ea111dc46c5877647085d547994
+//   characterBlockY        (Custom_Character_Rectangles.js) c7a6a1180963924d85e5690fca7d4c3214723a1ba5745819d6ae8c1276a1a1f4
+//   characterPatternX      (Custom_Character_Rectangles.js) 19ee1460e719357be72cf38ed13dceca5b29a4ba8dd9c42ffd05f7c503d37c09
+//   characterPatternY      (Custom_Character_Rectangles.js) 6d975bc75b8541627c0d60f094d9dfb073b1451f1b715c16ecad858d69ff89c5
+//   patternWidth           (Custom_Character_Rectangles.js) b1bfbf3b8cf68f9a0affbdebd062f1a2e0678aedc2928a33bbe05ed2d5fcda20
+//   patternHeight          (Custom_Character_Rectangles.js) c7c648b4ac8f4b5099de26a264a516827ca8cc24ba409119c1592dcc0d3c3b67
 
 (function () {
   'use strict';
@@ -111,21 +118,21 @@
       { name: 'updateCharacterFrame', fn: p.updateCharacterFrame,
         digests: ['61f013f3e685102f24712e68f58e322320f9d8eeff9a2829c9f892eca7385b61'] },
       { name: 'updateHalfBodySprites', fn: p.updateHalfBodySprites,
-        digests: ['47092631641a26aa9d3d7e9f80e1840b8f0fb9e12e6b2a3a454cb3788a16ff78'] },
+        digests: ['dc65b8c8604adc6a5d1af43015c944195f69dfb3e24e39cb19ee2a766a15a9a4'] },
       { name: 'createHalfBodySprites', fn: p.createHalfBodySprites,
         digests: ['3f127fe97cf23fd85ffdb6cc7443ee9273c9b95789c0aea09aee45abc9c6ff71'] },
       { name: 'characterBlockX', fn: p.characterBlockX,
-        digests: ['76d7c5af3b172bb03cb15aedf693673a32e4760c0c7a95a79bc420a5983317d1'] },
+        digests: ['46a829c6b4265898fc47a2077aa9ef5b91640ea111dc46c5877647085d547994'] },
       { name: 'characterBlockY', fn: p.characterBlockY,
-        digests: ['20953a88f0212e8821f2ed3cc0e3557ecf2988c1082a7c3dbc6444f89cea6de6'] },
+        digests: ['c7a6a1180963924d85e5690fca7d4c3214723a1ba5745819d6ae8c1276a1a1f4'] },
       { name: 'characterPatternX', fn: p.characterPatternX,
-        digests: ['d8367f4faa2dd88f43d512d35c9c2af9873798f219bac91f4589c9d88f1c6b95'] },
+        digests: ['19ee1460e719357be72cf38ed13dceca5b29a4ba8dd9c42ffd05f7c503d37c09'] },
       { name: 'characterPatternY', fn: p.characterPatternY,
-        digests: ['d82f8f1ef9c986740a1d6e0aed4c655f17a2847ddfe3305a5737859694d8c59d'] },
+        digests: ['6d975bc75b8541627c0d60f094d9dfb073b1451f1b715c16ecad858d69ff89c5'] },
       { name: 'patternWidth', fn: p.patternWidth,
-        digests: ['46d44179ca8be450446e5486f0833d96341cccf2818bc772256de52f0ab5e3f6'] },
+        digests: ['b1bfbf3b8cf68f9a0affbdebd062f1a2e0678aedc2928a33bbe05ed2d5fcda20'] },
       { name: 'patternHeight', fn: p.patternHeight,
-        digests: ['6bcbe7b8a62bed13e40f7f299222c571593ee561cc9d1b6e484d0a006318d7d3'] }
+        digests: ['c7c648b4ac8f4b5099de26a264a516827ca8cc24ba409119c1592dcc0d3c3b67'] }
     ])) return;
 
     var originalUpdateFrame = p.updateFrame;
@@ -150,16 +157,21 @@
         return originalUpdateFrame.call(this);
       }
       // Live reads through whatever composition the plugins installed: a value change of any
-      // kind (slippery pose, EMF state, page refresh, turn) is a stamp miss, never a stale hit.
+      // kind (slippery pose, EMF state, custom frame, page refresh, turn) is a stamp miss, never
+      // a stale hit.
       var pattern = ch.pattern(), direction = ch.direction(), single = ch.isSingleFrame();
       var charIndex = ch.characterIndex();
+      var emf = ch.isEmfCharacter(), emfNum = emf ? ch.emfCharacterState().frameNum : -1;
       var bm = this.bitmap, bw = bm ? bm.width : -1, bh = bm ? bm.height : -1;
       if (this._omoriFfBm === bm && this._omoriFfBw === bw && this._omoriFfBh === bh &&
           this._omoriFfIb === this._isBigCharacter && this._omoriFfT === this._tileId &&
           this._omoriFfP === pattern && this._omoriFfD === direction && this._omoriFfS === single &&
           this._omoriFfCi === charIndex &&
+          this._omoriFfFx === ch._customFrameX && this._omoriFfFy === ch._customFrameY &&
+          this._omoriFfFw === ch._customFrameWidth && this._omoriFfFh === ch._customFrameHeight &&
+          this._omoriFfE === emf && this._omoriFfEf === emfNum &&
           this._omoriFfBd === this._bushDepth && this._omoriFfBl === this._blendColor &&
-          this._omoriFfCt === this._colorTone &&
+          this._omoriFfCt === this._colorTone && this._omoriFfBmo === this.blendMode &&
           this._omoriFfTw === $gameMap.tileWidth() && this._omoriFfTh === $gameMap.tileHeight()) {
         item.fast++;
         return;
@@ -176,9 +188,16 @@
       putHidden(this, '_omoriFfD', direction);
       putHidden(this, '_omoriFfS', single);
       putHidden(this, '_omoriFfCi', charIndex);
+      putHidden(this, '_omoriFfFx', ch._customFrameX);
+      putHidden(this, '_omoriFfFy', ch._customFrameY);
+      putHidden(this, '_omoriFfFw', ch._customFrameWidth);
+      putHidden(this, '_omoriFfFh', ch._customFrameHeight);
+      putHidden(this, '_omoriFfE', emf);
+      putHidden(this, '_omoriFfEf', emfNum);
       putHidden(this, '_omoriFfBd', this._bushDepth);
       putHidden(this, '_omoriFfBl', this._blendColor);
       putHidden(this, '_omoriFfCt', this._colorTone);
+      putHidden(this, '_omoriFfBmo', this.blendMode);
       putHidden(this, '_omoriFfTw', $gameMap.tileWidth());
       putHidden(this, '_omoriFfTh', $gameMap.tileHeight());
       return result;
