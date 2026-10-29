@@ -18,9 +18,10 @@ The `project/` folder is byte-identical to a known-good decrypted copy of the ga
 
 # Layout
 
-Workspace ownership and the release-repository location are documented in
-[docs/WORKSPACE.md](docs/WORKSPACE.md). Development lives here; the separate PortMaster
-release repository is at `../../portmaster-builder/omori-pmjs`.
+Development lives here: OMORI-specific runtime patches in `launcher/`, generic engine work in
+the `pmjs/` submodule, device helpers in `tools/device/`. The separate PortMaster release
+repository is at `../../portmaster-builder/omori-pmjs`. Private material (credentials, historical
+scratch, third-party reference checkouts) lives in the Git-ignored `.local/`.
 
 | Path | What it is |
 | --- | --- |
