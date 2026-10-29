@@ -4,3 +4,6 @@ project/save/
 # Build output and downloaded runtimes (tools/build.py)
 build/
 __pycache__/
+
+# Private device credentials, historical builds and local reference checkouts
+.local/

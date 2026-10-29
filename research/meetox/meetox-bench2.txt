@@ -1,0 +1,33 @@
+# title -> new game -> warp 87/92/152/203, confirm each via eval MAPCHECK + shot
+wait 600
+press ok
+wait 300
+press ok
+wait 300
+eval console.log("MAPCHECK boot=" + $gameMap.mapId())
+warp 87 27 27
+wait 200
+eval console.log("MAPCHECK m87=" + $gameMap.mapId())
+shot
+wait 400
+eval console.log("MAPCHECK m87s=" + $gameMap.mapId())
+shot
+warp 92 21 11
+wait 200
+eval console.log("MAPCHECK m92=" + $gameMap.mapId())
+shot
+wait 400
+shot
+warp 152 39 14
+wait 200
+eval console.log("MAPCHECK m152=" + $gameMap.mapId())
+shot
+wait 400
+shot
+warp 203 87 12
+wait 200
+eval console.log("MAPCHECK m203=" + $gameMap.mapId())
+shot
+wait 400
+shot
+exit

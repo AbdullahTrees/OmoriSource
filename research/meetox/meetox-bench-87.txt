@@ -1,0 +1,15 @@
+# Map 87 check for T8: the run4 shot at (27,27) was blank white with a 1-px seam at x=322,
+# which may mean that coordinate is outside the drawn room (or the camera is clamped).
+# This warps to the middle of White Space (10,10) and takes one shot.
+at 950
+press ok
+at 1010
+warp 87 10 10 2
+at 1060
+eval var w = SceneManager._scene && SceneManager._scene._messageWindow; if (w) w.terminateMessage(); $gameMessage.clear(); $gameMap._interpreter.clear(); $gameScreen.clearPictures(); $gameScreen.clearTone(); $gameScreen.clearFlash(); $gameParty.addActor(2); $gameParty.addActor(3); $gameParty.addActor(4); $gamePlayer.refresh(); $gamePlayer.showFollowers(); $gamePlayer.followers().refresh();
+at 1066
+eval console.log("PHASE 87 map", $gameMap.mapId(), "x", $gamePlayer.x, "y", $gamePlayer.y)
+at 1250
+shot
+at 1260
+exit

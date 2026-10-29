@@ -18,6 +18,10 @@ The `project/` folder is byte-identical to a known-good decrypted copy of the ga
 
 # Layout
 
+Workspace ownership and the release-repository location are documented in
+[docs/WORKSPACE.md](docs/WORKSPACE.md). Development lives here; the separate PortMaster
+release repository is at `../../portmaster-builder/omori-pmjs`.
+
 | Path | What it is |
 | --- | --- |
 | `project/` | The game, byte-identical to OMORI's `www/` folder. Never edited by hand. |
@@ -27,6 +31,8 @@ The `project/` folder is byte-identical to a known-good decrypted copy of the ga
 | `launcher/pmjs/` | OMORI-specific runtime patches for the [PMJS](https://github.com/bbbreaddd/pmjs) runtime (`--patch`): a faster character-frame path, and a boot fix needed until PMJS ships NW.js semantics for exceptions in Node fs callbacks. |
 | `pmjs/` | PMJS as a git submodule, for working on runtime fixes that go upstream. |
 | `tools/` | The build script, Steam extractor and patch, and the parity checker with its hash manifest. |
+| `tools/device/` | Device SSH/test/deployment helpers; credentials are kept in ignored `.local/device-auth/`. |
+| `research/` | Profiling, analysis, experiments and device snapshots. |
 
 The game's own files can't change without breaking parity, and when running from a Steam install they're encrypted anyway.
 Platform fixes therefore live in `launcher/`.

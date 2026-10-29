@@ -1,0 +1,24 @@
+# Uncapped (--fast) follow-up for T8: White Space 87 and Forest Playground 92 only.
+# Same warp/clear/marker scheme as tools/meetox-bench.txt, shorter dwell.
+at 950
+press ok
+at 1010
+warp 87 27 27 2
+at 1060
+eval var w = SceneManager._scene && SceneManager._scene._messageWindow; if (w) w.terminateMessage(); $gameMessage.clear(); $gameMap._interpreter.clear(); $gameScreen.clearPictures(); $gameScreen.clearTone(); $gameScreen.clearFlash(); $gameParty.addActor(2); $gameParty.addActor(3); $gameParty.addActor(4); $gamePlayer.refresh(); $gamePlayer.showFollowers(); $gamePlayer.followers().refresh();
+at 1066
+eval console.log("PHASE 87 map", $gameMap.mapId())
+at 1300
+shot
+at 1320
+warp 92 21 11 2
+at 1370
+eval var w = SceneManager._scene && SceneManager._scene._messageWindow; if (w) w.terminateMessage(); $gameMessage.clear(); $gameMap._interpreter.clear(); $gameScreen.clearPictures(); $gameScreen.clearTone(); $gameScreen.clearFlash();
+at 1376
+eval console.log("PHASE 92 map", $gameMap.mapId())
+at 1610
+shot
+at 1620
+eval console.log("PHASE end")
+at 1630
+exit

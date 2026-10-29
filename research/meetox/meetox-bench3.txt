@@ -1,0 +1,21 @@
+# title -> new game -> warp 152 (Pyrefly) and 203 (Underwater Highway), confirm via eval
+wait 600
+press ok
+wait 300
+press ok
+wait 300
+warp 152 39 14
+wait 300
+eval console.log("MAPCHECK m152=" + $gameMap.mapId())
+shot
+wait 500
+eval console.log("MAPCHECK m152s=" + $gameMap.mapId())
+shot
+warp 203 87 12
+wait 300
+eval console.log("MAPCHECK m203=" + $gameMap.mapId())
+shot
+wait 500
+eval console.log("MAPCHECK m203s=" + $gameMap.mapId())
+shot
+exit

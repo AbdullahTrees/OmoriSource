@@ -1,0 +1,53 @@
+# meetox80/omori input script for T8 (frame numbers, 60 fps cap).
+#
+# Changes from the draft (tools/meetox-bench.txt as handed over):
+#  1. The draft's two "press ok" started the new-game intro and its autorun event kept running
+#     through every warp (shots showed "EVERYTHING IS GOING TO BE OKAY" / "DON'T WORRY..." text,
+#     not the maps). This follows the engine's own tests (engine/tests/psp1000/kc.txt): one
+#     "press ok" past the splash, then warp straight to a map.
+#  2. Because White Space (87) starts OMORI's intro cutscene, every warp is followed by the eval
+#     from engine/tests/psp1000/maps.txt that clears the message window, the map interpreter and
+#     leftover screen pictures/tone, so the shot shows the map itself.
+#  3. Party members 2-4 are added once (kc.txt) so follower sprites exist as in a real playthrough.
+#  4. "eval console.log" lines mark each phase in the log (console.log -> plat::log, stderr).
+#
+# Dwell per map: 420 frames (~7 s at the 60 fps cap, longer on a slow map); shot 40 frames
+# before the next warp.
+at 950
+press ok
+at 1010
+warp 87 27 27 2
+at 1060
+eval var w = SceneManager._scene && SceneManager._scene._messageWindow; if (w) w.terminateMessage(); $gameMessage.clear(); $gameMap._interpreter.clear(); $gameScreen.clearPictures(); $gameScreen.clearTone(); $gameScreen.clearFlash(); $gameParty.addActor(2); $gameParty.addActor(3); $gameParty.addActor(4); $gamePlayer.refresh(); $gamePlayer.showFollowers(); $gamePlayer.followers().refresh();
+at 1066
+eval console.log("PHASE 87 map", $gameMap.mapId())
+at 1390
+shot
+at 1410
+warp 92 21 11 2
+at 1460
+eval var w = SceneManager._scene && SceneManager._scene._messageWindow; if (w) w.terminateMessage(); $gameMessage.clear(); $gameMap._interpreter.clear(); $gameScreen.clearPictures(); $gameScreen.clearTone(); $gameScreen.clearFlash();
+at 1466
+eval console.log("PHASE 92 map", $gameMap.mapId())
+at 1790
+shot
+at 1810
+warp 152 39 14 2
+at 1860
+eval var w = SceneManager._scene && SceneManager._scene._messageWindow; if (w) w.terminateMessage(); $gameMessage.clear(); $gameMap._interpreter.clear(); $gameScreen.clearPictures(); $gameScreen.clearTone(); $gameScreen.clearFlash();
+at 1866
+eval console.log("PHASE 152 map", $gameMap.mapId())
+at 2190
+shot
+at 2210
+warp 203 87 12 2
+at 2260
+eval var w = SceneManager._scene && SceneManager._scene._messageWindow; if (w) w.terminateMessage(); $gameMessage.clear(); $gameMap._interpreter.clear(); $gameScreen.clearPictures(); $gameScreen.clearTone(); $gameScreen.clearFlash();
+at 2266
+eval console.log("PHASE 203 map", $gameMap.mapId())
+at 2590
+shot
+at 2610
+eval console.log("PHASE end")
+at 2620
+exit
