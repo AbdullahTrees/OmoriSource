@@ -541,6 +541,38 @@
     var costs = stats && stats.frameCosts;
     return costs ? NATIVE_COSTS.map(function (key) { return Number(costs[key]) || 0; }) : null;
   }
+  // Renderer counters are cumulative; the per-window delta names what the phase actually did.
+  var STAT_COUNTERS = ['frames', 'retainedFrames', 'commands', 'drawCalls', 'bufferUploads',
+    'baseSpriteDrawCalls', 'spriteTextureChangesBatched', 'effectSpriteDrawCalls', 'tileDrawCalls',
+    'nearestTileShaderDrawCalls', 'nearestTileShaderFallbackDrawCalls', 'filterDrawCalls',
+    'filterIntermediateCacheHits', 'identityFilterShaderDrawCalls', 'filterTargetAcquires',
+    'filterTargetReuses', 'rendererTargetCreates', 'rendererTargetDestroys',
+    'rendererTargetCacheHits', 'rendererTargetCacheEvictions', 'filterTargetClears',
+    'filterBoundedApplications', 'framebufferChecks', 'framebufferCopies', 'toneAdjustDrawCalls',
+    'toneComposedPresentationFrames', 'scaledPresentationFrames', 'presentationLetterboxedFrames',
+    'spriteDrawCalls', 'tilingSpriteDrawCalls', 'screenFillDrawCalls', 'meshDrawCalls',
+    'constantBlackGroups', 'constantBlackGroupsSkipped', 'constantBlackSourceDraws',
+    'constantBlackBorderDraws'];
+  var STAT_GAUGES = ['rendererTargetBytes', 'rendererTargetPeakBytes', 'rendererTargetCacheBytes',
+    'tileGeometryGpuBytes', 'tileGeometryCpuBytes'];
+  function rendererStatsSnapshot() {
+    return root.NativeHost && NativeHost.render && typeof NativeHost.render.stats === 'function'
+      ? NativeHost.render.stats() : null;
+  }
+  function statsDelta(before, after) {
+    if (!before || !after) return null;
+    var out = {};
+    STAT_COUNTERS.forEach(function (key) {
+      out[key] = (Number(after[key]) || 0) - (Number(before[key]) || 0);
+    });
+    if (Array.isArray(before.filterApplications) && Array.isArray(after.filterApplications)) {
+      out.filterApplications = after.filterApplications.map(function (value, index) {
+        return (Number(value) || 0) - (Number(before.filterApplications[index]) || 0);
+      });
+    }
+    STAT_GAUGES.forEach(function (key) { out[key] = Number(after[key]) || 0; });
+    return out;
+  }
 
   // Scene inventory: what the encoder sees, by class, and which plain-sprite conditions the live
   // nodes satisfy. Diagnostic only (OMORI_TEST_INVENTORY=1).
@@ -624,6 +656,7 @@
     var counters0 = counterSnapshot();
     var steps0 = logicSteps;
     var cpu0 = threadCpu();
+    var stats0 = rendererStatsSnapshot();
     return new Promise(function (resolve) {
       var times = [], draws = [], last = 0, started = performance.now(), f0 = Graphics.frameCount;
       (function frame(now) {
@@ -641,6 +674,7 @@
         var avg = function (v) { return round(v / Math.max(1, frames)); };
         var per = function (v) { return round(v / Math.max(1, b ? b.steps : 0)); };
         var counters = counterDeltas(counters0, counterSnapshot(), frames);
+        var nativeStats = statsDelta(stats0, rendererStatsSnapshot());
         resolve({ fps: round(frames * 1000 / elapsed),
           ft: [pick(0.5), pick(0.95), round(times[times.length - 1] || 0)],
           steps: steps, stepsPerFrame: round(steps / Math.max(1, frames)),
@@ -655,6 +689,8 @@
             out[key] = round(draws.reduce(function (a, d) { return Math.max(a, Number(d[k]) || 0); }, 0));
             return out;
           }, {}) : null,
+          // Renderer work during the window: draw calls, filter passes, render-target bytes.
+          nativeStats: nativeStats,
           breakdown: b ? {
             frames: frames,
             steps: b.steps,
