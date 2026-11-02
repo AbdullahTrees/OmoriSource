@@ -12,11 +12,14 @@
 
 const fs = require('fs');
 
-const file = process.argv[2];
+const args = process.argv.slice(2);
+const file = args.find(arg => !arg.startsWith('--'));
 if (!file) {
-  console.error('usage: node mem-summary.cjs <log>');
+  console.error('usage: node mem-summary.cjs <log> [--last N]');
   process.exit(2);
 }
+const lastIndex = args.indexOf('--last');
+const last = lastIndex >= 0 ? Number(args[lastIndex + 1]) : 0;
 
 const rows = [];
 for (const line of fs.readFileSync(file, 'utf8').split('\n')) {
@@ -34,6 +37,7 @@ for (const line of fs.readFileSync(file, 'utf8').split('\n')) {
   const sample = wrapper.mem || {};
   const images = sample.images || {};
   const cache = wrapper.cache || {};
+  const attribution = sample.attribution || {};
   rows.push({
     point: wrapper.point || '',
     battle: wrapper.battle || '',
@@ -45,8 +49,17 @@ for (const line of fs.readFileSync(file, 'utf8').split('\n')) {
     cacheEntries: cache.entries,
     cacheMp: cache.megapixels,
     reserved: cache.reserved,
-    notReady: cache.notReady
+    notReady: cache.notReady,
+    withImage: cache.withImage,
+    reusePool: cache.reusePool,
+    baseTextureCache: cache.baseTextureCache,
+    attribution: attribution.error ? attribution : {
+      live: attribution.live, cache: attribution.cache, scene: attribution.scene,
+      textures: attribution.textures, union: attribution.union,
+      unattributed: attribution.unattributed, scenes: attribution.scenes,
+      sceneNames: attribution.sceneNames
+    }
   });
 }
 
-console.log(JSON.stringify(rows));
+console.log(JSON.stringify(last > 0 ? rows.slice(-last) : rows));

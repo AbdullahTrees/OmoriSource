@@ -199,11 +199,84 @@
         preparedFallbacks: m.preparedFallbacks };
     } catch (_) { return null; }
   }
+  // Which live native images are accounted for by the game cache, the scene tree,
+  // or PIXI textures. Whatever remains is held somewhere else (or leaked).
+  function imageAttribution() {
+    try {
+      var live = null;
+      try { live = NativeHost.images.memory().liveCount; } catch (_) {}
+      function addBitmap(set, bitmap) {
+        if (!bitmap || !bitmap._image) return;
+        var resource = bitmap._image._nativeImage;
+        if (resource && resource.handle) set.add(resource.handle);
+      }
+      function walk(node, set, depth) {
+        if (!node || depth > 48) return;
+        try { addBitmap(set, node.bitmap); } catch (_) {}
+        var children = node.children;
+        if (children && children.length) {
+          for (var i = 0; i < children.length; i++) walk(children[i], set, depth + 1);
+        }
+      }
+      var cache = new Set();
+      try {
+        var items = ImageManager._imageCache && ImageManager._imageCache._items || {};
+        Object.keys(items).forEach(function (key) { addBitmap(cache, items[key] && items[key].bitmap); });
+      } catch (_) {}
+      var scene = new Set(), scenes = [];
+      try {
+        if (typeof SceneManager !== 'undefined') {
+          if (SceneManager._scene) scenes.push(SceneManager._scene);
+          if (Array.isArray(SceneManager._stack)) SceneManager._stack.forEach(function (item) { if (item) scenes.push(item); });
+        }
+      } catch (_) {}
+      var seenScenes = new Set();
+      scenes.forEach(function (item) {
+        if (!item || seenScenes.has(item)) return;
+        seenScenes.add(item);
+        walk(item, scene, 0);
+      });
+      var textures = new Set();
+      try {
+        var textureCache = PIXI.utils && PIXI.utils.BaseTextureCache || {};
+        Object.keys(textureCache).forEach(function (key) {
+          var source = textureCache[key] && textureCache[key].source;
+          if (source && source._nativeImage && source._nativeImage.handle) textures.add(source._nativeImage.handle);
+        });
+      } catch (_) {}
+      var union = new Set();
+      [cache, scene, textures].forEach(function (set) {
+        set.forEach(function (handle) { union.add(handle); });
+      });
+      return { live: live, cache: cache.size, scene: scene.size, textures: textures.size,
+        union: union.size, unattributed: live === null ? null : live - union.size,
+        scenes: seenScenes.size,
+        sceneNames: Array.from(seenScenes).map(function (item) {
+          return item.constructor && item.constructor.name || '?';
+        }) };
+    } catch (error) {
+      return { error: String(error && error.message || error) };
+    }
+  }
   // Process + native image accounting at one instant, small enough to log repeatedly.
   function memSample() {
     var out = memory();
     out.images = imageStats();
+    out.attribution = imageAttribution();
     return out;
+  }
+  // Force a full GC so unreachable Bitmaps/resources finalize; separates a real leak
+  // from ordinary GC latency.
+  function forceGc() {
+    try {
+      var v8 = require('v8');
+      v8.setFlagsFromString('--expose-gc');
+      var gc = require('vm').runInNewContext('gc');
+      if (typeof gc === 'function') { gc(); gc(); }
+    } catch (_) {}
+    if (typeof global.gc === 'function') {
+      try { global.gc(); global.gc(); } catch (_) {}
+    }
   }
   // The game's own image cache: entries, pixel budget use, and how much is pinned.
   function cacheStats() {
@@ -218,8 +291,17 @@
         if (item && item.reservationId) reserved++;
         if (bitmap && !bitmap.isReady()) notReady++;
       });
+      var withImage = 0;
+      Object.keys(items).forEach(function (key) {
+        var bitmap = items[key] && items[key].bitmap;
+        if (bitmap && bitmap._image) withImage++;
+      });
       return { entries: entries, megapixels: round(pixels / 1e6),
-        limitMp: round(ImageCache.limit / 1e6), reserved: reserved, notReady: notReady };
+        limitMp: round(ImageCache.limit / 1e6), reserved: reserved, notReady: notReady,
+        withImage: withImage,
+        reusePool: Bitmap._reuseImages ? Bitmap._reuseImages.length : null,
+        baseTextureCache: typeof PIXI !== 'undefined' && PIXI.utils && PIXI.utils.BaseTextureCache
+          ? Object.keys(PIXI.utils.BaseTextureCache).length : null };
     } catch (error) { return null; }
   }
   function digestFunction(fn) {
@@ -1792,6 +1874,10 @@
         battle.memAfter = memSample();
         battle.cacheAfter = cacheStats();
         log({ mem: { point: 'after', battle: entry.name, mem: battle.memAfter, cache: battle.cacheAfter } });
+        forceGc();
+        battle.memGc = memSample();
+        battle.cacheGc = cacheStats();
+        log({ mem: { point: 'after-gc', battle: entry.name, mem: battle.memGc, cache: battle.cacheGc } });
         battle.mem = memory();
       }
       // One line per battle as soon as it is done, so a later crash keeps the earlier results.
