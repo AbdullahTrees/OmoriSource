@@ -29,12 +29,14 @@ for (const line of fs.readFileSync(file, 'utf8').split('\n')) {
   } catch (error) {
     continue;
   }
-  const sample = payload.mem || {};
+  // The driver logs {"mem":{point, battle, mem:{rssMB,...}, cache:{...}}}.
+  const wrapper = payload.mem || {};
+  const sample = wrapper.mem || {};
   const images = sample.images || {};
-  const cache = payload.cache || {};
+  const cache = wrapper.cache || {};
   rows.push({
-    point: payload.point || '',
-    battle: payload.battle || '',
+    point: wrapper.point || '',
+    battle: wrapper.battle || '',
     rssMB: sample.rssMB,
     heapMB: sample.heapMB,
     liveImages: images.liveCount,
