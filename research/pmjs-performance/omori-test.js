@@ -199,6 +199,29 @@
         preparedFallbacks: m.preparedFallbacks };
     } catch (_) { return null; }
   }
+  // Process + native image accounting at one instant, small enough to log repeatedly.
+  function memSample() {
+    var out = memory();
+    out.images = imageStats();
+    return out;
+  }
+  // The game's own image cache: entries, pixel budget use, and how much is pinned.
+  function cacheStats() {
+    try {
+      var items = ImageManager._imageCache && ImageManager._imageCache._items;
+      if (!items) return null;
+      var entries = 0, pixels = 0, reserved = 0, notReady = 0;
+      Object.keys(items).forEach(function (key) {
+        var item = items[key], bitmap = item && item.bitmap;
+        entries++;
+        if (bitmap) pixels += (Number(bitmap.width) || 0) * (Number(bitmap.height) || 0);
+        if (item && item.reservationId) reserved++;
+        if (bitmap && !bitmap.isReady()) notReady++;
+      });
+      return { entries: entries, megapixels: round(pixels / 1e6),
+        limitMp: round(ImageCache.limit / 1e6), reserved: reserved, notReady: notReady };
+    } catch (error) { return null; }
+  }
   function digestFunction(fn) {
     if (typeof fn !== 'function') return '';
     var crypto = require('crypto');
@@ -1729,6 +1752,10 @@
     out.turns = $gameTroop.turnCount() - turn;
     // A troop event that ends or replaces the battle mid-window makes the window partial.
     out.leftBattle = out.after.scene !== 'Scene_Battle';
+    // Peak sample: still in the battle, before the scene tears down.
+    out.mem = memSample();
+    out.cache = cacheStats();
+    log({ mem: { point: auto ? 'turns-peak' : 'idle-peak', battle: entry.name, mem: out.mem, cache: out.cache } });
     out.returned = await battleEnd();
     return out;
   }
@@ -1746,14 +1773,25 @@
       out.arrived = await goTo(places(env('OMORI_TEST_ROOM') || '92:17:23')[0]);
     }
     out.party = battleParty(!!saveId);
+    // Log every memory sample the moment it is taken: the device watchdog can kill the
+    // process at any point, and the battle line at the end would take the samples with it.
+    out.memMap = memSample();
+    out.cacheMap = cacheStats();
+    log({ mem: { point: 'map', mem: out.memMap, cache: out.cacheMap } });
     for (var entry of battleEntries(env('OMORI_TEST_BATTLES') || 'bunny,sweetheart,something')) {
       var battle = { name: entry.name, troop: entry.troop, back: entry.back || null, note: entry.note,
         troopName: $dataTroops[entry.troop] ? $dataTroops[entry.troop].name : null };
+      battle.memBefore = memSample();
+      battle.cacheBefore = cacheStats();
+      log({ mem: { point: 'before', battle: entry.name, mem: battle.memBefore, cache: battle.cacheBefore } });
       if (!$dataTroops[entry.troop]) {
         battle.failed = 'no such troop';
       } else {
         battle.idle = await battleRun(entry, false);
         battle.turns = await battleRun(entry, true);
+        battle.memAfter = memSample();
+        battle.cacheAfter = cacheStats();
+        log({ mem: { point: 'after', battle: entry.name, mem: battle.memAfter, cache: battle.cacheAfter } });
         battle.mem = memory();
       }
       // One line per battle as soon as it is done, so a later crash keeps the earlier results.
