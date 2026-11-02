@@ -26,7 +26,7 @@
 #   --room MAP:X:Y         room mode map (default 14:45:44)
 #   --walk                 room mode: the player walks a loop during the measurement
 #   --battles LIST         battle mode: presets bunny, moles, sweetheart, spacebf, jawsum, humphrey,
-#                          something, or TROOP[:battleback] (default bunny,sweetheart,something)
+#                          tickets, or TROOP[:battleback] (default bunny,sweetheart,tickets)
 #   --battle-save ID       battle mode: start from fileID.rpgsave instead of a new game (pass
 #                          PMJS_SAVE_ROOT pointing at a COPY of the saves dir)
 #   --party IDS            battle mode: party actor ids (default 1,2,3,4 on a new game)
