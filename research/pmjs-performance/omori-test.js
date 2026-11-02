@@ -10,7 +10,7 @@
 //                  slot to load (default 4), OMORI_TEST_SAVE_SLOT scratch slot (default 6); use a saves COPY
 //   battle mode:
 //   OMORI_TEST_BATTLES       presets or "troopId[:battleback]", comma-separated (default
-//                            bunny,sweetheart,something; presets in BATTLE_PRESETS below)
+//                            bunny,sweetheart,tickets; presets in BATTLE_PRESETS below)
 //   OMORI_TEST_BATTLE_SAVE   save slot to start from (fileN.rpgsave; use a COPY of the saves dir);
 //                            default: new game at OMORI_TEST_ROOM (default 92:17:23)
 //   OMORI_TEST_PARTY         actor ids for the party (default 1,2,3,4 on a new game; a loaded save
@@ -1728,7 +1728,7 @@
     spacebf:    { troop: 414, back: 'battleback_ow_xsbf', note: 'boss, space backdrop effects' },
     jawsum:     { troop: 427, back: 'battlebacks_dw_jawsum', note: 'boss that summons adds' },
     humphrey:   { troop: 436, back: 'battleback_dw_humphrey', note: '3 large enemies' },
-    something:  { troop: 445, back: 'battleback_bs_something', note: '8 enemies, dark scene' }
+    tickets:    { troop: 546, note: '4 enemies (Lost Sprout Moles); normal encounter, uses the map battleback' }
   };
   function battleEntries(text) {
     return String(text).split(',').filter(Boolean).map(function (item) {
@@ -1860,7 +1860,7 @@
     out.memMap = memSample();
     out.cacheMap = cacheStats();
     log({ mem: { point: 'map', mem: out.memMap, cache: out.cacheMap } });
-    for (var entry of battleEntries(env('OMORI_TEST_BATTLES') || 'bunny,sweetheart,something')) {
+    for (var entry of battleEntries(env('OMORI_TEST_BATTLES') || 'bunny,sweetheart,tickets')) {
       var battle = { name: entry.name, troop: entry.troop, back: entry.back || null, note: entry.note,
         troopName: $dataTroops[entry.troop] ? $dataTroops[entry.troop].name : null };
       battle.memBefore = memSample();
@@ -1875,6 +1875,8 @@
         battle.cacheAfter = cacheStats();
         log({ mem: { point: 'after', battle: entry.name, mem: battle.memAfter, cache: battle.cacheAfter } });
         forceGc();
+        // FinalizationRegistry callbacks run after a task turn, not inside gc().
+        await wait(300);
         battle.memGc = memSample();
         battle.cacheGc = cacheStats();
         log({ mem: { point: 'after-gc', battle: entry.name, mem: battle.memGc, cache: battle.cacheGc } });
