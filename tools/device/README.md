@@ -4,10 +4,12 @@ These maintained host helpers belong to OmoriSource. They were moved out of the 
 handover directory on 2026-10-29. Run shell helpers with Git Bash (Windows) or Bash (Linux).
 
 - `dev.sh '<command>'`: SSH access; `OMORI_DEVICE_HOST` overrides the default address.
-- `omori-test.sh`, `omori-test3.sh`: legacy test2/test3 upload/run wrappers. They upload source
-  files and target the older `omori-pmjs2`/`omori-pmjs3` installs. Check the installed launcher
-  and current handover before choosing a target; do not confuse these with the newer
-  `omori-upstream-test` install.
+- `omori-test.sh`: uploads the test driver and runs a measurement mode on the install the
+  Ports launcher uses (`/mnt/mmc/ports/omori-upstream-test`; `OMORI_TEST_GAMEDIR` overrides
+  for the legacy installs). `PMJS_RUNTIME`, `PMJS_CACHE`, `PMJS_RETAINED_STATS`,
+  `PMJS_RETAINED_VERIFY` and `PMJS_WATCHDOG_MB` from the calling environment are forwarded
+  to the run. `omori-test3.sh` is the legacy test3 wrapper; check the installed launcher and
+  current handover before choosing a target.
 - `release-install.sh [ZIP]`: installs a release over the legacy test2 runtime. Its default
   ZIP is `../../../../portmaster-builder/omori-pmjs/share/out/OMORI-PMJS.zip` relative to this
   directory. Set `OMORI_RELEASE_REPO` for another layout. This mutates the device: use only

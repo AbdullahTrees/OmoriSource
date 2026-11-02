@@ -17,11 +17,21 @@
 #   load      real-save measurement: OMORI_TEST_LOAD_SAVE=ids (fileN.rpgsave) are loaded as the
 #             player left them; saved spot and --maps spots measured, then a new game at the same
 #             spots for a same-run A/B. Pass PMJS_SAVE_ROOT pointing at a COPY of the saves dir.
+#   battle    scripted battles, light to graphically heavy: per battle an "idle" window (command
+#             selection) and a "turns" window (auto-battle actions and animations), from a new
+#             game with a set party or from --battle-save (~1 min per battle)
 #
 # Options:
 #   --maps LIST            perf/verify maps, "id" or "id:x:y", comma-separated
 #   --room MAP:X:Y         room mode map (default 14:45:44)
 #   --walk                 room mode: the player walks a loop during the measurement
+#   --battles LIST         battle mode: presets bunny, moles, sweetheart, spacebf, jawsum, humphrey,
+#                          something, or TROOP[:battleback] (default bunny,sweetheart,something)
+#   --battle-save ID       battle mode: start from fileID.rpgsave instead of a new game (pass
+#                          PMJS_SAVE_ROOT pointing at a COPY of the saves dir)
+#   --party IDS            battle mode: party actor ids (default 1,2,3,4 on a new game)
+#   --level N              battle mode: party level (default 15)
+#   --battle-settle S      battle mode: seconds after the battle starts before measuring (default 8)
 #   --sweep STEP           room mode: place the camera on a grid STEP tiles apart; fps, visible
 #                          characters and native costs per point (where in a map the cost is)
 #   --settle S             seconds after arrival (default 18; maps run slower for ~17 s after entry)
@@ -52,13 +62,18 @@ GAMEDIR=${OMORI_TEST_GAMEDIR:-/mnt/mmc/ports/omori-pmjs2}
 DRIVER=$HERE/omori-test.js
 
 MODE=${1:-}; [ $# -gt 0 ] && shift
-case "$MODE" in startup|perf|room|verify|menus|soak|text|load) ;; *) sed -n '2,31p' "$0"; exit 2;; esac
-MAPS= ROOM= WALK= SWEEP= SETTLE= MEASURE= PATCH= SHOTS= PROFILE= CENSUS= PAUSE=1 TIMEOUT=300 VARIANTS= BREAKDOWN= DISABLE= INVENTORY=
+case "$MODE" in startup|perf|room|verify|menus|soak|text|load|battle|saveload) ;; *) sed -n '2,57p' "$0"; exit 2;; esac
+BATTLES= BATTLE_SAVE= PARTY= LEVEL= BATTLE_SETTLE= MAPS= ROOM= WALK= SWEEP= SETTLE= MEASURE= PATCH= SHOTS= PROFILE= CENSUS= PAUSE=1 TIMEOUT=300 VARIANTS= BREAKDOWN= DISABLE= INVENTORY=
 while [ $# -gt 0 ]; do
   case "$1" in
     --maps) MAPS=$2; shift;;
     --room) ROOM=$2; shift;;
     --walk) WALK=1;;
+    --battles) BATTLES=$2; shift;;
+    --battle-save) BATTLE_SAVE=$2; shift;;
+    --party) PARTY=$2; shift;;
+    --level) LEVEL=$2; shift;;
+    --battle-settle) BATTLE_SETTLE=$2; shift;;
     --sweep) SWEEP=$2; shift;;
     --settle) SETTLE=$2; shift;;
     --measure) MEASURE=$2; shift;;
@@ -104,7 +119,7 @@ for variant in $VARIANTS; do
     OMORI_TEST_MODE=$MODE OMORI_TEST_MAPS=$MAPS OMORI_TEST_ROOM=$ROOM OMORI_TEST_WALK=$WALK OMORI_TEST_SWEEP=$SWEEP \
     OMORI_TEST_SETTLE=$SETTLE OMORI_TEST_MEASURE=$MEASURE OMORI_TEST_PATCH=$PATCH \
     OMORI_TEST_SHOTS=${SHOTS:+$OUT/$name-shots} OMORI_TEST_PROFILE=${PROFILE:+$OUT/$name-profiles} OMORI_TEST_CENSUS=$CENSUS \
-    OMORI_TEST_BREAKDOWN=$BREAKDOWN OMORI_TEST_INVENTORY=$INVENTORY \
+    OMORI_TEST_BREAKDOWN=$BREAKDOWN OMORI_TEST_INVENTORY=$INVENTORY     OMORI_TEST_BATTLES=$BATTLES OMORI_TEST_BATTLE_SAVE=$BATTLE_SAVE OMORI_TEST_PARTY=$PARTY     OMORI_TEST_LEVEL=$LEVEL OMORI_TEST_BATTLE_SETTLE=$BATTLE_SETTLE \
     PMJS_EXTRA_PATCH="$DRIVER" \
     bash "$LAUNCHER" >/dev/null 2>&1
   # Blank both framebuffer pages: with the menu paused nothing else redraws, and the game's last

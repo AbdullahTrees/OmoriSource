@@ -5,7 +5,19 @@
 // "[omori-test] {json}" line per result, then quits. The game code it drives is the same in
 // both runtimes; runtime differences are contained in env(), require(), quitGame() and capture().
 // Env variables (set by drivers):
-//   OMORI_TEST_MODE     startup | perf | room | verify | menus | soak | text
+//   OMORI_TEST_MODE     startup | perf | room | verify | menus | soak | text | load | trace | battle | saveload
+//   saveload mode: OMORI_TEST_JSONEX stock|<name> (+ OMORI_TEST_JSONEX_DIR/jsonex-<name>.js), OMORI_TEST_LOAD_SAVE
+//                  slot to load (default 4), OMORI_TEST_SAVE_SLOT scratch slot (default 6); use a saves COPY
+//   battle mode:
+//   OMORI_TEST_BATTLES       presets or "troopId[:battleback]", comma-separated (default
+//                            bunny,sweetheart,something; presets in BATTLE_PRESETS below)
+//   OMORI_TEST_BATTLE_SAVE   save slot to start from (fileN.rpgsave; use a COPY of the saves dir);
+//                            default: new game at OMORI_TEST_ROOM (default 92:17:23)
+//   OMORI_TEST_PARTY         actor ids for the party (default 1,2,3,4 on a new game; a loaded save
+//                            keeps its own party unless this is set)
+//   OMORI_TEST_LEVEL         actor level for that party (default 15)
+//   OMORI_TEST_BATTLE_SETTLE seconds after the battle scene starts before measuring (default 8:
+//                            intro animation and the troop's opening events)
 //   OMORI_TEST_MAPS     perf/verify maps, "id" or "id:x:y" comma-separated
 //                       (default 14:45:44,111:15:25,87:27:27: Player's house, Rain Town, White Space)
 //   OMORI_TEST_ROOM     room mode map, "id:x:y"
@@ -36,6 +48,10 @@
 //   perf:    per map, fps, frame time p50/p95/max, native draw ms.
 //   room:    one map, same figures; with OMORI_TEST_WALK the player walks a loop during the measurement.
 //   verify:  per map, cutscene waits (logic steps) and camera-jump captures with the sprite patch on and off.
+//   battle:  per battle, two runs from a fresh battle start: "idle" (command selection, idle
+//            animations) and "turns" (the engine's auto-battle picks every actor's action; HP is
+//            raised so nobody dies mid-window). Same figures as room mode plus battle state,
+//            actions and turns executed. Math.random is seeded and reset before each run.
 (function () {
   'use strict';
   var root = typeof globalThis !== 'undefined' ? globalThis : window; // NW.js 0.29 has no globalThis
@@ -68,7 +84,7 @@
   var SEED = (Number(env('OMORI_TEST_SEED')) || 1234) >>> 0;
   var seedState = SEED;
   function resetSeed() { seedState = SEED; }
-  if (MODE === 'trace') Math.random = function () {
+  if (MODE === 'trace' || MODE === 'battle') Math.random = function () {
     seedState = (seedState + 0x6D2B79F5) >>> 0;
     var t = seedState;
     t = Math.imul(t ^ (t >>> 15), t | 1);
@@ -1557,6 +1573,244 @@
     return { farEvent: far.eventId(), runs: runs };
   }
 
+  // ---------------------------------------------------------------------- battle mode
+  // Battles cannot be saved in MV (Scene_Battle refuses, and BattleManager/$gameTroop are not in
+  // the save contents), so a battle "state" is a scripted start: a fixed party (new game or a
+  // copied save), BattleManager.setup(troop) pushed from inside a logic step like an encounter,
+  // and the seeded PRNG reset before each run. Presets go from light to graphically heavy; each
+  // uses the battleback the game shows for that fight. Boss troops run their own event pages
+  // (dialogue is auto-confirmed, YEP_ImprovedBattlebacks layers and pictures come from them).
+  var BATTLE_PRESETS = {
+    bunny:      { troop: 12,  back: 'battleback_vf_default', note: '1 enemy (Forest Bunny)' },
+    moles:      { troop: 22,  back: 'battleback_vf_default', note: '2 enemies (Sprout Mole, Forest Bunny)' },
+    sweetheart: { troop: 425, back: 'battleback_sw_sweetheart', note: 'boss with scripted phases' },
+    spacebf:    { troop: 414, back: 'battleback_ow_xsbf', note: 'boss, space backdrop effects' },
+    jawsum:     { troop: 427, back: 'battlebacks_dw_jawsum', note: 'boss that summons adds' },
+    humphrey:   { troop: 436, back: 'battleback_dw_humphrey', note: '3 large enemies' },
+    something:  { troop: 445, back: 'battleback_bs_something', note: '8 enemies, dark scene' }
+  };
+  function battleEntries(text) {
+    return String(text).split(',').filter(Boolean).map(function (item) {
+      var preset = BATTLE_PRESETS[item];
+      if (preset) return { name: item, troop: preset.troop, back: preset.back, note: preset.note };
+      var parts = item.split(':');
+      return { name: 'troop' + parts[0], troop: Number(parts[0]), back: parts[1], note: 'custom' };
+    });
+  }
+
+  var BATTLE = { hooked: false, auto: false, actions: 0 };
+  function installBattleHooks() {
+    if (BATTLE.hooked) return;
+    BATTLE.hooked = true;
+    // Stock canInput() is false for auto-battle actors, so the stock flow skips command input and
+    // Game_Actor.makeAutoBattleActions picks the actions: no menu scripting against OMORI's
+    // custom battle windows.
+    var isAutoBattle = Game_BattlerBase.prototype.isAutoBattle;
+    Game_BattlerBase.prototype.isAutoBattle = function () {
+      return (BATTLE.auto && this.isActor()) || isAutoBattle.call(this);
+    };
+    var startAction = BattleManager.startAction;
+    BattleManager.startAction = function () {
+      BATTLE.actions++;
+      return startAction.apply(this, arguments);
+    };
+  }
+
+  function battleParty(loaded) {
+    var ids = env('OMORI_TEST_PARTY');
+    if (loaded && !ids) return $gameParty.members().map(function (actor) { return actor.actorId(); });
+    ids = String(ids || '1,2,3,4').split(',').map(Number).filter(Boolean);
+    var level = Number(env('OMORI_TEST_LEVEL')) || 15;
+    $gameParty.members().slice().forEach(function (actor) {
+      if (ids.indexOf(actor.actorId()) < 0) $gameParty.removeActor(actor.actorId());
+    });
+    ids.forEach(function (id) {
+      if (!$gameParty.members().some(function (actor) { return actor.actorId() === id; })) $gameParty.addActor(id);
+      var actor = $gameActors.actor(id);
+      if (actor.level < level) actor.changeLevel(level, false);
+      actor.recoverAll();
+    });
+    return ids;
+  }
+
+  // Keeps every battler alive for the whole window without changing what is drawn: damage,
+  // popups and animations still play, only the pool is deep.
+  function battleDurable() {
+    $gameParty.members().concat($gameTroop.members()).forEach(function (battler) {
+      battler.addParam(0, 999999);
+      battler.setHp(battler.mhp);
+    });
+  }
+
+  function battleState() {
+    var troop = typeof $gameTroop !== 'undefined' && $gameTroop;
+    return { scene: sceneName(), phase: BattleManager._phase || null,
+      turn: troop ? troop.turnCount() : null,
+      enemiesAlive: troop ? troop.aliveMembers().length : null,
+      troopEventRunning: troop ? troop.isEventRunning() : null,
+      message: !!($gameMessage && $gameMessage.isBusy()) };
+  }
+
+  async function battleStart(entry, auto) {
+    resetSeed();
+    BATTLE.auto = auto;
+    if (entry.back !== undefined) $gameMap.changeBattleback(entry.back, '');
+    runNextStep(function () {
+      BattleManager.setup(entry.troop, true, true);
+      if (auto) battleDurable();
+      SceneManager.push(Scene_Battle);
+    }, 'battle-' + entry.name);
+    if (!await waitScene('Scene_Battle', 30000)) return false;
+    await wait(Number(env('OMORI_TEST_BATTLE_SETTLE')) * 1000 || 8000);
+    return true;
+  }
+
+  async function battleEnd() {
+    BATTLE.auto = false;
+    if (sceneName() === 'Scene_Battle') runNextStep(function () { BattleManager.abort(); }, 'battle-abort');
+    if (await waitScene('Scene_Map', 30000)) return true;
+    SceneManager.goto(Scene_Map);
+    return waitScene('Scene_Map', 30000);
+  }
+
+  async function battleRun(entry, auto) {
+    var label = 'battle-' + entry.name + (auto ? '-turns' : '-idle');
+    var out = { started: await battleStart(entry, auto) };
+    if (!out.started) {
+      out.state = battleState();
+      out.returned = await battleEnd();
+      return out;
+    }
+    out.before = battleState();
+    var actions = BATTLE.actions, turn = $gameTroop.turnCount();
+    await profileStart();
+    var result = await measure(MEASURE_MS);
+    result.profile = await profileStop(label);
+    result.shot = capture(label);
+    out.measure = result;
+    out.after = battleState();
+    out.actions = BATTLE.actions - actions;
+    out.turns = $gameTroop.turnCount() - turn;
+    // A troop event that ends or replaces the battle mid-window makes the window partial.
+    out.leftBattle = out.after.scene !== 'Scene_Battle';
+    out.returned = await battleEnd();
+    return out;
+  }
+
+  async function battleSweep() {
+    installBattleHooks();
+    var saveId = Number(env('OMORI_TEST_BATTLE_SAVE')) || 0;
+    var out = { save: saveId || null, party: null, battles: [] };
+    if (saveId) {
+      if (!loadSaveGame(saveId)) { out.failed = 'loadGame ' + saveId; return out; }
+      out.arrived = await waitScene('Scene_Map', 60000);
+      await wait(SETTLE_MS);
+    } else {
+      DataManager.setupNewGame();
+      out.arrived = await goTo(places(env('OMORI_TEST_ROOM') || '92:17:23')[0]);
+    }
+    out.party = battleParty(!!saveId);
+    for (var entry of battleEntries(env('OMORI_TEST_BATTLES') || 'bunny,sweetheart,something')) {
+      var battle = { name: entry.name, troop: entry.troop, back: entry.back || null, note: entry.note,
+        troopName: $dataTroops[entry.troop] ? $dataTroops[entry.troop].name : null };
+      if (!$dataTroops[entry.troop]) {
+        battle.failed = 'no such troop';
+      } else {
+        battle.idle = await battleRun(entry, false);
+        battle.turns = await battleRun(entry, true);
+        battle.mem = memory();
+      }
+      // One line per battle as soon as it is done, so a later crash keeps the earlier results.
+      log({ battle: battle });
+      out.battles.push(battle.failed ? entry.name + ': ' + battle.failed : entry.name);
+    }
+    return out;
+  }
+
+  // ---------------------------------------------------------------------- saveload mode
+  // A/B of JsonEx implementations on the real game state: load a save (from a COPY of the saves
+  // dir), measure, save to a scratch slot, measure again. OMORI_TEST_JSONEX picks the variant:
+  // stock (vanilla JsonEx), or a PMJS jsonex.js module file OMORI_TEST_JSONEX_DIR/jsonex-<name>.js
+  // run through a facade that records refusals and per-reason fallbacks. Disable OMORI's own
+  // jsonexFastObjects patch (--disable jsonexFastObjects) so only the variant differs.
+  var JSONEX = { variant: env('OMORI_TEST_JSONEX') || 'stock', installed: false, refused: null, fallbacks: {} };
+  function installJsonExVariant() {
+    if (JSONEX.variant === 'stock') return;
+    var crypto = require('crypto');
+    var facade = {
+      optimizations: {
+        register: function () {},
+        isEnabled: function () { return true; },
+        refuse: function (id, reason) { JSONEX.refused = reason; },
+        reportFallback: function (id, reason) { JSONEX.fallbacks[reason] = (JSONEX.fallbacks[reason] || 0) + 1; }
+      },
+      methods: {
+        matchesSource: function (fn, expected) {
+          if (typeof fn !== 'function') return false;
+          var source = Function.prototype.toString.call(fn);
+          var accepted = Array.isArray(expected) ? expected : [expected];
+          return accepted.indexOf(source) >= 0 ||
+            accepted.indexOf(crypto.createHash('sha256').update(source).digest('hex')) >= 0;
+        }
+      }
+    };
+    var file = env('OMORI_TEST_JSONEX_DIR') + '/jsonex-' + JSONEX.variant + '.js';
+    var source = require('fs').readFileSync(file, 'utf8');
+    new Function('PMJS', '__pmjsBuiltinRequire', source + '\ninstallNativeJsonEx();')(facade, require);
+    JSONEX.installed = !!JsonEx._pmjsFastObjects;
+  }
+
+  // Field reads over every map event: dictionary-mode objects read slower than fast ones, so this
+  // shows the object state directly, without fps noise.
+  function eventReadProbe() {
+    var events = $gameMap.events(), sum = 0, start = performance.now();
+    for (var round_ = 0; round_ < 400; round_++) {
+      for (var i = 0; i < events.length; i++) {
+        var e = events[i];
+        sum += e._x + e._y + e._realX + e._realY + e._direction + e._moveSpeed + e._opacity +
+          e._pageIndex + (e._through ? 1 : 0) + (e._characterName ? 1 : 0);
+      }
+    }
+    return { events: events.length, ms: round(performance.now() - start), check: sum > 0 };
+  }
+
+  async function saveLoadMeasure(label) {
+    var probe = eventReadProbe();
+    await profileStart();
+    var result = await measure(MEASURE_MS);
+    result.profile = await profileStop(label);
+    result.probe = probe;
+    result.place = [$gameMap.mapId(), $gamePlayer.x, $gamePlayer.y];
+    return result;
+  }
+
+  async function saveLoadSweep() {
+    installJsonExVariant();
+    var slot = Number(env('OMORI_TEST_LOAD_SAVE')) || 4;
+    var scratch = Number(env('OMORI_TEST_SAVE_SLOT')) || 6;
+    var out = { variant: JSONEX.variant, slot: slot, scratch: scratch };
+    var started = performance.now();
+    if (!loadSaveGame(slot)) { out.failed = 'loadGame ' + slot; out.jsonex = JSONEX; return out; }
+    out.loadMs = round(performance.now() - started);
+    out.arrived = await waitScene('Scene_Map', 60000);
+    await wait(SETTLE_MS);
+    out.loaded = await saveLoadMeasure('loaded');
+    // Save from inside a logic step, as the save menu does.
+    var saveMs = null;
+    runNextStep(function () {
+      $gameSystem.onBeforeSave();
+      var begin = performance.now();
+      out.saveOk = DataManager.saveGame(scratch);
+      saveMs = performance.now() - begin;
+    }, 'save');
+    await until(function () { return saveMs !== null; }, 15000);
+    out.saveMs = saveMs === null ? null : round(saveMs);
+    await wait(3000);
+    out.saved = await saveLoadMeasure('saved');
+    out.jsonex = JSONEX;
+    return out;
+  }
+
   async function run() {
     if (MODE === 'startup') {
       var m = memory();
@@ -1602,6 +1856,15 @@
     if (MODE === 'load') {
       log({ mode: 'load', result: await loadSweep(),
         perf: counterSnapshot(), mem: memoryDetailed(), imageStats: imageStats() });
+      return;
+    }
+    if (MODE === 'saveload') {
+      log({ mode: 'saveload', result: await saveLoadSweep(), mem: memory() });
+      return;
+    }
+    if (MODE === 'battle') {
+      log({ mode: 'battle', result: await battleSweep(),
+        perf: counterSnapshot(), mem: memory(), imageStats: imageStats() });
       return;
     }
     DataManager.setupNewGame();
