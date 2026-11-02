@@ -136,7 +136,8 @@ done) &
 WATCHDOG=$!
 
 if [ -n "${GPTOKEYB2:-}" ]; then
-  "$GPTOKEYB2" "$BINARY" > /dev/null 2>&1 &
+  # GPTOKEYB2 is a whole command line: keep it unquoted or Start+Select never quits.
+  $GPTOKEYB2 "$BINARY" > /dev/null &
 else
   echo "[launcher] GPTOKEYB2 unavailable"
 fi
